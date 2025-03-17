@@ -26,6 +26,11 @@ const apiEndpoint = {
     '/visa/travel-to-india-services/viewVisaRequestForm8ByFormId/',
   GET_ALL_STEPS_DATA: '/visa/travel-to-india-services/getAllStepData/',
 
+  // Image upload endpoints
+  UPLOAD_SINGLE_IMAGE: '/api/v1/upload/single',
+  UPLOAD_MULTIPLE_IMAGES: '/api/v1/upload/multiple',
+  DELETE_IMAGE: '/api/v1/upload',
+
   // temporary exit
   VISA_ADD_TEMPORARY_EXIT:
     '/visa/travel-to-india-services/visaLastTemporaryExitUrl',

@@ -1177,35 +1177,54 @@ export const step6ValidationSchemaMedicalBusiness = {
 };
 
 export const step6ValidationSchema = {
-  yupSchema: Yup.object().shape({
-    passport: Yup.array()
-      .of(
-        Yup.mixed()
-          .test(
-            'fileFormat',
-            'Only PNG and JPG files are allowed',
-            value => value && ['image/png', 'image/jpeg'].includes(value.type)
-          )
-          .required('Please select a file')
-      )
-      .min(1, 'At least one image is required'),
-    profilePicture: Yup.mixed()
-      .test(
-        'fileFormat',
-        'Only PNG and JPG files are allowed',
-        value => value && ['image/png', 'image/jpeg'].includes(value.type)
-      )
-      .required('Please select a file'),
-  }),
   initialValues: {
-    profilePicture: '',
     passport: [],
+    profilePicture: null,
     businessCard: [],
     eMedicalCard: [],
   },
+  yupSchema: Yup.object().shape({
+    passport: Yup.array()
+      .of(Yup.mixed())
+      .test('fileFormat', 'Only PNG and JPG files are allowed', value => {
+        if (!value || !value.length) return true;
+        return value.every(file => {
+          if (typeof file === 'string') return true;
+          return ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type);
+        });
+      })
+      .min(1, 'At least one passport image is required')
+      .required('Passport is required'),
+    profilePicture: Yup.mixed()
+      .test('fileFormat', 'Only PNG and JPG files are allowed', value => {
+        if (!value) return true;
+        if (typeof value === 'string') return true;
+        return ['image/png', 'image/jpeg', 'image/jpg'].includes(value.type);
+      })
+      .required('Profile picture is required'),
+    businessCard: Yup.array()
+      .of(Yup.mixed())
+      .test('fileFormat', 'Only PNG and JPG files are allowed', value => {
+        if (!value || !value.length) return true;
+        return value.every(file => {
+          if (typeof file === 'string') return true;
+          return ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type);
+        });
+      })
+      .notRequired(),
+    eMedicalCard: Yup.array()
+      .of(Yup.mixed())
+      .test('fileFormat', 'Only PNG and JPG files are allowed', value => {
+        if (!value || !value.length) return true;
+        return value.every(file => {
+          if (typeof file === 'string') return true;
+          return ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type);
+        });
+      })
+      .notRequired(),
+  }),
 };
 
-// step 5 data
 export const step5data = [
   {
     id: 1,
@@ -1251,7 +1270,6 @@ export const step5data = [
   },
 ];
 
-// nationality region
 export const nationalityRegionData = [
   {
     num_code: '4',
@@ -2998,7 +3016,6 @@ export const nationalityRegionData = [
   },
 ];
 
-// airports and seaports
 export const airportsSeaports = [
   'Portblair Airport',
   'Ahmedabad Airport',
@@ -3069,8 +3086,6 @@ export const airportsSeaports = [
   'Goa Seaport',
 ];
 
-// visa type
-
 export const visaTypesList = [
   'Business Visa',
   'Conference Visa',
@@ -3103,8 +3118,6 @@ export const saarcCountries = [
   'Pakistan',
   'Sri Lanka',
 ];
-
-// eligible evisa country for india
 
 export const eligibleCountriesEvisaIndia = [
   'Afghanistan',
@@ -3275,8 +3288,6 @@ export const eligibleCountriesEvisaIndia = [
   'Zambia and Zimbabwe',
 ];
 
-// religion names
-
 export const religionNames = [
   'Christian',
   'Islam',
@@ -3291,7 +3302,6 @@ export const religionNames = [
   'Zoroastrian',
 ];
 
-// education qualificatons list
 export const educationalQualificationList = [
   'Below Matriculation',
   'Graduate',
@@ -3304,7 +3314,6 @@ export const educationalQualificationList = [
   'Professional',
 ];
 
-// Occupation list
 export const occupationList = [
   'Air Force',
   'Business Person',

@@ -9,10 +9,20 @@ const FileUploadMain = ({
   errorMessage,
   accept,
   multiple,
+  onFileSelect,
 }) => {
   const handleFileChange = event => {
     const files = event.target.files;
-    setFieldValue(name, [...values[name], ...files]);
+    if (files.length > 0) {
+      setFieldValue(name, [...values[name], ...files]);
+
+      // Call onFileSelect for each file if provided
+      if (onFileSelect) {
+        for (let i = 0; i < files.length; i++) {
+          onFileSelect(files[i]);
+        }
+      }
+    }
   };
 
   return (
