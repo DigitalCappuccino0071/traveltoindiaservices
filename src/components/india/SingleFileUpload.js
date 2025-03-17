@@ -8,10 +8,16 @@ const SingleFileUpload = ({
   accept,
   errorMessage,
   id,
+  onFileSelect,
 }) => {
   const handleFileChange = event => {
     const file = event.target.files[0];
-    setFieldValue(name, file);
+    if (file) {
+      setFieldValue(name, file);
+      if (onFileSelect) {
+        onFileSelect(file);
+      }
+    }
   };
 
   return (

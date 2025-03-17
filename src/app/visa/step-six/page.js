@@ -3,25 +3,85 @@ import BannerPage from '@/components/india/common/BannerPage';
 import SavedFormId from '@/components/india/common/SavedFormId';
 import FileUploadMain from '@/components/india/FileUploadMain';
 import SingleFileUpload from '@/components/india/SingleFileUpload';
-import { step6ValidationSchema } from '@/constant/indiaConstant';
 import { useFormContext } from '@/context/formContext';
 import usePost from '@/hooks/usePost';
 import useUpdate from '@/hooks/useUpdate';
+import { useImageUpload } from '@/hooks/useImageUpload';
 import axiosInstance from '@/services/api';
 import apiEndpoint from '@/services/apiEndpoint';
 import { useQuery } from '@tanstack/react-query';
 import { ErrorMessage, Form, Formik } from 'formik';
+import * as Yup from 'yup';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { ImSpinner2 } from 'react-icons/im';
 import { LuImagePlus } from 'react-icons/lu';
+import { useState, useCallback } from 'react';
+import { toast } from 'react-toastify';
 
 const StepSix = () => {
   const pathName = usePathname();
   const { state } = useFormContext();
   const router = useRouter();
+  const { uploadSingleImage, uploadMultipleImages } = useImageUpload();
+  const [uploadedPublicIds, setUploadedPublicIds] = useState({
+    profilePicture: '',
+    passport: [],
+    businessCard: [],
+    eMedicalCard: [],
+  });
+
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Define validation schema directly in the component
+  const validationSchema = Yup.object().shape({
+    passport: Yup.array()
+      .of(Yup.mixed())
+      .test('fileFormat', 'Only PNG and JPG files are allowed', value => {
+        if (!value || !value.length) return true;
+        return value.every(file => {
+          if (typeof file === 'string') return true;
+          return ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type);
+        });
+      })
+      .min(1, 'At least one passport image is required')
+      .required('Passport is required'),
+    profilePicture: Yup.mixed()
+      .test('fileFormat', 'Only PNG and JPG files are allowed', value => {
+        if (!value) return true;
+        if (typeof value === 'string') return true;
+        return ['image/png', 'image/jpeg', 'image/jpg'].includes(value.type);
+      })
+      .required('Profile picture is required'),
+    businessCard: Yup.array()
+      .of(Yup.mixed())
+      .test('fileFormat', 'Only PNG and JPG files are allowed', value => {
+        if (!value || !value.length) return true;
+        return value.every(file => {
+          if (typeof file === 'string') return true;
+          return ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type);
+        });
+      }),
+    eMedicalCard: Yup.array()
+      .of(Yup.mixed())
+      .test('fileFormat', 'Only PNG and JPG files are allowed', value => {
+        if (!value || !value.length) return true;
+        return value.every(file => {
+          if (typeof file === 'string') return true;
+          return ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type);
+        });
+      }),
+  });
+
+  const initialValues = {
+    passport: [],
+    profilePicture: null,
+    businessCard: [],
+    eMedicalCard: [],
+  };
+
   const {
     isPending,
     error,
@@ -34,6 +94,7 @@ const StepSix = () => {
       axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
     enabled: !!state.formId,
   });
+
   const postMutation = usePost(
     apiEndpoint.VISA_ADD_STEP6,
     6,
@@ -65,6 +126,114 @@ const StepSix = () => {
     localStorage.clear();
   };
 
+  const handleImageUpload = useCallback(
+    async (file, fieldName) => {
+      if (!file) return;
+
+      setIsUploading(true);
+      try {
+        if (fieldName === 'profilePicture') {
+          const result = await uploadSingleImage.mutateAsync(file);
+          if (result && result.public_id) {
+            setUploadedPublicIds(prev => ({
+              ...prev,
+              [fieldName]: result.public_id,
+            }));
+            console.log(
+              `Successfully uploaded ${fieldName} with public_id: ${result.public_id}`
+            );
+            toast.success('Profile picture uploaded successfully', {
+              position: toast.POSITION.BOTTOM_RIGHT,
+              autoClose: 2000,
+            });
+          } else {
+            throw new Error('No public_id received from upload');
+          }
+        } else {
+          const result = await uploadMultipleImages.mutateAsync([file]);
+          if (result && result.length > 0 && result[0].public_id) {
+            setUploadedPublicIds(prev => ({
+              ...prev,
+              [fieldName]: [...prev[fieldName], result[0].public_id],
+            }));
+            console.log(
+              `Successfully uploaded ${fieldName} with public_id: ${result[0].public_id}`
+            );
+            toast.success(
+              `${fieldName
+                .replace(/([A-Z])/g, ' $1')
+                .trim()} uploaded successfully`,
+              {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                autoClose: 2000,
+              }
+            );
+          } else {
+            throw new Error('No public_id received from upload');
+          }
+        }
+      } catch (error) {
+        console.error(`Error uploading ${fieldName}:`, error);
+        toast.error(
+          `Failed to upload ${fieldName}: ${error.message || 'Unknown error'}`,
+          {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            autoClose: 3000,
+          }
+        );
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [uploadSingleImage, uploadMultipleImages]
+  );
+
+  // Check if all required files are uploaded based on visa type
+  const validateRequiredFiles = useCallback(() => {
+    let isValid = true;
+    const visaService = getAllStepsData?.data?.step1Data?.visaService || '';
+
+    // Profile picture is always required
+    if (!uploadedPublicIds.profilePicture) {
+      toast.error('Profile picture is required', {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      });
+      isValid = false;
+    }
+
+    // Passport is always required
+    if (uploadedPublicIds.passport.length === 0) {
+      toast.error('Passport is required', {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      });
+      isValid = false;
+    }
+
+    // Business card is required only for business visa
+    if (
+      visaService === 'eBUSINESS VISA' &&
+      uploadedPublicIds.businessCard.length === 0
+    ) {
+      toast.error('Business card is required for business visa', {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      });
+      isValid = false;
+    }
+
+    // Medical card is required only for medical visa
+    if (
+      visaService === 'eMEDICAL VISA' &&
+      uploadedPublicIds.eMedicalCard.length === 0
+    ) {
+      toast.error('Medical card is required for medical visa', {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      });
+      isValid = false;
+    }
+
+    return isValid;
+  }, [uploadedPublicIds, getAllStepsData]);
+
   if (isPending) {
     return (
       <div className="flex items-center justify-center flex-1 h-full pt-20">
@@ -86,6 +255,7 @@ const StepSix = () => {
     if (getAllStepsData?.data?.step6Data) {
       return router.push('/visa/step-seven');
     }
+    const visaService = getAllStepsData?.data?.step1Data?.visaService || '';
 
     return (
       <>
@@ -93,47 +263,82 @@ const StepSix = () => {
         <SavedFormId />
 
         <Formik
-          initialValues={step6ValidationSchema.initialValues}
-          validationSchema={step6ValidationSchema.yupSchema}
+          initialValues={initialValues}
+          validationSchema={validationSchema}
           validateOnChange={true}
-          validateOnMount={true}
-          onSubmit={(values, { setSubmitting, resetForm }) => {
-            const formData = new FormData();
-
-            if (values.profilePicture instanceof File) {
-              formData.append('profilePicture', values.profilePicture);
+          validateOnMount={false}
+          onSubmit={async (values, { setSubmitting, resetForm }) => {
+            // Validate all required files are uploaded based on visa type
+            if (!validateRequiredFiles()) {
+              setSubmitting(false);
+              return;
             }
 
-            for (const file of values.passport) {
-              formData.append('passport', file);
-            }
+            try {
+              const formData = new FormData();
+              formData.append('formId', state.formId);
+              formData.append('lastExitStepUrl', pathName);
 
-            for (const file of values.businessCard) {
-              formData.append('businessCard', file);
-            }
+              // Add profile picture public ID
+              formData.append(
+                'profilePicture',
+                uploadedPublicIds.profilePicture
+              );
 
-            for (const file of values.eMedicalCard) {
-              formData.append('eMedicalCard', file);
-            }
+              // Add passport public IDs
+              uploadedPublicIds.passport.forEach(id => {
+                formData.append('passport', id);
+              });
 
-            formData.append('formId', state.formId);
-            formData.append('lastExitStepUrl', pathName);
-
-            // postMutation.mutate(formData);
-
-            postMutation.mutate(formData, {
-              onSuccess: () => {
-                updatePaymentStatusMutation.mutate({
-                  paymentStatus: 'pendingPayment',
+              // Add business card public IDs if applicable
+              if (visaService === 'eBUSINESS VISA') {
+                uploadedPublicIds.businessCard.forEach(id => {
+                  formData.append('businessCard', id);
                 });
-              },
-            });
+              }
 
-            setSubmitting(false);
-            resetForm();
+              // Add medical card public IDs if applicable
+              if (visaService === 'eMEDICAL VISA') {
+                uploadedPublicIds.eMedicalCard.forEach(id => {
+                  formData.append('eMedicalCard', id);
+                });
+              }
+
+              // Submit form data
+              await postMutation.mutateAsync(formData, {
+                onSuccess: () => {
+                  updatePaymentStatusMutation.mutate({
+                    paymentStatus: 'pendingPayment',
+                  });
+                  toast.success('Files uploaded successfully!', {
+                    position: toast.POSITION.BOTTOM_RIGHT,
+                  });
+                },
+                onError: error => {
+                  toast.error(
+                    `Submission error: ${error.message || 'Unknown error'}`,
+                    {
+                      position: toast.POSITION.BOTTOM_RIGHT,
+                    }
+                  );
+                },
+              });
+
+              setSubmitting(false);
+              resetForm();
+            } catch (error) {
+              console.error('Form submission error:', error);
+              toast.error(
+                `Error submitting form: ${error.message || 'Unknown error'}`,
+                {
+                  position: toast.POSITION.BOTTOM_RIGHT,
+                }
+              );
+              setSubmitting(false);
+            }
           }}
         >
-          {({ values, isValid, handleSubmit, setFieldValue }) => (
+          {({ values, isValid, handleSubmit, setFieldValue, isSubmitting }) => (
             <>
               <Form onSubmit={handleSubmit} className="container pt-4 pb-16">
                 {/* upload file start  */}
@@ -142,7 +347,6 @@ const StepSix = () => {
                     <label className="mb-3 block font-semibold text-[#07074D]">
                       Upload Your Image
                     </label>
-                    {/* <FileUpload /> */}
                     <div className="flex items-center w-full max-w-lg gap-8 p-2 mb-5 overflow-hidden border rounded-md h-36">
                       <div className="bg-gray-200 rounded-lg">
                         <SingleFileUpload
@@ -154,9 +358,13 @@ const StepSix = () => {
                             <ErrorMessage
                               name="profilePicture"
                               component="div"
+                              className="text-red-500"
                             />
                           }
                           accept="image/png, image/jpeg"
+                          onFileSelect={file =>
+                            handleImageUpload(file, 'profilePicture')
+                          }
                         />
 
                         <label
@@ -171,14 +379,16 @@ const StepSix = () => {
                           <div className="flex flex-wrap gap-2 mt-2">
                             <div>
                               <div className="relative overflow-hidden">
-                                <Image
-                                  src={URL.createObjectURL(
-                                    values.profilePicture
-                                  )}
-                                  alt={`Uploaded Image`}
-                                  width={100}
-                                  height={100}
-                                />
+                                {typeof values.profilePicture === 'object' && (
+                                  <Image
+                                    src={URL.createObjectURL(
+                                      values.profilePicture
+                                    )}
+                                    alt={`Uploaded Image`}
+                                    width={100}
+                                    height={100}
+                                  />
+                                )}
                               </div>
                             </div>
                           </div>
@@ -193,6 +403,7 @@ const StepSix = () => {
                   </div>
                 </div>
                 {/* upload file end  */}
+
                 <div className="py-4 space-y-2 font-medium">
                   <p>
                     Temporary Application ID:{' '}
@@ -221,6 +432,7 @@ const StepSix = () => {
                     option on home page.
                   </p>
                 </div>
+
                 <div className="py-8">
                   <div>
                     <h2 className="text-3xl font-semibold">Upload Documents</h2>
@@ -241,19 +453,24 @@ const StepSix = () => {
                           setFieldValue={setFieldValue}
                           values={values}
                           errorMessage={
-                            <ErrorMessage name="passport" component="div" />
+                            <ErrorMessage
+                              name="passport"
+                              component="div"
+                              className="text-red-500"
+                            />
                           }
                           accept="image/png, image/jpeg"
                           multiple="multiple"
+                          onFileSelect={file =>
+                            handleImageUpload(file, 'passport')
+                          }
                         />
                       </div>
                     </div>
                     {/* passport upload end  */}
 
                     {/* ebusiness visa code start */}
-                    {getAllStepsDataIsSuccess &&
-                    getAllStepsData?.data?.step1Data.visaService ===
-                      'eBUSINESS VISA' ? (
+                    {visaService === 'eBUSINESS VISA' && (
                       <div className="grid grid-cols-3 py-8 text-sm">
                         <div>
                           <b>Business Description</b>
@@ -271,21 +488,22 @@ const StepSix = () => {
                               <ErrorMessage
                                 name="businessCard"
                                 component="div"
+                                className="text-red-500"
                               />
                             }
                             accept="image/png, image/jpeg"
                             multiple="multiple"
+                            onFileSelect={file =>
+                              handleImageUpload(file, 'businessCard')
+                            }
                           />
                         </div>
                       </div>
-                    ) : null}
-
+                    )}
                     {/* ebusiness visa code end here */}
 
                     {/* emedical code start here */}
-                    {getAllStepsDataIsSuccess &&
-                    getAllStepsData?.data?.step1Data.visaService ===
-                      'eMEDICAL VISA' ? (
+                    {visaService === 'eMEDICAL VISA' && (
                       <div className="grid grid-cols-3 py-8 text-sm">
                         <div>
                           <b>Medical Description</b>
@@ -303,31 +521,42 @@ const StepSix = () => {
                               <ErrorMessage
                                 name="eMedicalCard"
                                 component="div"
+                                className="text-red-500"
                               />
                             }
                             accept="image/png, image/jpeg"
                             multiple="multiple"
+                            onFileSelect={file =>
+                              handleImageUpload(file, 'eMedicalCard')
+                            }
                           />
                         </div>
                       </div>
-                    ) : null}
+                    )}
                     {/* emedical code end here */}
                   </div>
                 </div>
+
                 <div className="space-x-4 space-y-4 text-center md:space-y-0">
                   <Link href="/visa/step-five/update">
                     <button className="formbtnBorder">Back</button>
                   </Link>
                   <button
                     type="submit"
-                    disabled={!isValid}
+                    disabled={isUploading || isSubmitting}
                     className={`formbtn cursor-pointer inline-flex items-center gap-3 ${
-                      !isValid ? 'cursor-not-allowed opacity-50' : ''
+                      isUploading || isSubmitting
+                        ? 'cursor-not-allowed opacity-50'
+                        : ''
                     }`}
                   >
-                    {postMutation.isPending ? (
+                    {isUploading ? (
                       <>
-                        <ImSpinner2 className="animate-spin" /> Loading
+                        <ImSpinner2 className="animate-spin" /> Uploading...
+                      </>
+                    ) : isSubmitting ? (
+                      <>
+                        <ImSpinner2 className="animate-spin" /> Submitting...
                       </>
                     ) : (
                       'Next'
@@ -335,9 +564,11 @@ const StepSix = () => {
                   </button>
                   {/* save and temporary exit button  */}
                   <button
-                    disabled={temporaryExitUpdateMutation.isPending}
+                    disabled={
+                      temporaryExitUpdateMutation.isPending || isUploading
+                    }
                     className={`formbtnDark cursor-pointer inline-flex items-center gap-3 ${
-                      temporaryExitUpdateMutation.isPending
+                      temporaryExitUpdateMutation.isPending || isUploading
                         ? 'cursor-not-allowed opacity-50'
                         : ''
                     }`}
