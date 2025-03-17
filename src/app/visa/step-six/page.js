@@ -246,6 +246,7 @@ const StepSix = () => {
   if (error) {
     return router.push('/visa/step-five');
   }
+  //
 
   if (getAllStepsDataIsSuccess) {
     if (!getAllStepsData?.data?.step5Data) {
