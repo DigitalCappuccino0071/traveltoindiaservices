@@ -35,6 +35,7 @@ const Home = () => {
     <>
       <div>
         <Banner />
+        {/* {''} */}
         <div className="container grid w-full font-medium text-center my-7">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
             <Link href="/visa/step-one" className="flex flex-col h-full">
