@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { ImSpinner2 } from 'react-icons/im';
+import { CldImage } from 'next-cloudinary';
 
 const StepSeven = () => {
   const { state } = useFormContext();
@@ -68,12 +69,21 @@ const StepSeven = () => {
               </p>
             </div>
             {step6Data ? (
-              <Image
-                src={step6Data?.profilePicture}
-                width={140}
-                height={100}
-                className="object-cover"
-                alt="profile picture"
+              // <Image
+              //   src={step6Data?.profilePicture}
+              //   width={140}
+              //   height={100}
+              //   className="object-cover"
+              //   alt="profile picture"
+              // />
+              <CldImage
+                width="100"
+                height="100"
+                className="rounded-md"
+                src={`${step6Data?.profilePicture}`}
+                // src={`visa-images/ygvdlenxytq4q2ybl9ge`}
+                sizes="100vw"
+                alt="profile image"
               />
             ) : null}
             {/* <Image
