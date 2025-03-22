@@ -56,11 +56,14 @@ export default function CancelPage() {
             </h3>
             <p class="text-gray-600 my-2">
               Unfortunately, your payment has been cancelled. Your order ID is{' '}
-              <Highlight className="font-bold text-primary" text={orderId} />{' '}
+              <Highlight
+                className="font-bold text-primary"
+                text={orderId || ''}
+              />{' '}
               and the name on the order is{' '}
               <Highlight
                 className="font-bold text-primary"
-                text={data.step2.firstName}
+                text={data?.step2?.firstName}
               />
               . If you have any questions, please contact our support team or go
               back to the payment page.

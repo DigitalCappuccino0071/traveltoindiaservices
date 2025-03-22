@@ -8,7 +8,7 @@ const BannerPage = ({ heading, buttonTitle }) => {
   // const isInView = useInView(ref, { once: true });
 
   return (
-    <div className="mt-[80px] relative">
+    <div className="mt-[80px] relative overflow-hidden">
       <div className="relative w-full h-auto md:h-[400px] overflow-hidden">
         <Image
           loading="lazy"

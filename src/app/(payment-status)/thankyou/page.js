@@ -25,11 +25,6 @@ export default function ThankyouPage() {
       axiosInstance.get(`${apiEndpoint.GET_VISA_STEP1_BY_ID}${orderId}`),
     enabled: !!orderId,
   });
-
-  if (!orderId || !success) {
-    return notFound();
-  }
-
   if (isPending) {
     return (
       <div className="flex items-center justify-center flex-1 h-full pt-24">
@@ -44,6 +39,13 @@ export default function ThankyouPage() {
 
   if (isSuccess) {
     const { data } = userData;
+
+    if (!orderId || !success) {
+      return notFound();
+    }
+
+    console.log('orderid available');
+
     if (!data.paid) return notFound();
     return (
       <div class="bg-gray-100 flex-1 pt-20">
@@ -57,10 +59,13 @@ export default function ThankyouPage() {
               Thank you{' '}
               <Highlight
                 className="font-bold text-primary"
-                text={data.step2.firstName}
+                text={data?.step2?.firstName}
               />{' '}
               for completing your secure online payment. Your order id is{' '}
-              <Highlight className="font-bold text-primary" text={orderId} />
+              <Highlight
+                className="font-bold text-primary"
+                text={orderId || ''}
+              />
             </p>
             <p> Have a great day! </p>
             <div class="py-10 text-center">
