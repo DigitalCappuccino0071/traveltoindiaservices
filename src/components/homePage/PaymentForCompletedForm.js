@@ -37,10 +37,6 @@ export default function PaymentForCompletedForm({
     setFormOpen(prev => !prev);
   };
 
-  if (postUserLogin.isSuccess) {
-    console.log(postUserLogin.data.data.data.lastExitStepUrl);
-  }
-
   useEffect(() => {
     localStorage.removeItem('formId');
   }, [dispatch, isFormOpen]);

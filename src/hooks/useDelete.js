@@ -18,7 +18,6 @@ export default function useDelete(
       return axiosInstance.delete(`${apiEndpointUrl}/${deleteId}`);
     },
     onSuccess: data => {
-      console.log(data);
       toast.success(successMessage, {
         position: toast.POSITION.BOTTOM_RIGHT,
         autoClose: 500,

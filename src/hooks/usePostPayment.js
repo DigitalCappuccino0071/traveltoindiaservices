@@ -17,8 +17,6 @@ export default function usePostPayment(
       return axiosInstance.put(apiEndpointUrl, formData);
     },
     onSuccess: async data => {
-      console.log(data);
-
       queryClient.invalidateQueries({ queryKey: [queryKey] });
 
       toast.success(successMessage, {

@@ -139,9 +139,7 @@ const StepSix = () => {
               ...prev,
               [fieldName]: result.public_id,
             }));
-            console.log(
-              `Successfully uploaded ${fieldName} with public_id: ${result.public_id}`
-            );
+
             toast.success('Profile picture uploaded successfully', {
               position: toast.POSITION.BOTTOM_RIGHT,
               autoClose: 2000,
@@ -156,9 +154,7 @@ const StepSix = () => {
               ...prev,
               [fieldName]: [...prev[fieldName], result[0].public_id],
             }));
-            console.log(
-              `Successfully uploaded ${fieldName} with public_id: ${result[0].public_id}`
-            );
+
             toast.success(
               `${fieldName
                 .replace(/([A-Z])/g, ' $1')
