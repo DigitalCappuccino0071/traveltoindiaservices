@@ -1,4 +1,6 @@
 import * as Yup from 'yup';
+import { isValidPhoneNumber } from 'react-phone-number-input';
+
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
@@ -22,11 +24,15 @@ export const step1ValidationSchema = {
       .required('Email ID is required'),
     reEmailId: Yup.string().oneOf([Yup.ref('emailId')], 'Email do not match'),
     contactNo: Yup.string()
-      .matches(
-        /^\+[1-9]\d{1,14}$/,
-        'Invalid phone number format. Please use the international format.'
+      .test(
+        'is-valid-phone',
+        'Phone number must be a valid international format',
+        value => {
+          if (!value) return false;
+          return isValidPhoneNumber(value);
+        }
       )
-      .required(),
+      .required('Phone number is required'),
 
     visaService: Yup.string().required('Visa Service is required'),
     eEmergencyXMisc: Yup.string().when('visaService', {
@@ -294,7 +300,7 @@ export const step3ValidationSchema = {
     motherCountryOfBirth: Yup.string(),
 
     applicantMaritalStatus: Yup.string().required(
-      'Applicant’s Marital Status is required'
+      "Applicant's Marital Status is required"
     ),
 
     spouseFullName: Yup.string().when('applicantMaritalStatus', {

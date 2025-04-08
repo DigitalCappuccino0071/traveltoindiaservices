@@ -16,6 +16,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ImSpinner2 } from 'react-icons/im';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
+import PhoneInputField from '@/components/common/PhoneInputField';
 
 const StepOne = () => {
   const pathName = usePathname();
@@ -207,33 +208,25 @@ const StepOne = () => {
                 </div>
               </div>
               <div className="form-input-main-div">
-                <label className="form-label">Contact no*</label>
-                <div className="input-error-wrapper form-input">
+                {/* <label className="form-label">Contact no*</label> */}
+                <div className="input-error-wrapper">
                   <Field name="contactNo">
                     {({ field, form }) => (
-                      <PhoneInput
+                      <PhoneInputField
+                        name="contactNo"
                         placeholder="Enter phone number"
                         value={field.value}
-                        inputclassName="phone-input-class"
                         onChange={value => {
                           form.setFieldValue(field.name, value);
-
-                          if (field.value) {
-                            form.setFieldValue({
-                              ...form.values,
-                              contactNo: value,
-                            });
-                          }
                         }}
+                        onBlur={field.onBlur}
+                        error={form.errors.contactNo}
+                        touched={form.touched.contactNo}
+                        required={true}
+                        form={form}
                       />
                     )}
                   </Field>
-
-                  <ErrorMessage
-                    name="contactNo"
-                    component="div"
-                    className="text-red-600"
-                  />
                 </div>
               </div>
 
