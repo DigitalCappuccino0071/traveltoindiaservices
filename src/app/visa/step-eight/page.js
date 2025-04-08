@@ -70,7 +70,7 @@ const StepEight = () => {
   }, [isSuccess, isCancelled, orderId, refetch]);
 
   const postPayment = useVisaBookingPaymentPost({
-    apiEndpointUrl: `api/v1/india-visa/payments/checkout-session/${
+    apiEndpointUrl: `api/v1/india-visa/payments/create-checkout-session/${
       state.formId || orderId
     }`,
     successMessage: 'Redirecting to payment...',
