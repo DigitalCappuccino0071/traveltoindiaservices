@@ -7,7 +7,7 @@ import { loadStripe } from '@stripe/stripe-js';
 
 // Use the appropriate Stripe key based on environment
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_TEST
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_LIVE
 );
 
 export default function useVisaBookingPaymentPost({
