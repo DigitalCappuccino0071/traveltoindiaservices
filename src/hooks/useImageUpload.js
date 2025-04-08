@@ -24,7 +24,6 @@ export const useImageUpload = () => {
           throw new Error(response.data.message || 'Failed to upload image');
         }
 
-        console.log('Upload successful: ', response.data);
         return response.data.data;
       } catch (error) {
         console.error('Error uploading image: ', error);
@@ -67,7 +66,6 @@ export const useImageUpload = () => {
           throw new Error(response.data.message || 'Failed to upload images');
         }
 
-        console.log('Multiple upload successful: ', response.data);
         return response.data.data;
       } catch (error) {
         console.error('Error uploading images: ', error);

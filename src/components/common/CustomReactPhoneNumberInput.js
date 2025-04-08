@@ -17,7 +17,7 @@ export default function CustomReactPhoneNumberInput({
   ...props
 }) {
   const [value, setValue] = useState(defaultValue || '');
-  console.log(value);
+
   const handleChange = value => {
     if (value && isValidPhoneNumber(value)) {
       setFieldValue(name, formatPhoneNumberIntl(value));

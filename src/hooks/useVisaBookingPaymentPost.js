@@ -62,7 +62,6 @@ export default function useVisaBookingPaymentPost({
           throw new Error('Invalid session data received from server');
         }
 
-        console.log('Stripe session created:', data.data.session.id);
         const stripe = await stripePromise;
 
         // Redirect to checkout and handle result

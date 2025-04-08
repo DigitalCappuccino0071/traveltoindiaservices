@@ -42,18 +42,12 @@ export default function ThankyouPage() {
     queryKey: ['getUserData', orderId],
     queryFn: async () => {
       try {
-        console.log(
-          `Fetching data for application: ${orderId} (Attempt ${
-            retryCount + 1
-          })`
-        );
         const response = await axiosInstance.get(
           `${apiEndpoint.GET_VISA_STEP1_BY_ID}${orderId}`
         );
-        console.log('Application data received:', response.data?.paid);
+
         return response;
       } catch (err) {
-        console.error('Error fetching application data:', err);
         throw err;
       }
     },
@@ -63,18 +57,12 @@ export default function ThankyouPage() {
     refetchInterval: data => {
       // Only auto-refresh twice if not paid yet
       if (!data?.data?.paid && retryCount < MAX_AUTO_RETRIES) {
-        console.log(
-          `Payment not confirmed yet. Auto-retry ${
-            retryCount + 1
-          }/${MAX_AUTO_RETRIES}`
-        );
         setRetryCount(prev => prev + 1);
         return 6000; // Check every 6 seconds
       }
 
       // Set flag when max retries reached
       if (retryCount >= MAX_AUTO_RETRIES && !maxRetriesReached) {
-        console.log('Max auto-retries reached. Showing manual retry button.');
         setMaxRetriesReached(true);
       }
 
@@ -83,7 +71,6 @@ export default function ThankyouPage() {
     staleTime: 10000,
     onSuccess: data => {
       if (data?.data?.paid) {
-        console.log('Payment confirmed in database!');
         setShowConfetti(true);
         toast.success('Payment successful!');
       }
@@ -272,7 +259,6 @@ export default function ThankyouPage() {
 
   // Success state - when payment is confirmed in database
   if (isSuccess && userData?.data?.paid) {
-    console.log('Payment successful', userData?.data?.paid);
     const data = userData?.data || {};
     const paymentDate = new Date(
       data?.paymentDate || new Date()

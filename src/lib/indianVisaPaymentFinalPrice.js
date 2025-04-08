@@ -1465,10 +1465,8 @@ export const indianVisaPaymentFinalPrice = (
       country => country.country.toLowerCase() === nationality.toLowerCase()
     );
     finalPrice = selectedCountry?.prices[eTouristVisa] + basePrice;
-    console.log(finalPrice);
   } else if (selectedVisaService === 'eemergencyxmisc') {
     finalPrice = basePrice;
-    console.log(finalPrice);
   } else {
     const selectedCountry = indianVisaBusinessMedicalAttendantConference.find(
       country => country.country.toLowerCase() === nationality.toLowerCase()

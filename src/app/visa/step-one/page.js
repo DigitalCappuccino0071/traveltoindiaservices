@@ -41,9 +41,6 @@ const StepOne = () => {
           validateOnChange={true}
           validateOnMount={true}
           onSubmit={(values, { setSubmitting, resetForm }) => {
-            // console.log(values);
-            // console.log(values.visaService.replaceAll(' ', '').toLowerCase());
-
             postMutation.mutate({
               ...values,
               lastExitStepUrl: '/visa/step-two',

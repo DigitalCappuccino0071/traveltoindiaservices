@@ -1773,7 +1773,7 @@ const StepFour = () => {
                               <label className="form-label">
                                 Countries Visited in last 10 years
                               </label>
-                              {console.log(values.countryVisitedInLast10Years)}
+
                               <div className="input-error-wrapper">
                                 <Select
                                   defaultValue={values.countryVisitedInLast10Years?.map(

@@ -30,7 +30,6 @@ export default function usePaymentVerification(
         orderId ? `&orderId=${orderId}` : ''
       }`;
 
-      console.log('Verifying payment with:', verificationUrl);
       const response = await axios.get(verificationUrl);
       return response.data;
     },
