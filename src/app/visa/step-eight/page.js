@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Highlight from '@/components/common/Highlight';
 import BannerPage from '@/components/india/common/BannerPage';
 import { useFormContext } from '@/context/formContext';
@@ -10,10 +11,11 @@ import axiosInstance from '@/services/api';
 import apiEndpoint from '@/services/apiEndpoint';
 import { useQuery } from '@tanstack/react-query';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 import { ImSpinner2 } from 'react-icons/im';
 import * as Yup from 'yup';
+import { toast } from 'react-toastify';
 
 const paymentFormSchema = Yup.object().shape({
   termsAndConditions: Yup.boolean()
@@ -25,7 +27,14 @@ const StepEight = () => {
   const pathName = usePathname();
   const { state } = useFormContext();
   const router = useRouter();
-  console.log(state);
+  const searchParams = useSearchParams();
+  const [paymentStatus, setPaymentStatus] = useState(null);
+
+  // Check for payment success or cancel in URL parameters
+  const isSuccess = searchParams.get('success') === 'true';
+  const isCancelled = searchParams.get('cancel') === 'true';
+  const orderId = searchParams.get('orderId');
+
   const {
     isPending,
     error,
@@ -35,18 +44,41 @@ const StepEight = () => {
   } = useQuery({
     queryKey: ['getAllStepsData'],
     queryFn: () =>
-      axiosInstance.get(`${apiEndpoint.GET_VISA_STEP1_BY_ID}${state.formId}`),
-    enabled: !!state.formId,
+      axiosInstance.get(
+        `${apiEndpoint.GET_VISA_STEP1_BY_ID}${state.formId || orderId}`
+      ),
+    enabled: !!(state.formId || orderId),
   });
 
+  // Effect to handle payment status check when returning from Stripe
+  useEffect(() => {
+    if (isSuccess && orderId) {
+      setPaymentStatus('success');
+      toast.success('Payment completed successfully!', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 5000,
+      });
+      // Force a refresh of data to get updated payment status
+      refetch();
+    } else if (isCancelled && orderId) {
+      setPaymentStatus('cancelled');
+      toast.warn('Payment was cancelled.', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 5000,
+      });
+    }
+  }, [isSuccess, isCancelled, orderId, refetch]);
+
   const postPayment = useVisaBookingPaymentPost({
-    apiEndpointUrl: `api/checkout-session/${state.formId}`,
-    successMessage: 'Successful',
+    apiEndpointUrl: `api/v1/india-visa/payments/create-checkout-session/${
+      state.formId || orderId
+    }`,
+    successMessage: 'Redirecting to payment...',
   });
 
   const paymentUpdateMutation = useUpdatePatch(
     apiEndpoint.UPDATE_VISA_ADD_STEP1,
-    state.formId,
+    state.formId || orderId,
     'successful',
     '/',
     false
@@ -69,29 +101,54 @@ const StepEight = () => {
   }
 
   if (error) {
-    return router.push('/visa/step-seven');
+    return (
+      <div className="container py-12 text-center">
+        <h2 className="text-xl text-red-600">Error loading application</h2>
+        <p className="my-4">We couldn&apos;t find your application details.</p>
+        <button
+          onClick={() => router.push('/visa/step-seven')}
+          className="px-4 py-2 mt-4 text-white bg-blue-600 rounded hover:bg-blue-700"
+        >
+          Go Back
+        </button>
+      </div>
+    );
   }
 
   if (getAllStepsDataIsSuccess && getAllStepsData?.data?.paid === true) {
     return (
-      <div>
-        <div>
-          Payment is completed for this application Id :{' '}
-          {getAllStepsData?.data?._id ?? 'application id not found'}{' '}
-        </div>
-        <div>
-          visaStatus: {getAllStepsData?.data?.visaStatus ?? 'no status found'}
+      <div className="container py-12 text-center">
+        <div className="p-6 bg-green-100 rounded-lg shadow-md">
+          <h2 className="mb-4 text-2xl font-bold text-green-700">
+            Payment Successful!
+          </h2>
+          <p className="mb-4">
+            Your application has been processed and payment received.
+          </p>
+          <div className="p-4 mb-4 bg-white rounded">
+            <p className="font-semibold">
+              Application ID:{' '}
+              <span className="font-bold text-primary">
+                {getAllStepsData?.data?._id ?? 'Not found'}
+              </span>
+            </p>
+            <p className="font-semibold">
+              Status:{' '}
+              <span className="font-bold text-green-600">
+                {getAllStepsData?.data?.visaStatus ?? 'Processing'}
+              </span>
+            </p>
+          </div>
+          <p className="text-sm text-gray-600">
+            You will receive a confirmation email shortly with further
+            instructions.
+          </p>
         </div>
       </div>
     );
   }
 
   if (getAllStepsDataIsSuccess && getAllStepsData?.data?.paid === false) {
-    console.log(
-      getAllStepsData?.data?.nationalityRegion ?? '',
-      getAllStepsData?.data?.visaService ?? '',
-      getAllStepsData?.data?.eTouristVisa ?? ''
-    );
     return (
       <>
         <div>
@@ -101,6 +158,16 @@ const StepEight = () => {
             <h2 className="py-3 text-lg font-semibold text-center text-white rounded-t bg-secondary">
               Online VISA Fee Payment
             </h2>
+
+            {paymentStatus === 'cancelled' && (
+              <div className="p-4 mb-6 text-center text-yellow-800 bg-yellow-100 border border-yellow-200 rounded-md">
+                <p>
+                  Your previous payment was cancelled. You can try again when
+                  you're ready.
+                </p>
+              </div>
+            )}
+
             <div className="flex items-center justify-center space-x-4 ">
               <h2 className="py-1 text-lg italic font-semibold text-secondary">
                 Applicant Name :-
@@ -115,7 +182,7 @@ const StepEight = () => {
                 Application Id :-
               </h2>
               <p className="font-bold leading-relaxed tracking-wide text-justify text-primary">
-                {state?.formId}
+                {state?.formId || orderId}
               </p>
             </div>
             <div className="flex items-center justify-center space-x-4 ">
@@ -205,7 +272,9 @@ const StepEight = () => {
                   application are true and correct to the best of my knowledge
                   and belief. I understand and agree that once the fee is paid
                   towards the Temporary application ID{' '}
-                  <span className="font-bold">${state?.formId}</span> is 100%
+                  <span className="font-bold">${
+                    state?.formId || orderId
+                  }</span> is 100%
                   non-refundable and I will not claim a refund or dispute the
                   transaction incase of cancellation request raised at my end. I
                   also understand that indiansvisaonline.org.in is only
@@ -213,7 +282,6 @@ const StepEight = () => {
                   granted or rejected by the indian government. I authorized
                   them to take the payment from my card online.`,
                 });
-                // console.log(values, state.formId);
                 setSubmitting(false);
                 resetForm();
               }}
@@ -239,13 +307,16 @@ const StepEight = () => {
                       correct to the best of my knowledge and belief. I
                       understand and agree that once the fee is paid towards the
                       Temporary application ID{' '}
-                      <span className="font-bold">{state?.formId}</span> is 100%
-                      non-refundable and I will not claim a refund or dispute
-                      the transaction incase of cancellation request raised at
-                      my end. I also understand that indiansvisaonline.org.in is
-                      only responsible for processing my application and the
-                      visa may be granted or rejected by the indian government.
-                      I authorized them to take the payment from my card online.
+                      <span className="font-bold">
+                        {state?.formId || orderId}
+                      </span>{' '}
+                      is 100% non-refundable and I will not claim a refund or
+                      dispute the transaction incase of cancellation request
+                      raised at my end. I also understand that
+                      indiansvisaonline.org.in is only responsible for
+                      processing my application and the visa may be granted or
+                      rejected by the indian government. I authorized them to
+                      take the payment from my card online.
                     </label>
                   </p>
                   <ErrorMessage name="termsAndConditions">
@@ -256,7 +327,7 @@ const StepEight = () => {
                     <p className="pt-12 font-bold leading-relaxed tracking-wide text-justify">
                       Please note down the Application ID :
                       <span className="font-bold text-primary">
-                        {state?.formId}
+                        {state?.formId || orderId}
                       </span>{' '}
                       which will be required for Status Enquiry, e-Visa Printing
                       and Payment of visa processing fee.{' '}
@@ -282,18 +353,27 @@ const StepEight = () => {
                       )}
                     </button>
                     <button
-                      disabled={!isValid}
+                      disabled={!isValid || postPayment.isPending}
                       className={`formbtn cursor-pointer inline-flex items-center gap-3 ${
-                        !isValid ? 'cursor-not-allowed opacity-50' : ''
+                        !isValid || postPayment.isPending
+                          ? 'cursor-not-allowed opacity-50'
+                          : ''
                       }`}
                       type="submit"
                     >
-                      {postPayment.isPending ? 'Processing...' : 'Pay Now'}
+                      {postPayment.isPending ? (
+                        <>
+                          <ImSpinner2 className="animate-spin" /> Processing...
+                        </>
+                      ) : (
+                        'Pay Now'
+                      )}
                     </button>
 
                     {postPayment.isError ? (
-                      <div className="text-red-500">
-                        An error occurred: {postPayment.error.message}
+                      <div className="p-3 mt-4 text-left text-red-500 bg-red-50 rounded">
+                        <p className="font-semibold">Payment Error</p>
+                        <p>{postPayment.error.message}</p>
                       </div>
                     ) : null}
                   </div>

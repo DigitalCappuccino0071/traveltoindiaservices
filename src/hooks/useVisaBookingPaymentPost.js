@@ -4,10 +4,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { loadStripe } from '@stripe/stripe-js';
-import { useEffect } from 'react';
+
+// Use the appropriate Stripe key based on environment
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_LIVE
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_TEST
 );
+
 export default function useVisaBookingPaymentPost({
   apiEndpointUrl,
   isDispatch = false,
@@ -18,44 +20,92 @@ export default function useVisaBookingPaymentPost({
   const queryClient = useQueryClient();
   const { dispatch } = useFormContext();
   const router = useRouter();
+
   const mutation = useMutation({
-    mutationFn: formData => {
-      return axiosInstance.post(apiEndpointUrl, formData);
+    mutationFn: async formData => {
+      // Add additional metadata for better tracking
+      const enhancedFormData = {
+        ...formData,
+        clientInfo: {
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString(),
+        },
+      };
+
+      try {
+        const response = await axiosInstance.post(
+          apiEndpointUrl,
+          enhancedFormData
+        );
+        return response;
+      } catch (error) {
+        console.error('Payment API error:', error);
+
+        // Enhance error details for better debugging
+        if (error.response) {
+          throw new Error(
+            `Server error: ${error.response.status} - ${
+              error.response.data?.message || 'Unknown error'
+            }`
+          );
+        } else if (error.request) {
+          throw new Error('Network error: No response received from server');
+        } else {
+          throw new Error(`Request error: ${error.message}`);
+        }
+      }
     },
+
     onSuccess: async data => {
-      // console.log(data.data.session);
-      const stripe = await stripePromise;
+      try {
+        if (!data?.data?.session?.id) {
+          throw new Error('Invalid session data received from server');
+        }
 
-      await stripe.redirectToCheckout({
-        sessionId: data.data.session.id,
-      });
+        console.log('Stripe session created:', data.data.session.id);
+        const stripe = await stripePromise;
 
-      if (isDispatch) {
-        dispatch({
-          type: 'SET_FORM_ID',
-          payload: data?.data?._id,
+        // Redirect to checkout and handle result
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: data.data.session.id,
+        });
+
+        if (error) {
+          console.error('Stripe redirect error:', error);
+          throw new Error(error.message);
+        }
+
+        // This code runs after successful redirect - but likely won't execute
+        // since the page will redirect away
+        if (isDispatch) {
+          dispatch({
+            type: 'SET_FORM_ID',
+            payload: data?.data?._id,
+          });
+        }
+
+        queryClient.invalidateQueries({ queryKey: [queryKey] });
+
+        if (routeUrl) {
+          router.push(`${routeUrl}`);
+        }
+      } catch (stripeError) {
+        console.error('Stripe processing error:', stripeError);
+        toast.error(`Payment processing error: ${stripeError.message}`, {
+          position: toast.POSITION.BOTTOM_RIGHT,
+          autoClose: 5000,
         });
       }
-
-      queryClient.invalidateQueries({ queryKey: [queryKey] });
-
-      toast.success(successMessage ?? 'Form Submitted successfully', {
-        position: toast.POSITION.BOTTOM_RIGHT,
-        autoClose: 1000,
-      });
-
-      if (routeUrl) {
-        router.push(`${routeUrl}`);
-      }
     },
+
     onError: error => {
-      console.error(error.message);
+      console.error('Payment mutation error:', error.message);
 
       toast.error(
-        'An error occurred while processing your request. Please try again later.',
+        `Payment setup failed: ${error.message}. Please try again later.`,
         {
           position: toast.POSITION.BOTTOM_RIGHT,
-          autoClose: 1000,
+          autoClose: 5000,
         }
       );
     },
