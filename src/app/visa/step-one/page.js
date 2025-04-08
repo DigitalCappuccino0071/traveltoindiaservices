@@ -213,6 +213,7 @@ const StepOne = () => {
                   <Field name="contactNo">
                     {({ field, form }) => (
                       <PhoneInputField
+                        label="Contact no"
                         name="contactNo"
                         placeholder="Enter phone number"
                         value={field.value}
