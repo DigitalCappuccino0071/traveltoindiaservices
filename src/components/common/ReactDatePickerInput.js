@@ -7,18 +7,34 @@ import { parseISO, format } from 'date-fns';
 
 // Create a custom input component for the date picker
 const CustomInput = React.forwardRef(
-  ({ value, onClick, onChange, disabled, placeholder, className }, ref) => {
+  (
+    { value, onClick, onChange, onBlur, disabled, placeholder, className },
+    ref
+  ) => {
     // Format the date for display (DD-MM-YYYY)
     let displayValue = '';
+
+    // ReactDatePicker passes the value which could be a Date or a string
     if (value) {
       try {
-        // Parse the date value and format it
-        const date = new Date(value);
-        if (!isNaN(date.getTime())) {
-          displayValue = format(date, 'dd-MM-yyyy');
+        // Handle both Date objects and string representations
+        const dateObj = value instanceof Date ? value : new Date(value);
+
+        // Verify we have a valid date
+        if (!isNaN(dateObj.getTime())) {
+          // Format as DD-MM-YYYY
+          displayValue = format(dateObj, 'dd-MM-yyyy');
+        } else {
+          console.warn('Invalid date value received:', value);
+          // Try to extract a format from the string if it's not a valid date
+          if (typeof value === 'string') {
+            displayValue = value;
+          }
         }
       } catch (e) {
         console.error('Error formatting date for display:', e);
+        // Last resort fallback
+        displayValue = typeof value === 'string' ? value : '';
       }
     }
 
@@ -29,6 +45,7 @@ const CustomInput = React.forwardRef(
         value={displayValue}
         onClick={disabled ? undefined : onClick}
         onChange={onChange}
+        onBlur={onBlur}
         disabled={disabled}
         placeholder={placeholder}
         className={className}
@@ -107,20 +124,35 @@ export default function ReactDatePickerInput({
       break;
 
     case 'doa':
-      const arrivalMinDate = new Date();
-      arrivalMinDate.setDate(today.getDate() + 4);
-      minDateValue = minDate || arrivalMinDate;
-      placeholderText = 'Select arrival date';
-      calendarStartDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate() + 7
+      // Create a new date object for today
+      const currentDate = new Date();
+      // Reset hours to avoid timezone issues
+      currentDate.setHours(0, 0, 0, 0);
+
+      // Create a properly normalized minimum date (4 days from today)
+      const arrivalMinDate = new Date(currentDate);
+      // Add exactly 4 days
+      arrivalMinDate.setDate(currentDate.getDate() + 4);
+
+      console.log('Today:', format(currentDate, 'dd-MM-yyyy'));
+      console.log(
+        'Min arrival date (4 days later):',
+        format(arrivalMinDate, 'dd-MM-yyyy')
       );
+
+      // Use provided minDate if available, otherwise use calculated one
+      minDateValue = minDate || arrivalMinDate;
+
+      placeholderText = 'Select arrival date';
+      calendarStartDate = new Date(currentDate);
+      calendarStartDate.setDate(currentDate.getDate() + 7);
       break;
 
     case 'passport-expiry':
       const expiryMinDate = new Date();
-      expiryMinDate.setMonth(today.getMonth() + 6);
+      // Set time to beginning of day for consistent comparison
+      expiryMinDate.setHours(0, 0, 0, 0);
+      expiryMinDate.setMonth(expiryMinDate.getMonth() + 6);
       minDateValue = expiryMinDate;
       placeholderText = 'Select passport expiry date';
       calendarStartDate = new Date(
@@ -143,32 +175,47 @@ export default function ReactDatePickerInput({
   // Validate date directly
   const validateDate = date => {
     if (!date) {
-      setIsValid(false);
-      setErrorMessage('Please select a date');
-      return false;
+      setIsValid(!required); // Only invalid if required
+      setErrorMessage(required ? 'Please select a date' : '');
+      return !required; // Return valid if not required
     }
 
-    if (minDateValue && date < minDateValue) {
+    // Create a normalized copy of the date for comparison (without time)
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
+
+    if (minDateValue && normalizedDate < minDateValue) {
       setIsValid(false);
       if (variant === 'passport-expiry') {
         setErrorMessage('Passport must be valid for at least 6 months');
       } else if (variant === 'doa') {
-        setErrorMessage('Arrival date must be at least 4 days from today');
+        // Calculate the actual required minimum date (4 days from today)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const requiredDate = new Date(today);
+        requiredDate.setDate(today.getDate() + 4);
+
+        // Format the minimum date for better error message
+        const formattedMinDate = format(requiredDate, 'dd-MM-yyyy');
+        setErrorMessage(
+          `Arrival date must be on or after ${formattedMinDate} (4 days from today)`
+        );
       } else {
         setErrorMessage(
-          `Date must be after ${minDateValue.toLocaleDateString()}`
+          `Date must be on or after ${format(minDateValue, 'dd-MM-yyyy')}`
         );
       }
       return false;
     }
 
-    if (maxDateValue && date > maxDateValue) {
+    if (maxDateValue && normalizedDate > maxDateValue) {
       setIsValid(false);
       if (variant === 'dob') {
         setErrorMessage('Birth date cannot be in the future');
       } else {
         setErrorMessage(
-          `Date must be before ${maxDateValue.toLocaleDateString()}`
+          `Date must be on or before ${format(maxDateValue, 'dd-MM-yyyy')}`
         );
       }
       return false;
@@ -179,15 +226,15 @@ export default function ReactDatePickerInput({
     return true;
   };
 
-  // Initialize validation state if we already have a value
+  // Use useEffect to update validation when selectedDate changes
   useEffect(() => {
     if (selectedDate) {
       validateDate(selectedDate);
       setIsTouched(true);
     }
-  }, []);
+  }, [selectedDate]);
 
-  // Handle date change with guaranteed immediate feedback
+  // Modify the date change handler to ensure proper date objects
   const handleDateChange = date => {
     // First validate
     const valid = validateDate(date);
@@ -195,8 +242,39 @@ export default function ReactDatePickerInput({
     // Always set as touched
     setIsTouched(true);
 
-    // Update Formik
-    setFieldValue(name, date);
+    // Make sure we have a valid date object before updating Formik
+    if (date) {
+      console.log('Date selected:', date); // For debugging
+
+      // Ensure we're passing a valid Date object to Formik
+      try {
+        const dateObj = new Date(date);
+        if (!isNaN(dateObj.getTime())) {
+          setFieldValue(name, dateObj);
+        } else {
+          console.error('Invalid date selected:', date);
+        }
+      } catch (e) {
+        console.error('Error processing selected date:', e);
+      }
+    } else {
+      // If date is null/undefined, clear the field
+      setFieldValue(name, null);
+    }
+
+    // Update Formik touched state
+    helpers.setTouched(true, true);
+  };
+
+  // Add a proper handleBlur function to validate when a user clicks away
+  const handleBlur = () => {
+    // Mark as touched to trigger validation
+    setIsTouched(true);
+
+    // Validate current selectedDate (might be null/empty)
+    validateDate(selectedDate);
+
+    // Update Formik touched state
     helpers.setTouched(true, true);
   };
 
@@ -228,7 +306,7 @@ export default function ReactDatePickerInput({
           {...field}
           selected={selectedDate}
           onChange={handleDateChange}
-          onBlur={() => setIsTouched(true)}
+          onBlur={handleBlur}
           disabled={disabled}
           className={inputClass}
           dateFormat="dd-MM-yyyy"
@@ -263,6 +341,10 @@ export default function ReactDatePickerInput({
               },
             },
           ]}
+          // Add these props to ensure date handling works properly
+          strictParsing={false}
+          fixedHeight
+          popperClassName="react-datepicker-right"
         />
 
         {hasError && (

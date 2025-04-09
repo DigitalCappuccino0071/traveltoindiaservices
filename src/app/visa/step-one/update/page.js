@@ -16,7 +16,6 @@ import {
 } from '@/constant/indiaConstant';
 import { useFormContext } from '@/context/formContext';
 import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
-import { minDate, minDateWithDate } from '@/lib/minDate';
 import PhoneInputField from '@/components/common/PhoneInputField';
 import SelectField from '@/components/common/SelectField';
 import TextInputField from '@/components/common/TextInputField';
@@ -968,10 +967,6 @@ export default function StepOneUpdate() {
                           name="expectedDateOfArrival"
                           selected={new Date(values.expectedDateOfArrival)}
                           setFieldValue={setFieldValue}
-                          minDate={minDateWithDate(
-                            3,
-                            values.expectedDateOfArrival
-                          )}
                           label="Expected Date of Arrival"
                           required={true}
                           variant="doa"

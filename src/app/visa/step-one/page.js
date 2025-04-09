@@ -7,9 +7,8 @@ import {
   step1ValidationSchema,
 } from '@/constant/indiaConstant';
 import usePost from '@/hooks/usePost';
-import { minDate } from '@/lib/minDate';
 import apiEndpoint from '@/services/apiEndpoint';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { Field, Form, Formik } from 'formik';
 import Script from 'next/script';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ImSpinner2 } from 'react-icons/im';
@@ -907,7 +906,6 @@ const StepOne = () => {
                     name="expectedDateOfArrival"
                     selected={values.expectedDateOfArrival}
                     setFieldValue={setFieldValue}
-                    minDate={minDate(3)}
                     label="Expected Date of Arrival"
                     required={true}
                     variant="doa"

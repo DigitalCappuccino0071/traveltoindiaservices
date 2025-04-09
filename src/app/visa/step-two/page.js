@@ -13,14 +13,12 @@ import axiosInstance from '@/services/api';
 import apiEndpoint from '@/services/apiEndpoint';
 import { useQuery } from '@tanstack/react-query';
 import { Country } from 'country-state-city';
-import { ErrorMessage, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Script from 'next/script';
-import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { BsQuestionCircleFill } from 'react-icons/bs';
-import { CiCalendarDate } from 'react-icons/ci';
 import { ImSpinner2 } from 'react-icons/im';
 import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
 import TextInputField from '@/components/common/TextInputField';
@@ -117,22 +115,10 @@ const StepTwo = () => {
                     <div>
                       <div className="formMain">
                         <div className="form-input-main-div">
-                          <label className="form-label">
-                            First Name*{' '}
-                            <div className="relative group">
-                              <BsQuestionCircleFill
-                                className="text-primary info-icon"
-                                size={20}
-                              />
-                              <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                First name (Exactly as in passport)
-                              </div>
-                            </div>
-                          </label>
-
                           <div className="input-error-wrapper">
                             <TextInputField
                               name="firstName"
+                              label="First Name"
                               placeholder="Enter your first name"
                               required={true}
                             />
@@ -193,6 +179,7 @@ const StepTwo = () => {
                               <div className="input-error-wrapper">
                                 <TextInputField
                                   name="previousName"
+                                  label="Previous Name"
                                   placeholder="Enter your previous name"
                                   required={true}
                                 />
@@ -214,6 +201,7 @@ const StepTwo = () => {
                               <div className="input-error-wrapper">
                                 <TextInputField
                                   name="previousLastName"
+                                  label="Previous Last Name"
                                   placeholder="Enter your previous last name"
                                   required={true}
                                 />
@@ -237,6 +225,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Gender"
                               name="gender"
                               placeholder="Select Gender"
                               required={true}
@@ -249,21 +238,9 @@ const StepTwo = () => {
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">
-                            Date Of Birth
-                            <div className="relative group">
-                              <BsQuestionCircleFill
-                                className="text-primary info-icon"
-                                size={20}
-                              />
-                              <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                Date of birth as in passport in dd/mm/yyyy
-                                format
-                              </div>
-                            </div>
-                          </label>
                           <div className="input-error-wrapper">
                             <ReactDatePickerInput
+                              label="Date of Birth"
                               className="new-form-input"
                               name="dateOfBirth"
                               selected={
@@ -274,7 +251,6 @@ const StepTwo = () => {
                               setFieldValue={setFieldValue}
                               variant="dob"
                               disabled={true}
-                              label="Date of Birth"
                               required={true}
                             />
                           </div>
@@ -294,6 +270,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Town/City of birth"
                               name="townCityOfBirth"
                               placeholder="Enter your town/city of birth"
                             />
@@ -314,6 +291,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Country/Region of birth"
                               name="countryRegionOfBirth"
                               placeholder="Select Country"
                               required={true}
@@ -341,6 +319,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Citizenship/National ID no."
                               name="citizenshipNationalID"
                               placeholder="Enter your Citizenship/National ID"
                             />
@@ -361,6 +340,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Religion"
                               name="religion"
                               placeholder="Select Religion"
                               required={true}
@@ -373,11 +353,12 @@ const StepTwo = () => {
                         </div>
                         {values.religion === 'other' && (
                           <div className="form-input-main-div">
-                            <label className="form-label">
+                            {/* <label className="form-label">
                               Religion (Other)
-                            </label>
+                            </label> */}
                             <div className="input-error-wrapper">
                               <TextInputField
+                                label="Religion (Other)"
                                 name="religionOther"
                                 placeholder="Enter your religion"
                               />
@@ -399,6 +380,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Visible identification marks"
                               name="visibleIdentificationMarks"
                               placeholder="Enter visible identification marks"
                             />
@@ -420,6 +402,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Educational Qualification"
                               name="educationalQualification"
                               placeholder="Select Educational Qualification"
                               required={true}
@@ -448,6 +431,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Nationality/Region"
                               name="nationalityRegion"
                               disabled={true}
                               className="input-disabled"
@@ -471,6 +455,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Did you acquire nationality by birth or by naturalization?"
                               name="acquireNationality"
                               placeholder="Select"
                               options={[
@@ -500,6 +485,7 @@ const StepTwo = () => {
                             </label>
                             <div className="input-error-wrapper">
                               <SelectField
+                                label="Previous Nationality"
                                 name="previousNationality"
                                 placeholder="Select"
                                 required={true}
@@ -637,6 +623,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Applicant's Passport Number"
                               name="passportNumber"
                               placeholder="Enter passport number"
                               required={true}
@@ -658,6 +645,7 @@ const StepTwo = () => {
                           </label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Place of Issue"
                               name="placeOfIssue"
                               placeholder="Enter place of issue"
                               required={true}
@@ -665,18 +653,6 @@ const StepTwo = () => {
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          {/* <label className="form-label">
-                            Date of Issue*
-                            <div className="relative group">
-                              <BsQuestionCircleFill
-                                className="text-primary info-icon"
-                                size={20}
-                              />
-                              <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                In dd/mm/yyyy format
-                              </div>
-                            </div>
-                          </label> */}
                           <div className="input-error-wrapper">
                             <ReactDatePickerInput
                               className="new-form-input"
@@ -694,21 +670,9 @@ const StepTwo = () => {
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          {/* <label className="form-label">
-                            Date of Expiry*
-                            <div className="relative group">
-                              <BsQuestionCircleFill
-                                className="text-primary info-icon"
-                                size={20}
-                              />
-                              <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                In dd/mm/yyyy format. minimum six months
-                                validity is from journey date.
-                              </div>
-                            </div>
-                          </label> */}
                           <div className="input-error-wrapper">
                             <ReactDatePickerInput
+                              label="Date of Expiry"
                               className="new-form-input"
                               name="dateOfExpiry"
                               selected={
@@ -718,7 +682,6 @@ const StepTwo = () => {
                               }
                               setFieldValue={setFieldValue}
                               variant="passport-expiry"
-                              label="Date of Expiry"
                               required={true}
                             />
                           </div>
@@ -790,6 +753,7 @@ const StepTwo = () => {
                               </label>
                               <div className="input-error-wrapper">
                                 <SelectField
+                                  label="Country of Issue"
                                   name="countryOfIssue"
                                   placeholder="Select"
                                   required={true}
@@ -817,6 +781,7 @@ const StepTwo = () => {
                               </label>
                               <div className="input-error-wrapper">
                                 <TextInputField
+                                  label="Passport IC Number"
                                   name="passportICNumber"
                                   placeholder="Enter passport/IC number"
                                 />
@@ -866,6 +831,7 @@ const StepTwo = () => {
                               </label>
                               <div className="input-error-wrapper">
                                 <TextInputField
+                                  label="Place of Issue"
                                   name="placeOfIssuePassportIC"
                                   placeholder="Enter place of issue"
                                   required={true}
@@ -887,6 +853,7 @@ const StepTwo = () => {
                               </label>
                               <div className="input-error-wrapper">
                                 <SelectField
+                                  label="Nationality mentioned therein"
                                   name="passportNationalityMentionedTherein"
                                   placeholder="Select"
                                   required={true}

@@ -76,20 +76,20 @@ export default function StepTwoUpdate() {
                     <div>
                       <div className="formMain">
                         <div className="form-input-main-div">
-                          <label className="form-label">First Name*</label>
                           <div className="input-error-wrapper">
                             <TextInputField
                               name="firstName"
+                              label="First Name"
                               placeholder="Enter your first name"
                               required={true}
                             />
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">Last Name*</label>
                           <div className="input-error-wrapper">
                             <TextInputField
                               name="lastName"
+                              label="Last Name"
                               placeholder="Enter your last name"
                               required={true}
                             />
@@ -113,11 +113,9 @@ export default function StepTwoUpdate() {
                         {values.changedName && (
                           <>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Previous Name*
-                              </label>
                               <div className="input-error-wrapper">
                                 <TextInputField
+                                  label="Previous Name"
                                   name="previousName"
                                   placeholder="Enter your previous name"
                                   required={true}
@@ -125,21 +123,10 @@ export default function StepTwoUpdate() {
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Previous Last Name*
-                                <div className="relative group">
-                                  <BsQuestionCircleFill
-                                    className="text-primary info-icon"
-                                    size={20}
-                                  />
-                                  <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                    Enter your previous last name
-                                  </div>
-                                </div>
-                              </label>
                               <div className="input-error-wrapper">
                                 <TextInputField
                                   name="previousLastName"
+                                  label="Previous Last Name"
                                   placeholder="Enter your previous last name"
                                   required={true}
                                 />
@@ -149,10 +136,10 @@ export default function StepTwoUpdate() {
                         )}
 
                         <div className="form-input-main-div">
-                          <label className="form-label">Gender*</label>
                           <div className="input-error-wrapper">
                             <SelectField
                               name="gender"
+                              label="Gender"
                               placeholder="Select Gender"
                               required={true}
                               options={[
@@ -164,7 +151,7 @@ export default function StepTwoUpdate() {
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">Date Of Birth</label>
+                          {/* <label className="form-label">Date Of Birth</label> */}
                           <div className="input-error-wrapper">
                             <ReactDatePickerInput
                               className="new-form-input"
@@ -194,11 +181,9 @@ export default function StepTwoUpdate() {
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">
-                            Country/Region of birth
-                          </label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Country/Region of birth"
                               name="countryRegionOfBirth"
                               placeholder="Select Country"
                               required={true}
@@ -212,20 +197,18 @@ export default function StepTwoUpdate() {
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">
-                            Citizenship/National ID no.
-                          </label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Citizenship/National ID no."
                               name="citizenshipNationalID"
                               placeholder="Enter your Citizenship/National ID"
                             />
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">Religion</label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Religion"
                               name="religion"
                               placeholder="Select Religion"
                               required={true}
@@ -238,11 +221,9 @@ export default function StepTwoUpdate() {
                         </div>
                         {values.religion === 'other' && (
                           <div className="form-input-main-div">
-                            <label className="form-label">
-                              Religion (Other)
-                            </label>
                             <div className="input-error-wrapper">
                               <TextInputField
+                                label="Religion (Other)"
                                 name="religionOther"
                                 placeholder="Enter your religion"
                               />
@@ -250,11 +231,9 @@ export default function StepTwoUpdate() {
                           </div>
                         )}
                         <div className="form-input-main-div">
-                          <label className="form-label">
-                            Visible identification marks
-                          </label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Visible identification marks"
                               name="visibleIdentificationMarks"
                               placeholder="Enter visible identification marks"
                             />
@@ -262,11 +241,9 @@ export default function StepTwoUpdate() {
                         </div>
 
                         <div className="form-input-main-div">
-                          <label className="form-label">
-                            Educational Qualification
-                          </label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Educational Qualification"
                               name="educationalQualification"
                               placeholder="Select Educational Qualification"
                               required={true}
@@ -281,9 +258,9 @@ export default function StepTwoUpdate() {
                         </div>
 
                         <div className="form-input-main-div">
-                          <label className="form-label">Nationality</label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Nationality/Region"
                               name="nationalityRegion"
                               disabled={true}
                               className="input-disabled"
@@ -291,12 +268,9 @@ export default function StepTwoUpdate() {
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">
-                            Did you acquire nationality by birth or by
-                            naturalization?
-                          </label>
                           <div className="input-error-wrapper">
                             <SelectField
+                              label="Did you acquire nationality by birth or by naturalization?"
                               name="acquireNationality"
                               placeholder="Select"
                               options={[
@@ -438,9 +412,9 @@ export default function StepTwoUpdate() {
                     <div>
                       <div className="formMain">
                         <div className="form-input-main-div">
-                          <label className="form-label">Passport Number*</label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Passport Number"
                               name="passportNumber"
                               placeholder="Enter passport number"
                               required={true}
@@ -448,9 +422,9 @@ export default function StepTwoUpdate() {
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">Place of Issue*</label>
                           <div className="input-error-wrapper">
                             <TextInputField
+                              label="Place of Issue"
                               name="placeOfIssue"
                               placeholder="Enter place of issue"
                               required={true}
@@ -546,11 +520,9 @@ export default function StepTwoUpdate() {
                         {values.anyOtherPassport === 'yes' && (
                           <>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Country of Issue*
-                              </label>
                               <div className="input-error-wrapper">
                                 <SelectField
+                                  label="Country of Issue"
                                   name="countryOfIssue"
                                   placeholder="Select"
                                   required={true}
@@ -564,13 +536,12 @@ export default function StepTwoUpdate() {
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Passport/IC No.
-                              </label>
+                              <label className="form-label"></label>
                               <div className="input-error-wrapper">
                                 <TextInputField
                                   name="passportICNumber"
                                   placeholder="Enter passport/IC number"
+                                  label="Passport/IC No."
                                 />
                               </div>
                             </div>
@@ -595,11 +566,9 @@ export default function StepTwoUpdate() {
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Place of Issue*
-                              </label>
                               <div className="input-error-wrapper">
                                 <TextInputField
+                                  label="Place of Issue"
                                   name="placeOfIssuePassportIC"
                                   placeholder="Enter place of issue"
                                   required={true}
@@ -607,11 +576,9 @@ export default function StepTwoUpdate() {
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Nationality mentioned therein*
-                              </label>
                               <div className="input-error-wrapper">
                                 <SelectField
+                                  label="Nationality mentioned therein"
                                   name="passportNationalityMentionedTherein"
                                   placeholder="Select"
                                   required={true}
