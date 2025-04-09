@@ -7,8 +7,7 @@ import 'react-phone-number-input/style.css';
 import useUpdate from '@/hooks/useUpdate';
 import { ImSpinner2 } from 'react-icons/im';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import PhoneInput from 'react-phone-number-input';
-import { Country } from 'country-state-city';
+// import PhoneInput from 'react-phone-number-input';
 import BannerPage from '@/components/india/common/BannerPage';
 import {
   airportsSeaports,
@@ -18,6 +17,9 @@ import {
 import { useFormContext } from '@/context/formContext';
 import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
 import { minDate, minDateWithDate } from '@/lib/minDate';
+import PhoneInputField from '@/components/common/PhoneInputField';
+import SelectField from '@/components/common/SelectField';
+import TextInputField from '@/components/common/TextInputField';
 
 export default function StepOneUpdate() {
   const { state } = useFormContext();
@@ -72,41 +74,40 @@ export default function StepOneUpdate() {
                 {({ values, isValid, setFieldValue, handleChange }) => (
                   <Form className="formMain">
                     <div className="form-input-main-div">
-                      <label className="form-label">Application Type*</label>
                       <div className="input-error-wrapper">
-                        <Field
-                          required
-                          component="select"
-                          id="applicationType"
+                        <SelectField
                           name="applicationType"
-                          className="p-2 border rounded select-input"
-                        >
-                          <option disabled value="">
-                            Select*
-                          </option>
-                          <option value="Bussiness">
-                            Normal Processing(4 to 7 Business Days)
-                          </option>
-                          <option value="Education">
-                            Urgent Processing(24 to 72 Business Hours)
-                          </option>
-                        </Field>
-                        <ErrorMessage name="applicationType">
-                          {errorMsg => (
-                            <div style={{ color: 'red' }}>{errorMsg}</div>
-                          )}
-                        </ErrorMessage>
+                          label="Application Type"
+                          required={true}
+                          placeholder="Select"
+                          options={[
+                            {
+                              value: 'Normal',
+                              label: 'Normal Processing (4 to 7 Business Days)',
+                            },
+                            {
+                              value: 'Urgent',
+                              label:
+                                'Urgent Processing (24 to 72 Business Hours)',
+                            },
+                            { value: 'Rush', label: 'Rush' },
+                          ]}
+                        />
                       </div>
                     </div>
                     <div className="form-input-main-div">
-                      <label className="form-label">Select Country*</label>
-                      <div className="select-input">
-                        <Field
-                          required
-                          component="select"
-                          id="nationalityRegion"
+                      <div className="input-error-wrapper">
+                        <SelectField
                           name="nationalityRegion"
-                          className="p-2 border rounded select-input"
+                          label="Select Country"
+                          required={true}
+                          placeholder="Country"
+                          options={eligibleCountriesEvisaIndia?.map(
+                            country => ({
+                              value: country,
+                              label: country,
+                            })
+                          )}
                           onChange={e => {
                             handleChange(e);
                             setFieldValue('visaService', '');
@@ -120,138 +121,83 @@ export default function StepOneUpdate() {
                             setFieldValue('eMedicalVisa', '');
                             setFieldValue('eEmergencyXMisc', '');
                           }}
-                        >
-                          <option disabled value="">
-                            Country
-                          </option>
-                          {eligibleCountriesEvisaIndia?.map(
-                            (country, index) => (
-                              <option key={index} value={country}>
-                                {country}
-                              </option>
-                            )
-                          )}
-                        </Field>
-
-                        <ErrorMessage name="nationalityRegion">
-                          {errorMsg => (
-                            <div style={{ color: 'red' }}>{errorMsg}</div>
-                          )}
-                        </ErrorMessage>
+                        />
                       </div>
                     </div>
                     <div className="form-input-main-div">
-                      <label className="form-label">Passport Type*</label>
                       <div className="input-error-wrapper">
-                        <Field
-                          required
-                          component="select"
-                          id="passportType"
+                        <SelectField
                           name="passportType"
-                          className="p-2 border rounded select-input"
-                        >
-                          <option disabled value="">
-                            Select*
-                          </option>
-                          <option value="ordinary passport">
-                            ORDINARY PASSPORT
-                          </option>
-                        </Field>
-                        <ErrorMessage name="passportType">
-                          {errorMsg => (
-                            <div style={{ color: 'red' }}>{errorMsg}</div>
-                          )}
-                        </ErrorMessage>
+                          label="Passport Type"
+                          required={true}
+                          placeholder="Select"
+                          options={[
+                            {
+                              value: 'ordinary passport',
+                              label: 'ORDINARY PASSPORT',
+                            },
+                          ]}
+                        />
                       </div>
                     </div>
                     <div className="form-input-main-div">
-                      <label className="form-label">Port Of Arrival</label>
                       <div className="input-error-wrapper">
-                        <Field
-                          required
-                          component="select"
-                          id="portOfArrival"
+                        <SelectField
                           name="portOfArrival"
-                          className="p-2 border rounded select-input"
-                        >
-                          <option defaultChecked selected>
-                            Select
-                          </option>
-                          {airportsSeaports.map((airportSeaport, index) => (
-                            <option key={index} value={airportSeaport}>
-                              {airportSeaport}
-                            </option>
-                          ))}
-                        </Field>
-                        <ErrorMessage name="portOfArrival">
-                          {errorMsg => (
-                            <div style={{ color: 'red' }}>{errorMsg}</div>
-                          )}
-                        </ErrorMessage>
+                          label="Port Of Arrival"
+                          required={true}
+                          placeholder="Select"
+                          options={airportsSeaports.map(airportSeaport => ({
+                            value: airportSeaport,
+                            label: airportSeaport,
+                          }))}
+                        />
                       </div>
                     </div>
 
                     <div className="form-input-main-div">
-                      <label className="form-label">Date Of Birth</label>
                       <div className="input-error-wrapper">
                         <ReactDatePickerInput
                           className="new-form-input"
                           name="dateOfBirth"
-                          selected={new Date(values.dateOfBirth)}
+                          selected={values.dateOfBirth}
                           setFieldValue={setFieldValue}
                           maxDate={new Date()}
+                          variant="dob"
+                          label="Date Of Birth"
+                          required={true}
                         />
                       </div>
                     </div>
 
                     <div className="form-input-main-div">
-                      <label className="form-label">Email ID*</label>
                       <div className="input-error-wrapper">
-                        <Field
-                          required
-                          type="email"
+                        <TextInputField
                           name="emailId"
-                          id="emailId"
-                          className="form-input"
+                          label="Email ID"
+                          type="email"
                           placeholder="Enter Email Id"
+                          required={true}
+                          autoComplete="email"
                         />
-                        <ErrorMessage name="emailId">
-                          {errorMsg => (
-                            <div style={{ color: 'red' }}>{errorMsg}</div>
-                          )}
-                        </ErrorMessage>
                       </div>
                     </div>
 
                     <div className="form-input-main-div">
-                      <label className="form-label">Re-Enter Email ID*</label>
                       <div className="input-error-wrapper">
-                        <Field
-                          required
-                          type="email"
+                        <TextInputField
                           name="reEmailId"
-                          id="reEmailId"
-                          className="form-input"
+                          label="Re-Enter Email ID"
+                          type="email"
                           placeholder="Re-Enter Email Id"
+                          required={true}
+                          autoComplete="email"
                         />
-                        <ErrorMessage name="reEmailId">
-                          {errorMsg => (
-                            <div style={{ color: 'red' }}>{errorMsg}</div>
-                          )}
-                        </ErrorMessage>
                       </div>
                     </div>
-                    <div className="form-input-main-div">
+                    {/* <div className="form-input-main-div">
                       <label className="form-label">Contact no*</label>
                       <div className="input-error-wrapper form-input">
-                        {/* <PhoneInput
-                    placeholder="Enter phone number"
-                    value={contactValue}
-                    inputclassName="phone-input-class"
-                    className="form-input"
-                    onChange={setContactValue}
-                  /> */}
-
                         <Field name="contactNo">
                           {({ field, form }) => (
                             <PhoneInput
@@ -278,27 +224,35 @@ export default function StepOneUpdate() {
                           className="text-red-600"
                         />
                       </div>
+                    </div> */}
+                    <div className="form-input-main-div">
+                      <div className="input-error-wrapper">
+                        <Field name="contactNo">
+                          {({ field, form }) => (
+                            <PhoneInputField
+                              label="Contact no"
+                              name="contactNo"
+                              placeholder="Enter phone number"
+                              value={field.value}
+                              onChange={value => {
+                                form.setFieldValue(field.name, value);
+                              }}
+                              onBlur={field.onBlur}
+                              error={form.errors.contactNo}
+                              touched={form.touched.contactNo}
+                              required={true}
+                              form={form}
+                            />
+                          )}
+                        </Field>
+                      </div>
                     </div>
 
                     <div className="form-input-main-div">
                       <label className="self-start form-label">
                         Visa Service*
                       </label>
-                      {/* <div className="input-error-wrapper">
-                  <Field
-                    required
-                    type="text"
-                    name="visaService"
-                    id="visaService"
-                    className="form-input"
-                    placeholder="Visa service"
-                  />
-                  <ErrorMessage name="visaService">
-                    {(errorMsg) => (
-                      <div style={{ color: "red" }}>{errorMsg}</div>
-                    )}
-                  </ErrorMessage>
-                </div> */}
+
                       {/* multi step radio button start  */}
                       <div className="space-y-4 text-sm input-error-wrapper">
                         <div>
@@ -1008,9 +962,6 @@ export default function StepOneUpdate() {
                     </div>
 
                     <div className="form-input-main-div">
-                      <label className="form-label">
-                        Expected Date of Arrival
-                      </label>
                       <div className="input-error-wrapper">
                         <ReactDatePickerInput
                           className="new-form-input"
@@ -1021,6 +972,8 @@ export default function StepOneUpdate() {
                             3,
                             values.expectedDateOfArrival
                           )}
+                          label="Expected Date of Arrival"
+                          required={true}
                         />
                       </div>
                     </div>

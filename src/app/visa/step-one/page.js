@@ -10,16 +10,15 @@ import usePost from '@/hooks/usePost';
 import { minDate } from '@/lib/minDate';
 import apiEndpoint from '@/services/apiEndpoint';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ImSpinner2 } from 'react-icons/im';
-import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import PhoneInputField from '@/components/common/PhoneInputField';
+import SelectField from '@/components/common/SelectField';
+import TextInputField from '@/components/common/TextInputField';
 
 const StepOne = () => {
-  const pathName = usePathname();
   const postMutation = usePost(
     apiEndpoint.VISA_ADD_STEP1,
     1,
@@ -53,40 +52,37 @@ const StepOne = () => {
           {({ values, isValid, handleSubmit, setFieldValue, handleChange }) => (
             <Form onSubmit={handleSubmit} className="formMain">
               <div className="form-input-main-div">
-                <label className="form-label">Application Type*</label>
                 <div className="input-error-wrapper">
-                  <Field
-                    required
-                    component="select"
-                    id="applicationType"
+                  <SelectField
                     name="applicationType"
-                    className="p-2 border rounded select-input"
-                  >
-                    <option disabled value="">
-                      Select*
-                    </option>
-                    <option value="Normal">
-                      Normal Processing(4 to 7 Business Days)
-                    </option>
-                    <option value="Urgent">
-                      Urgent Processing(24 to 72 Business Hours)
-                    </option>
-                    <option value="Rush">Rush</option>
-                  </Field>
-                  <ErrorMessage name="applicationType">
-                    {errorMsg => <div style={{ color: 'red' }}>{errorMsg}</div>}
-                  </ErrorMessage>
+                    label="Application Type"
+                    required={true}
+                    placeholder="Select"
+                    options={[
+                      {
+                        value: 'Normal',
+                        label: 'Normal Processing (4 to 7 Business Days)',
+                      },
+                      {
+                        value: 'Urgent',
+                        label: 'Urgent Processing (24 to 72 Business Hours)',
+                      },
+                      { value: 'Rush', label: 'Rush' },
+                    ]}
+                  />
                 </div>
               </div>
               <div className="form-input-main-div">
-                <label className="form-label">Select Country*</label>
-                <div className="select-input">
-                  <Field
-                    required
-                    component="select"
-                    id="nationalityRegion"
+                <div className="input-error-wrapper">
+                  <SelectField
                     name="nationalityRegion"
-                    className="p-2 border rounded select-input"
+                    label="Select Country"
+                    required={true}
+                    placeholder="Country"
+                    options={eligibleCountriesEvisaIndia?.map(country => ({
+                      value: country,
+                      label: country,
+                    }))}
                     onChange={e => {
                       handleChange(e);
                       setFieldValue('visaService', '');
@@ -100,69 +96,41 @@ const StepOne = () => {
                       setFieldValue('eMedicalVisa', '');
                       setFieldValue('eEmergencyXMisc', '');
                     }}
-                  >
-                    <option disabled value="">
-                      Country
-                    </option>
-                    {eligibleCountriesEvisaIndia?.map((country, index) => (
-                      <option key={index} value={country}>
-                        {country}
-                      </option>
-                    ))}
-                  </Field>
-
-                  <ErrorMessage name="nationalityRegion">
-                    {errorMsg => <div style={{ color: 'red' }}>{errorMsg}</div>}
-                  </ErrorMessage>
+                  />
                 </div>
               </div>
               <div className="form-input-main-div">
-                <label className="form-label">Passport Type*</label>
                 <div className="input-error-wrapper">
-                  <Field
-                    required
-                    component="select"
-                    id="passportType"
+                  <SelectField
                     name="passportType"
-                    className="p-2 border rounded select-input"
-                  >
-                    <option disabled value="">
-                      Select*
-                    </option>
-                    <option value="ordinary passport">ORDINARY PASSPORT</option>
-                  </Field>
-                  <ErrorMessage name="passportType">
-                    {errorMsg => <div style={{ color: 'red' }}>{errorMsg}</div>}
-                  </ErrorMessage>
+                    label="Passport Type"
+                    required={true}
+                    placeholder="Select"
+                    options={[
+                      {
+                        value: 'ordinary passport',
+                        label: 'ORDINARY PASSPORT',
+                      },
+                    ]}
+                  />
                 </div>
               </div>
               <div className="form-input-main-div">
-                <label className="form-label">Port Of Arrival</label>
                 <div className="input-error-wrapper">
-                  <Field
-                    required
-                    component="select"
-                    id="portOfArrival"
+                  <SelectField
                     name="portOfArrival"
-                    className="p-2 space-y-2 border rounded select-input"
-                  >
-                    <option defaultChecked selected>
-                      Select
-                    </option>
-                    {airportsSeaports.map((airportSeaport, index) => (
-                      <option key={index} value={airportSeaport}>
-                        {airportSeaport}
-                      </option>
-                    ))}
-                  </Field>
-                  <ErrorMessage name="portOfArrival">
-                    {errorMsg => <div style={{ color: 'red' }}>{errorMsg}</div>}
-                  </ErrorMessage>
+                    label="Port Of Arrival"
+                    required={true}
+                    placeholder="Select"
+                    options={airportsSeaports.map(airportSeaport => ({
+                      value: airportSeaport,
+                      label: airportSeaport,
+                    }))}
+                  />
                 </div>
               </div>
 
               <div className="form-input-main-div">
-                <label className="form-label">Date Of Birth</label>
                 <div className="input-error-wrapper">
                   <ReactDatePickerInput
                     className="new-form-input"
@@ -170,41 +138,36 @@ const StepOne = () => {
                     selected={values.dateOfBirth}
                     setFieldValue={setFieldValue}
                     maxDate={new Date()}
+                    variant="dob"
+                    label="Date Of Birth"
+                    required={true}
                   />
                 </div>
               </div>
 
               <div className="form-input-main-div">
-                <label className="form-label">Email ID*</label>
                 <div className="input-error-wrapper">
-                  <Field
-                    required
-                    type="email"
+                  <TextInputField
                     name="emailId"
-                    id="emailId"
-                    className="form-input"
+                    label="Email ID"
+                    type="email"
                     placeholder="Enter Email Id"
+                    required={true}
+                    autoComplete="email"
                   />
-                  <ErrorMessage name="emailId">
-                    {errorMsg => <div style={{ color: 'red' }}>{errorMsg}</div>}
-                  </ErrorMessage>
                 </div>
               </div>
 
               <div className="form-input-main-div">
-                <label className="form-label">Re-Enter Email ID*</label>
                 <div className="input-error-wrapper">
-                  <Field
-                    required
-                    type="email"
+                  <TextInputField
                     name="reEmailId"
-                    id="reEmailId"
-                    className="form-input"
+                    label="Re-Enter Email ID"
+                    type="email"
                     placeholder="Re-Enter Email Id"
+                    required={true}
+                    autoComplete="email"
                   />
-                  <ErrorMessage name="reEmailId">
-                    {errorMsg => <div style={{ color: 'red' }}>{errorMsg}</div>}
-                  </ErrorMessage>
                 </div>
               </div>
               <div className="form-input-main-div">
@@ -938,7 +901,6 @@ const StepOne = () => {
               </div>
 
               <div className="form-input-main-div">
-                <label className="form-label">Expected Date of Arrival</label>
                 <div className="input-error-wrapper">
                   <ReactDatePickerInput
                     className="new-form-input"
@@ -946,6 +908,8 @@ const StepOne = () => {
                     selected={values.expectedDateOfArrival}
                     setFieldValue={setFieldValue}
                     minDate={minDate(3)}
+                    label="Expected Date of Arrival"
+                    required={true}
                   />
                 </div>
               </div>

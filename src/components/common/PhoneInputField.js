@@ -64,6 +64,22 @@ export default function PhoneInputField({
     }
   }, [open]);
 
+  // Validate immediately when value changes
+  useEffect(() => {
+    if (value && form && name) {
+      setLocalTouched(true);
+      form.setFieldTouched(name, true, false);
+
+      // Validate the phone number
+      const validationError = validatePhoneNumber(value);
+      if (validationError) {
+        form.setFieldError(name, validationError);
+      } else {
+        form.setFieldError(name, undefined);
+      }
+    }
+  }, [value, form, name]);
+
   // Validate phone number using isValidPhoneNumber like in the Zod validation
   const validatePhoneNumber = phoneNumber => {
     if (!phoneNumber) return required ? 'Phone number is required' : null;
@@ -159,22 +175,22 @@ export default function PhoneInputField({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label className="form-label mb-1 block">
+        <label className="block mb-1 text-sm font-medium">
           {label}
-          {required && <span className="text-red-500">*</span>}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
 
       <div
-        className={`relative rounded border ${
+        className={`relative rounded-md ${
           validationStatus === 'error'
-            ? 'border-red-500'
+            ? 'border-red-500 bg-red-50'
             : validationStatus === 'success'
-            ? 'border-green-500'
+            ? 'border-green-500 bg-green-50'
             : isFocused
             ? 'border-primary'
             : 'border-gray-300'
-        } focus-within:border-primary`}
+        } border focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50`}
       >
         <PhoneInput
           name={name}
@@ -202,7 +218,13 @@ export default function PhoneInputField({
                 <button
                   type="button"
                   aria-label="Select country"
-                  className="flex items-center h-full p-2 space-x-1 text-gray-700 border-r border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 rounded-l"
+                  className={`flex items-center h-full p-2 space-x-1 text-gray-700 border-r ${
+                    validationStatus === 'error'
+                      ? 'border-red-300'
+                      : validationStatus === 'success'
+                      ? 'border-green-300'
+                      : 'border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 rounded-l`}
                   onClick={() => setOpen(!open)}
                 >
                   <span className="flex items-center">
@@ -300,7 +322,13 @@ export default function PhoneInputField({
             );
           }}
           className="w-full flex"
-          inputClassName="w-full p-2 outline-none focus:ring-0"
+          inputClassName={`w-full p-2 outline-none focus:ring-0 ${
+            validationStatus === 'error'
+              ? 'bg-red-50 text-red-700'
+              : validationStatus === 'success'
+              ? 'bg-green-50 text-green-700'
+              : 'bg-white'
+          }`}
         />
         {validationStatus === 'error' && (
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-500">
@@ -315,10 +343,7 @@ export default function PhoneInputField({
       </div>
 
       {errorMessage && (
-        <div className="mt-1 text-sm text-red-500 flex items-start">
-          <FaExclamationCircle className="w-3 h-3 mt-0.5 mr-1 flex-shrink-0" />
-          <span>{errorMessage}</span>
-        </div>
+        <div className="mt-1 text-sm text-red-500">{errorMessage}</div>
       )}
     </div>
   );
