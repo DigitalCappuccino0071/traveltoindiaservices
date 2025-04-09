@@ -974,6 +974,7 @@ export default function StepOneUpdate() {
                           )}
                           label="Expected Date of Arrival"
                           required={true}
+                          variant="doa"
                         />
                       </div>
                     </div>

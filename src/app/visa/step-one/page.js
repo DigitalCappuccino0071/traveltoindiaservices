@@ -910,6 +910,7 @@ const StepOne = () => {
                     minDate={minDate(3)}
                     label="Expected Date of Arrival"
                     required={true}
+                    variant="doa"
                   />
                 </div>
               </div>

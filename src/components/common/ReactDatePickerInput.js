@@ -3,6 +3,43 @@ import { ErrorMessage, useField } from 'formik';
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CiCalendarDate } from 'react-icons/ci';
+import { parseISO, format } from 'date-fns';
+
+// Create a custom input component for the date picker
+const CustomInput = React.forwardRef(
+  ({ value, onClick, onChange, disabled, placeholder, className }, ref) => {
+    // Format the date for display (DD-MM-YYYY)
+    let displayValue = '';
+    if (value) {
+      try {
+        // Parse the date value and format it
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          displayValue = format(date, 'dd-MM-yyyy');
+        }
+      } catch (e) {
+        console.error('Error formatting date for display:', e);
+      }
+    }
+
+    return (
+      <input
+        type="text"
+        ref={ref}
+        value={displayValue}
+        onClick={disabled ? undefined : onClick}
+        onChange={onChange}
+        disabled={disabled}
+        placeholder={placeholder}
+        className={className}
+        readOnly
+      />
+    );
+  }
+);
+
+// Add display name to avoid linter error
+CustomInput.displayName = 'CustomDateInput';
 
 export default function ReactDatePickerInput({
   setFieldValue,
@@ -15,77 +52,163 @@ export default function ReactDatePickerInput({
   label = '',
   required = false,
 }) {
+  // Use Formik's useField hook to get field props
   const [field, meta, helpers] = useField(name);
+
+  // Manual validation control states
   const [isTouched, setIsTouched] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Improve date parsing logic
+  let selectedDate = null;
+  try {
+    // Handle different types of date inputs
+    if (selected instanceof Date && !isNaN(selected.getTime())) {
+      selectedDate = selected;
+    } else if (typeof selected === 'string' && selected) {
+      try {
+        selectedDate = parseISO(selected);
+        // Check if the parsed date is valid
+        if (isNaN(selectedDate.getTime())) {
+          selectedDate = new Date(selected);
+        }
+      } catch (err) {
+        // Fallback to standard Date constructor
+        selectedDate = new Date(selected);
+      }
+    }
+
+    // Final validity check
+    if (selectedDate && isNaN(selectedDate.getTime())) {
+      selectedDate = null;
+    }
+  } catch (e) {
+    console.error('Error parsing date:', e);
+    selectedDate = null;
+  }
+
+  // Get today's date for reference
   const today = new Date();
 
-  // Validate immediately when selected value changes
+  // Set up date constraints based on variant
+  let minDateValue = null;
+  let maxDateValue = null;
+  let placeholderText = 'Select a date';
+  let dateFormat = 'dd/MM/yyyy';
+  let calendarStartDate = null;
+
+  // Configure variant-specific settings
+  switch (variant) {
+    case 'dob':
+      maxDateValue = maxDate || today;
+      placeholderText = 'Select your date of birth';
+      calendarStartDate = new Date(today.getFullYear() - 30, 0, 1);
+      break;
+
+    case 'doa':
+      const arrivalMinDate = new Date();
+      arrivalMinDate.setDate(today.getDate() + 4);
+      minDateValue = minDate || arrivalMinDate;
+      placeholderText = 'Select arrival date';
+      calendarStartDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate() + 7
+      );
+      break;
+
+    case 'passport-expiry':
+      const expiryMinDate = new Date();
+      expiryMinDate.setMonth(today.getMonth() + 6);
+      minDateValue = expiryMinDate;
+      placeholderText = 'Select passport expiry date';
+      calendarStartDate = new Date(
+        today.getFullYear(),
+        today.getMonth() + 6,
+        today.getDate()
+      );
+      break;
+
+    default:
+      if (minDate)
+        minDateValue =
+          typeof minDate === 'string' ? parseISO(minDate) : minDate;
+      if (maxDate)
+        maxDateValue =
+          typeof maxDate === 'string' ? parseISO(maxDate) : maxDate;
+      break;
+  }
+
+  // Validate date directly
+  const validateDate = date => {
+    if (!date) {
+      setIsValid(false);
+      setErrorMessage('Please select a date');
+      return false;
+    }
+
+    if (minDateValue && date < minDateValue) {
+      setIsValid(false);
+      if (variant === 'passport-expiry') {
+        setErrorMessage('Passport must be valid for at least 6 months');
+      } else if (variant === 'doa') {
+        setErrorMessage('Arrival date must be at least 4 days from today');
+      } else {
+        setErrorMessage(
+          `Date must be after ${minDateValue.toLocaleDateString()}`
+        );
+      }
+      return false;
+    }
+
+    if (maxDateValue && date > maxDateValue) {
+      setIsValid(false);
+      if (variant === 'dob') {
+        setErrorMessage('Birth date cannot be in the future');
+      } else {
+        setErrorMessage(
+          `Date must be before ${maxDateValue.toLocaleDateString()}`
+        );
+      }
+      return false;
+    }
+
+    setIsValid(true);
+    setErrorMessage('');
+    return true;
+  };
+
+  // Initialize validation state if we already have a value
   useEffect(() => {
-    if (selected) {
-      // Mark as touched to trigger validation
+    if (selectedDate) {
+      validateDate(selectedDate);
       setIsTouched(true);
-      helpers.setTouched(true);
     }
-  }, [selected, helpers]);
+  }, []);
 
-  // Handle blur event to set field as touched
-  const handleBlur = () => {
-    setIsTouched(true);
-    field.onBlur({ target: { name } });
-  };
-
-  // Handle date change
+  // Handle date change with guaranteed immediate feedback
   const handleDateChange = date => {
-    setFieldValue(name, date);
+    // First validate
+    const valid = validateDate(date);
+
+    // Always set as touched
     setIsTouched(true);
-    helpers.setTouched(true);
 
-    // Force validation immediately
-    setTimeout(() => {
-      helpers.setTouched(true);
-    }, 10);
+    // Update Formik
+    setFieldValue(name, date);
+    helpers.setTouched(true, true);
   };
 
-  // Determine appearance and behavior based on variant
-  const getVariantProps = () => {
-    switch (variant) {
-      case 'dob':
-        return {
-          maxDate: maxDate || today,
-          showYearDropdown: true,
-          showMonthDropdown: true,
-          dropdownMode: 'select',
-          yearDropdownItemNumber: 100,
-          scrollableYearDropdown: true,
-          placeholderText: 'Select your date of birth',
-          dateFormat: 'dd/MM/yyyy',
-          calendarClassName: 'dob-calendar',
-          openToDate: new Date(today.getFullYear() - 30, 0, 1),
-        };
-      default:
-        return {
-          showMonthDropdown: true,
-          showYearDropdown: true,
-          dropdownMode: 'select',
-          placeholderText: 'Select a date',
-          dateFormat: 'dd/MM/yyyy',
-        };
-    }
-  };
+  // Determine validation state directly
+  const hasError = isTouched && !isValid;
+  const showSuccess = isTouched && isValid;
 
-  const variantProps = getVariantProps();
-
-  // Determine if field has error - only if field is touched AND has an error AND no valid date is selected
-  const hasError = (meta.touched || isTouched) && meta.error;
-
-  // Success state - field is touched AND has no error AND a date is selected
-  const isSuccess = (meta.touched || isTouched) && !meta.error && selected;
-
-  // Set input class based on validation state
+  // Input style based on validation state
   const inputClass = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
     hasError
       ? 'border-red-500 bg-red-50'
-      : isSuccess
+      : showSuccess
       ? 'border-green-500 bg-green-50'
       : 'border-gray-300'
   }`;
@@ -98,34 +221,50 @@ export default function ReactDatePickerInput({
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
+
       <div className="relative">
         <ReactDatePicker
           id={name}
-          disabled={disabled}
-          name={name}
-          selected={selected}
+          {...field}
+          selected={selectedDate}
           onChange={handleDateChange}
+          onBlur={() => setIsTouched(true)}
+          disabled={disabled}
           className={inputClass}
+          dateFormat="dd-MM-yyyy"
+          placeholderText={placeholderText}
           showIcon
           icon={
             <CiCalendarDate
               className={
                 hasError
                   ? 'text-red-500'
-                  : isSuccess
+                  : showSuccess
                   ? 'text-green-500'
                   : 'text-gray-500'
               }
             />
           }
-          toggleCalendarOnIconClick
-          minDate={minDate}
-          maxDate={variantProps.maxDate || maxDate}
-          {...variantProps}
-          required={required}
-          onBlur={handleBlur}
-          onCalendarClose={handleBlur}
+          minDate={minDateValue}
+          maxDate={maxDateValue}
+          openToDate={calendarStartDate}
+          showMonthDropdown
+          showYearDropdown
+          dropdownMode="select"
+          shouldCloseOnSelect={true}
+          isClearable={false}
+          customInput={<CustomInput className={inputClass} />}
+          popperModifiers={[
+            {
+              name: 'preventOverflow',
+              options: {
+                rootBoundary: 'viewport',
+                padding: 8,
+              },
+            },
+          ]}
         />
+
         {hasError && (
           <div className="absolute right-10 top-2.5 text-red-500">
             <svg
@@ -142,7 +281,8 @@ export default function ReactDatePickerInput({
             </svg>
           </div>
         )}
-        {isSuccess && (
+
+        {showSuccess && (
           <div className="absolute right-10 top-2.5 text-green-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -159,14 +299,9 @@ export default function ReactDatePickerInput({
           </div>
         )}
       </div>
-      {hasError ? (
-        <div className="mt-1 text-sm text-red-500">{meta.error}</div>
-      ) : (
-        <ErrorMessage name={name}>
-          {errorMsg => (
-            <div className="mt-1 text-sm text-red-500">{errorMsg}</div>
-          )}
-        </ErrorMessage>
+
+      {hasError && (
+        <div className="mt-1 text-sm text-red-500">{errorMessage}</div>
       )}
     </div>
   );

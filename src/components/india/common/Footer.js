@@ -45,9 +45,10 @@ const Footer = () => {
                   <div>
                     <Image
                       src="/assets/images/india/common/logo-white.png"
-                      width="240"
-                      height="140"
+                      width={240}
+                      height={140}
                       alt="logo-white"
+                      style={{ height: 'auto', width: 'auto' }}
                     />
                   </div>
                 </Link>

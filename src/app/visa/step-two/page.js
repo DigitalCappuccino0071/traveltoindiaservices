@@ -13,7 +13,7 @@ import axiosInstance from '@/services/api';
 import apiEndpoint from '@/services/apiEndpoint';
 import { useQuery } from '@tanstack/react-query';
 import { Country } from 'country-state-city';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { ErrorMessage, Form, Formik } from 'formik';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Script from 'next/script';
@@ -22,6 +22,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { BsQuestionCircleFill } from 'react-icons/bs';
 import { CiCalendarDate } from 'react-icons/ci';
 import { ImSpinner2 } from 'react-icons/im';
+import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
+import TextInputField from '@/components/common/TextInputField';
+import SelectField from '@/components/common/SelectField';
 
 const StepTwo = () => {
   const pathName = usePathname();
@@ -128,17 +131,11 @@ const StepTwo = () => {
                           </label>
 
                           <div className="input-error-wrapper">
-                            <Field
-                              type="text"
-                              id="firstName"
+                            <TextInputField
                               name="firstName"
-                              className="p-2 border rounded select-input"
+                              placeholder="Enter your first name"
+                              required={true}
                             />
-                            <ErrorMessage name="firstName">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
 
@@ -156,21 +153,23 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              type="text"
-                              id="lastName"
+                            <TextInputField
                               name="lastName"
-                              className="p-2 border rounded select-input"
+                              placeholder="Enter your last name"
+                              required={true}
                             />
-                            <ErrorMessage name="lastName">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
                         <div className="flex items-start space-x-2">
-                          <Field type="checkbox" name="changedName" />
+                          <input
+                            type="checkbox"
+                            id="changedName"
+                            name="changedName"
+                            onChange={e =>
+                              setFieldValue('changedName', e.target.checked)
+                            }
+                            checked={values.changedName}
+                          />
                           <label className="text-xs">
                             Have you ever changed your name? If yes click the
                             box
@@ -192,19 +191,11 @@ const StepTwo = () => {
                                 </div>
                               </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  id="previousName"
+                                <TextInputField
                                   name="previousName"
-                                  className="p-2 border rounded select-input"
+                                  placeholder="Enter your previous name"
+                                  required={true}
                                 />
-                                <ErrorMessage name="previousName">
-                                  {errorMsg => (
-                                    <div style={{ color: 'red' }}>
-                                      {errorMsg}
-                                    </div>
-                                  )}
-                                </ErrorMessage>
                               </div>
                             </div>
                             <div className="form-input-main-div">
@@ -221,19 +212,11 @@ const StepTwo = () => {
                                 </div>
                               </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  id="previousLastName"
+                                <TextInputField
                                   name="previousLastName"
-                                  className="p-2 border rounded select-input"
+                                  placeholder="Enter your previous last name"
+                                  required={true}
                                 />
-                                <ErrorMessage name="previousLastName">
-                                  {errorMsg => (
-                                    <div style={{ color: 'red' }}>
-                                      {errorMsg}
-                                    </div>
-                                  )}
-                                </ErrorMessage>
                               </div>
                             </div>
                           </>
@@ -253,24 +236,16 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              component="select"
-                              id="gender"
+                            <SelectField
                               name="gender"
-                              className="p-2 border rounded select-input"
-                            >
-                              <option value="" disabled>
-                                Select Gender*
-                              </option>
-                              <option value="male">Male</option>
-                              <option value="female">Female</option>
-                              <option value="other">Other</option>
-                            </Field>
-                            <ErrorMessage name="gender">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
+                              placeholder="Select Gender"
+                              required={true}
+                              options={[
+                                { value: 'male', label: 'Male' },
+                                { value: 'female', label: 'Female' },
+                                { value: 'other', label: 'Other' },
+                              ]}
+                            />
                           </div>
                         </div>
                         <div className="form-input-main-div">
@@ -288,26 +263,20 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <ReactDatePicker
-                              showIcon
-                              value={new Date(
-                                values.dateOfBirth
-                              ).toLocaleDateString()}
-                              onChange={date =>
-                                setFieldValue('dateOfBirth', date)
-                              }
-                              dateFormat="dd-MM-yyyy"
-                              icon={<CiCalendarDate />}
-                              className="w-full new-form-input input-disabled"
+                            <ReactDatePickerInput
+                              className="new-form-input"
                               name="dateOfBirth"
-                              placeholderText="Date of birth as in passport"
+                              selected={
+                                values.dateOfBirth
+                                  ? new Date(values.dateOfBirth)
+                                  : null
+                              }
+                              setFieldValue={setFieldValue}
+                              variant="dob"
                               disabled={true}
+                              label="Date of Birth"
+                              required={true}
                             />
-                            <ErrorMessage name="dateOfBirth">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
                         <div className="form-input-main-div">
@@ -324,17 +293,10 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              type="text"
-                              id="townCityOfBirth"
+                            <TextInputField
                               name="townCityOfBirth"
-                              className="p-2 border rounded select-input"
+                              placeholder="Enter your town/city of birth"
                             />
-                            <ErrorMessage name="townCityOfBirth">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
                         <div className="form-input-main-div">
@@ -351,28 +313,17 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              component="select"
-                              id="countryRegionOfBirth"
+                            <SelectField
                               name="countryRegionOfBirth"
-                              className="p-2 border rounded select-input"
-                            >
-                              <option value="" disabled>
-                                Select Country*
-                              </option>
-                              {Country?.getAllCountries()?.map(
-                                (country, index) => (
-                                  <option key={index} value={country?.name}>
-                                    {country?.name}
-                                  </option>
-                                )
+                              placeholder="Select Country"
+                              required={true}
+                              options={Country?.getAllCountries()?.map(
+                                country => ({
+                                  value: country?.name,
+                                  label: country?.name,
+                                })
                               )}
-                            </Field>
-                            <ErrorMessage name="countryRegionOfBirth">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
+                            />
                           </div>
                         </div>
                         <div className="form-input-main-div">
@@ -389,17 +340,10 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              type="text"
-                              id="citizenshipNationalID"
+                            <TextInputField
                               name="citizenshipNationalID"
-                              className="p-2 border rounded select-input"
+                              placeholder="Enter your Citizenship/National ID"
                             />
-                            <ErrorMessage name="citizenshipNationalID">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
                         <div className="form-input-main-div">
@@ -416,26 +360,15 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              component="select"
-                              id="religion"
+                            <SelectField
                               name="religion"
-                              className="p-2 border rounded select-input"
-                            >
-                              <option value="" disabled>
-                                Select Religion*
-                              </option>
-                              {religionNames?.map(religion => (
-                                <option key={religion} value={religion}>
-                                  {religion}
-                                </option>
-                              ))}
-                            </Field>
-                            <ErrorMessage name="religion">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
+                              placeholder="Select Religion"
+                              required={true}
+                              options={religionNames?.map(religion => ({
+                                value: religion,
+                                label: religion,
+                              }))}
+                            />
                           </div>
                         </div>
                         {values.religion === 'other' && (
@@ -444,11 +377,9 @@ const StepTwo = () => {
                               Religion (Other)
                             </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="religionOther"
+                              <TextInputField
                                 name="religionOther"
-                                className="p-2 border rounded select-input"
+                                placeholder="Enter your religion"
                               />
                             </div>
                           </div>
@@ -467,17 +398,10 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              type="text"
-                              id="visibleIdentificationMarks"
+                            <TextInputField
                               name="visibleIdentificationMarks"
-                              className="p-2 border rounded select-input"
+                              placeholder="Enter visible identification marks"
                             />
-                            <ErrorMessage name="visibleIdentificationMarks">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
 
@@ -495,27 +419,17 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              component="select"
-                              id="educationalQualification"
+                            <SelectField
                               name="educationalQualification"
-                              className="p-2 border rounded select-input"
-                            >
-                              <option value="" disabled>
-                                Select Educational Qualification*
-                              </option>
-
-                              {educationalQualificationList?.map(education => (
-                                <option key={education} value={education}>
-                                  {education}
-                                </option>
-                              ))}
-                            </Field>
-                            <ErrorMessage name="educationalQualification">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
+                              placeholder="Select Educational Qualification"
+                              required={true}
+                              options={educationalQualificationList?.map(
+                                education => ({
+                                  value: education,
+                                  label: education,
+                                })
                               )}
-                            </ErrorMessage>
+                            />
                           </div>
                         </div>
 
@@ -533,18 +447,11 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              id="nationalityRegion"
+                            <TextInputField
                               name="nationalityRegion"
-                              className="p-2 border rounded select-input input-disabled"
                               disabled={true}
+                              className="input-disabled"
                             />
-
-                            <ErrorMessage name="nationalityRegion">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
                         <div className="form-input-main-div">
@@ -563,25 +470,17 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              id="acquireNationality"
+                            <SelectField
                               name="acquireNationality"
-                              className="p-2 border rounded select-input"
-                              component="select"
-                            >
-                              <option value="" selected>
-                                Select*
-                              </option>
-                              <option value="birth">By Birth</option>
-                              <option value="naturalization">
-                                By Naturalization
-                              </option>
-                            </Field>
-                            <ErrorMessage name="acquireNationality">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
+                              placeholder="Select"
+                              options={[
+                                { value: 'birth', label: 'By Birth' },
+                                {
+                                  value: 'naturalization',
+                                  label: 'By Naturalization',
+                                },
+                              ]}
+                            />
                           </div>
                         </div>
 
@@ -600,29 +499,17 @@ const StepTwo = () => {
                               </div>
                             </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                component="select"
-                                id="previousNationality"
+                              <SelectField
                                 name="previousNationality"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select*
-                                </option>
-                                {Country?.getAllCountries()?.map(
-                                  (country, index) => (
-                                    <option key={index} value={country?.name}>
-                                      {country?.name}
-                                    </option>
-                                  )
+                                placeholder="Select"
+                                required={true}
+                                options={Country?.getAllCountries()?.map(
+                                  country => ({
+                                    value: country?.name,
+                                    label: country?.name,
+                                  })
                                 )}
-                              </Field>
-
-                              <ErrorMessage name="previousNationality">
-                                {errorMsg => (
-                                  <div style={{ color: 'red' }}>{errorMsg}</div>
-                                )}
-                              </ErrorMessage>
+                              />
                             </div>
                           </div>
                         ) : (
@@ -687,27 +574,35 @@ const StepTwo = () => {
 
                   <div className="flex space-x-4">
                     <div className="px-2 space-x-2">
-                      <Field
+                      <input
                         type="radio"
-                        id="haveLivedInApplyingCountry"
+                        id="haveLivedInApplyingCountryYes"
                         name="haveLivedInApplyingCountry"
                         className="mt-1"
                         value="yes"
+                        checked={values.haveLivedInApplyingCountry === 'yes'}
+                        onChange={() =>
+                          setFieldValue('haveLivedInApplyingCountry', 'yes')
+                        }
                       />
                       <label
-                        htmlFor="haveLivedInApplyingCountry"
+                        htmlFor="haveLivedInApplyingCountryYes"
                         className="font-semibold"
                       >
                         Yes
                       </label>
                     </div>
                     <div className="px-2 space-x-2">
-                      <Field
+                      <input
                         type="radio"
                         id="haveLivedInApplyingCountryNo"
                         name="haveLivedInApplyingCountry"
                         className="mt-1"
                         value="no"
+                        checked={values.haveLivedInApplyingCountry === 'no'}
+                        onChange={() =>
+                          setFieldValue('haveLivedInApplyingCountry', 'no')
+                        }
                       />
                       <label
                         htmlFor="haveLivedInApplyingCountryNo"
@@ -736,22 +631,16 @@ const StepTwo = () => {
                                 size={20}
                               />
                               <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                Applicant’s Passport Number
+                                Applicant's Passport Number
                               </div>
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              type="text"
-                              id="passportNumber"
+                            <TextInputField
                               name="passportNumber"
-                              className="p-2 border rounded select-input"
+                              placeholder="Enter passport number"
+                              required={true}
                             />
-                            <ErrorMessage name="passportNumber">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
                         <div className="form-input-main-div">
@@ -768,21 +657,15 @@ const StepTwo = () => {
                             </div>
                           </label>
                           <div className="input-error-wrapper">
-                            <Field
-                              type="text"
-                              id="placeOfIssue"
+                            <TextInputField
                               name="placeOfIssue"
-                              className="p-2 border rounded select-input"
+                              placeholder="Enter place of issue"
+                              required={true}
                             />
-                            <ErrorMessage name="placeOfIssue">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">
+                          {/* <label className="form-label">
                             Date of Issue*
                             <div className="relative group">
                               <BsQuestionCircleFill
@@ -793,23 +676,25 @@ const StepTwo = () => {
                                 In dd/mm/yyyy format
                               </div>
                             </div>
-                          </label>
+                          </label> */}
                           <div className="input-error-wrapper">
-                            <Field
-                              type="date"
+                            <ReactDatePickerInput
+                              className="new-form-input"
                               name="dateOfIssue"
-                              id="dateOfIssue"
-                              className="form-input"
+                              selected={
+                                values.dateOfIssue
+                                  ? new Date(values.dateOfIssue)
+                                  : null
+                              }
+                              setFieldValue={setFieldValue}
+                              maxDate={new Date()}
+                              label="Date of Issue"
+                              required={true}
                             />
-                            <ErrorMessage name="dateOfIssue">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
                         <div className="form-input-main-div">
-                          <label className="form-label">
+                          {/* <label className="form-label">
                             Date of Expiry*
                             <div className="relative group">
                               <BsQuestionCircleFill
@@ -821,19 +706,21 @@ const StepTwo = () => {
                                 validity is from journey date.
                               </div>
                             </div>
-                          </label>
+                          </label> */}
                           <div className="input-error-wrapper">
-                            <Field
-                              type="date"
+                            <ReactDatePickerInput
+                              className="new-form-input"
                               name="dateOfExpiry"
-                              id="dateOfExpiry"
-                              className="form-input"
+                              selected={
+                                values.dateOfExpiry
+                                  ? new Date(values.dateOfExpiry)
+                                  : null
+                              }
+                              setFieldValue={setFieldValue}
+                              variant="passport-expiry"
+                              label="Date of Expiry"
+                              required={true}
                             />
-                            <ErrorMessage name="dateOfExpiry">
-                              {errorMsg => (
-                                <div style={{ color: 'red' }}>{errorMsg}</div>
-                              )}
-                            </ErrorMessage>
                           </div>
                         </div>
 
@@ -846,27 +733,35 @@ const StepTwo = () => {
 
                           <div className="flex space-x-4">
                             <div className="px-2 space-x-2">
-                              <Field
+                              <input
                                 type="radio"
-                                id="anyOtherPassport"
+                                id="anyOtherPassportYes"
                                 name="anyOtherPassport"
                                 className="mt-1"
                                 value="yes"
+                                checked={values.anyOtherPassport === 'yes'}
+                                onChange={() =>
+                                  setFieldValue('anyOtherPassport', 'yes')
+                                }
                               />
                               <label
-                                htmlFor="anyOtherPassport"
+                                htmlFor="anyOtherPassportYes"
                                 className="font-semibold"
                               >
                                 Yes
                               </label>
                             </div>
                             <div className="px-2 space-x-2">
-                              <Field
+                              <input
                                 type="radio"
                                 id="anyOtherPassportNo"
                                 name="anyOtherPassport"
                                 className="mt-1"
                                 value="no"
+                                checked={values.anyOtherPassport === 'no'}
+                                onChange={() =>
+                                  setFieldValue('anyOtherPassport', 'no')
+                                }
                               />
                               <label
                                 htmlFor="anyOtherPassportNo"
@@ -894,31 +789,17 @@ const StepTwo = () => {
                                 </div>
                               </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  component="select"
-                                  id="countryOfIssue"
+                                <SelectField
                                   name="countryOfIssue"
-                                  className="p-2 border rounded select-input"
-                                >
-                                  <option value="" disabled>
-                                    Select*
-                                  </option>
-                                  {Country?.getAllCountries()?.map(
-                                    (country, index) => (
-                                      <option key={index} value={country?.name}>
-                                        {country?.name}
-                                      </option>
-                                    )
+                                  placeholder="Select"
+                                  required={true}
+                                  options={Country?.getAllCountries()?.map(
+                                    country => ({
+                                      value: country?.name,
+                                      label: country?.name,
+                                    })
                                   )}
-                                </Field>
-
-                                <ErrorMessage name="countryOfIssue">
-                                  {errorMsg => (
-                                    <div style={{ color: 'red' }}>
-                                      {errorMsg}
-                                    </div>
-                                  )}
-                                </ErrorMessage>
+                                />
                               </div>
                             </div>
                             <div className="form-input-main-div">
@@ -935,11 +816,9 @@ const StepTwo = () => {
                                 </div>
                               </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  id="passportICNumber"
+                                <TextInputField
                                   name="passportICNumber"
-                                  className="p-2 border rounded select-input"
+                                  placeholder="Enter passport/IC number"
                                 />
                               </div>
                             </div>
@@ -957,19 +836,19 @@ const StepTwo = () => {
                                 </div>
                               </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="date"
+                                <ReactDatePickerInput
+                                  className="new-form-input"
                                   name="dateOfIssuePassportIC"
-                                  id="dateOfIssuePassportIC"
-                                  className="form-input"
+                                  selected={
+                                    values.dateOfIssuePassportIC
+                                      ? new Date(values.dateOfIssuePassportIC)
+                                      : null
+                                  }
+                                  setFieldValue={setFieldValue}
+                                  maxDate={new Date()}
+                                  label="Date of Issue"
+                                  required={true}
                                 />
-                                <ErrorMessage name="dateOfIssuePassportIC">
-                                  {errorMsg => (
-                                    <div style={{ color: 'red' }}>
-                                      {errorMsg}
-                                    </div>
-                                  )}
-                                </ErrorMessage>
                               </div>
                             </div>
                             <div className="form-input-main-div">
@@ -986,19 +865,11 @@ const StepTwo = () => {
                                 </div>
                               </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  id="placeOfIssuePassportIC"
+                                <TextInputField
                                   name="placeOfIssuePassportIC"
-                                  className="p-2 border rounded select-input"
+                                  placeholder="Enter place of issue"
+                                  required={true}
                                 />
-                                <ErrorMessage name="placeOfIssuePassportIC">
-                                  {errorMsg => (
-                                    <div style={{ color: 'red' }}>
-                                      {errorMsg}
-                                    </div>
-                                  )}
-                                </ErrorMessage>
                               </div>
                             </div>
                             <div className="form-input-main-div">
@@ -1015,31 +886,17 @@ const StepTwo = () => {
                                 </div>
                               </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  component="select"
-                                  id="passportNationalityMentionedTherein"
+                                <SelectField
                                   name="passportNationalityMentionedTherein"
-                                  className="p-2 border rounded select-input"
-                                >
-                                  <option value="" disabled>
-                                    Select*
-                                  </option>
-                                  {Country?.getAllCountries()?.map(
-                                    (country, index) => (
-                                      <option key={index} value={country?.name}>
-                                        {country?.name}
-                                      </option>
-                                    )
+                                  placeholder="Select"
+                                  required={true}
+                                  options={Country?.getAllCountries()?.map(
+                                    country => ({
+                                      value: country?.name,
+                                      label: country?.name,
+                                    })
                                   )}
-                                </Field>
-
-                                <ErrorMessage name="passportNationalityMentionedTherein">
-                                  {errorMsg => (
-                                    <div style={{ color: 'red' }}>
-                                      {errorMsg}
-                                    </div>
-                                  )}
-                                </ErrorMessage>
+                                />
                               </div>
                             </div>
                           </>
@@ -1050,7 +907,7 @@ const StepTwo = () => {
 
                   <div className="hidden col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl md:block">
                     <h2 className="py-5 sidetext ">
-                      Applicant’s Passport Number
+                      Applicant's Passport Number
                     </h2>
                     <h2 className="py-4 sidetext ">Place of Issue</h2>
                     <h2 className="py-5 sidetext ">In dd/mm/yyyy format</h2>

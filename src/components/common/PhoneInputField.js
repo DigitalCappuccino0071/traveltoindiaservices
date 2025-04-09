@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import PhoneInput from 'react-phone-number-input';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
@@ -11,6 +11,25 @@ import {
   FaExclamationCircle,
   FaGlobe,
 } from 'react-icons/fa';
+
+// Create a forwarded ref component for the input
+const CustomInput = forwardRef(
+  ({ className, validationStatus, ...rest }, ref) => (
+    <input
+      ref={ref}
+      className={`w-full p-2 outline-none focus:ring-0 ${
+        validationStatus === 'error'
+          ? 'bg-red-50 text-red-700'
+          : validationStatus === 'success'
+          ? 'bg-green-50 text-green-700'
+          : 'bg-white'
+      } ${className}`}
+      {...rest}
+    />
+  )
+);
+
+CustomInput.displayName = 'CustomInput';
 
 export default function PhoneInputField({
   name,
@@ -63,6 +82,18 @@ export default function PhoneInputField({
       }, 10);
     }
   }, [open]);
+
+  // Update selectedCountry when value changes
+  useEffect(() => {
+    // Extract country code from phone number
+    if (value && typeof value === 'string' && value.startsWith('+')) {
+      const countryCode = value.split(' ')[0];
+      // Just store the country code part, don't set anything during render
+      if (countryCode) {
+        setSelectedCountry(countryCode);
+      }
+    }
+  }, [value]);
 
   // Validate immediately when value changes
   useEffect(() => {
@@ -201,10 +232,13 @@ export default function PhoneInputField({
           placeholder={placeholder}
           international
           defaultCountry="US"
-          countrySelectComponent={({ value, onChange, options }) => {
-            setSelectedCountry(value);
-
-            // Filter options based on search query
+          countrySelectComponent={({
+            value: countryValue,
+            onChange: onCountryChange,
+            options,
+          }) => {
+            // Don't set state during render - moved to useEffect above
+            // Only filter options here, don't set state
             const filteredOptions = searchQuery
               ? options.filter(option =>
                   option.label
@@ -216,6 +250,7 @@ export default function PhoneInputField({
             return (
               <div className="relative inline-block" ref={dropdownRef}>
                 <button
+                  key="country-selector-button"
                   type="button"
                   aria-label="Select country"
                   className={`flex items-center h-full p-2 space-x-1 text-gray-700 border-r ${
@@ -228,21 +263,26 @@ export default function PhoneInputField({
                   onClick={() => setOpen(!open)}
                 >
                   <span className="flex items-center">
-                    {value ? (
+                    {countryValue ? (
                       <img
-                        src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${value}.svg`}
-                        alt={value}
+                        key="country-flag"
+                        src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${countryValue}.svg`}
+                        alt={countryValue}
                         className="w-5 h-4 mr-1 rounded-sm object-cover"
                       />
                     ) : (
-                      <FaGlobe className="w-4 h-4 mr-1 text-gray-500" />
+                      <FaGlobe
+                        key="globe-icon"
+                        className="w-4 h-4 mr-1 text-gray-500"
+                      />
                     )}
                   </span>
-                  <FaChevronDown className="w-3 h-3" />
+                  <FaChevronDown key="chevron-icon" className="w-3 h-3" />
                 </button>
 
                 {open && (
                   <div
+                    key="country-dropdown"
                     ref={dropdownContentRef}
                     className="absolute z-10 w-64 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
                     role="listbox"
@@ -250,7 +290,10 @@ export default function PhoneInputField({
                     <div className="sticky top-0 z-10 bg-white p-2 border-b border-gray-200">
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <FaSearch className="text-gray-400 w-3 h-3" />
+                          <FaSearch
+                            key="search-icon"
+                            className="text-gray-400 w-3 h-3"
+                          />
                         </div>
                         <input
                           ref={searchInputRef}
@@ -289,7 +332,7 @@ export default function PhoneInputField({
                                 : 'hover:bg-gray-50'
                             }`}
                             onClick={() => {
-                              onChange(option.value);
+                              onCountryChange(option.value);
                               setOpen(false);
                               setSearchQuery('');
                             }}
@@ -298,6 +341,7 @@ export default function PhoneInputField({
                             <div className="flex items-center">
                               {option.value && (
                                 <img
+                                  key={`flag-${option.value}`}
                                   src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${option.value}.svg`}
                                   alt={option.label}
                                   className="w-5 h-4 mr-2 rounded-sm object-cover"
@@ -306,12 +350,18 @@ export default function PhoneInputField({
                               <span>{option.label}</span>
                             </div>
                             {option.value === selectedCountry && (
-                              <FaCheck className="w-3 h-3 text-primary" />
+                              <FaCheck
+                                key="check-icon"
+                                className="w-3 h-3 text-primary"
+                              />
                             )}
                           </button>
                         ))
                       ) : (
-                        <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                        <div
+                          key="no-countries-found"
+                          className="px-4 py-3 text-sm text-gray-500 text-center"
+                        >
                           No countries found
                         </div>
                       )}
@@ -322,22 +372,16 @@ export default function PhoneInputField({
             );
           }}
           className="w-full flex"
-          inputClassName={`w-full p-2 outline-none focus:ring-0 ${
-            validationStatus === 'error'
-              ? 'bg-red-50 text-red-700'
-              : validationStatus === 'success'
-              ? 'bg-green-50 text-green-700'
-              : 'bg-white'
-          }`}
+          inputComponent={CustomInput}
         />
         {validationStatus === 'error' && (
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-500">
-            <FaExclamationCircle className="w-4 h-4" />
+            <FaExclamationCircle key="error-icon" className="w-4 h-4" />
           </div>
         )}
         {validationStatus === 'success' && (
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500">
-            <FaCheck className="w-4 h-4" />
+            <FaCheck key="success-icon" className="w-4 h-4" />
           </div>
         )}
       </div>
