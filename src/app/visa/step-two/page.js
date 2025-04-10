@@ -77,6 +77,13 @@ const StepTwo = () => {
   }
 
   if (getStep1DataIsSuccess) {
+    if (!step1Data?.data?.step2) {
+      return router.push('/visa/step-one');
+    }
+    if (step1Data?.data?.step2) {
+      return router.push('/visa/step-two/update');
+    }
+
     return (
       <>
         <BannerPage heading="Applicant Detail Form" />

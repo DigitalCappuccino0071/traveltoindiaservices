@@ -1,4 +1,7 @@
 'use client';
+import PhoneInputField from '@/components/common/PhoneInputField';
+import SelectField from '@/components/common/SelectField';
+import TextInputField from '@/components/common/TextInputField';
 import MyDependentField from '@/components/india/MyFields';
 import BannerPage from '@/components/india/common/BannerPage';
 import Loading from '@/components/india/common/Loading';
@@ -102,7 +105,7 @@ const StepThree = () => {
             resetForm();
           }}
         >
-          {({ values, isValid, handleSubmit }) => (
+          {({ values, isValid, handleSubmit, setFieldValue, handleChange }) => (
             <>
               <SavedFormId />
               <Form onSubmit={handleSubmit} className="container pt-4 pb-16">
@@ -123,237 +126,113 @@ const StepThree = () => {
                       <div>
                         <div className="formMain">
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="houseNoStreet"
-                            >
-                              House No. Street*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Applicant’s permanent address (with postal/zip
-                                  code)
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="houseNoStreet"
+                              <TextInputField
+                                label="House No. Street"
                                 name="houseNoStreet"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="houseNoStreet"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Enter your house no. and street"
+                                required={true}
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="villageTownCity"
-                            >
-                              Village/Town?City*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Enter your Village/Town/City
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="villageTownCity"
+                              <TextInputField
+                                label="Village/Town/City"
                                 name="villageTownCity"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="villageTownCity"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Enter your village/town/city"
+                                required={true}
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label className="form-label" htmlFor="country">
-                              Country
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please select your country{' '}
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                component="select"
-                                id="country"
+                              <SelectField
+                                label="Country"
                                 name="country"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option disabled value="">
-                                  Country
-                                </option>
-                                {Country?.getAllCountries()?.map(
-                                  (country, index) => (
-                                    <option key={index} value={country?.name}>
-                                      {country?.name}
-                                    </option>
-                                  )
+                                placeholder="Select Country"
+                                required={true}
+                                options={Country?.getAllCountries()?.map(
+                                  country => ({
+                                    value: country?.name,
+                                    label: country?.name,
+                                  })
+                                )}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-input-main-div">
+                            <div className="input-error-wrapper">
+                              <TextInputField
+                                label="State/Province/District"
+                                name="stateProvinceDistrict"
+                                placeholder="Enter your State/Province/District"
+                                required={true}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-input-main-div">
+                            <div className="input-error-wrapper">
+                              <TextInputField
+                                label="Postal/Zip Code"
+                                name="postalZipCode"
+                                placeholder="Enter your Postal/Zip Code"
+                                required={true}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-input-main-div">
+                            <div className="input-error-wrapper">
+                              <Field name="phoneNo">
+                                {({ field, form }) => (
+                                  <PhoneInputField
+                                    label="Phone No."
+                                    name="phoneNo"
+                                    placeholder="Enter phone number"
+                                    value={field.value}
+                                    onChange={value => {
+                                      form.setFieldValue(field.name, value);
+                                    }}
+                                    onBlur={field.onBlur}
+                                    error={form.errors.phoneNo}
+                                    touched={form.touched.phoneNo}
+                                    required={true}
+                                    form={form}
+                                  />
                                 )}
                               </Field>
-                              <ErrorMessage
-                                name="country"
-                                component="div"
-                                className="text-red-500"
-                              />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="stateProvinceDistrict"
-                            >
-                              State/Province/District*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Enter your State/Province/City
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="stateProvinceDistrict"
-                                name="stateProvinceDistrict"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="stateProvinceDistrict"
-                                component="div"
-                                className="text-red-500"
-                              />
+                              <Field name="mobileNo">
+                                {({ field, form }) => (
+                                  <PhoneInputField
+                                    label="Mobile No."
+                                    name="mobileNo"
+                                    placeholder="Enter mobile number"
+                                    value={field.value}
+                                    onChange={value => {
+                                      form.setFieldValue(field.name, value);
+                                    }}
+                                    onBlur={field.onBlur}
+                                    error={form.errors.mobileNo}
+                                    touched={form.touched.mobileNo}
+                                    required={true}
+                                    form={form}
+                                  />
+                                )}
+                              </Field>
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="postalZipCode"
-                            >
-                              Postal/Zip Code*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Enter your Postal Zip Code
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="postalZipCode"
-                                name="postalZipCode"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="postalZipCode"
-                                component="div"
-                                className="text-red-500"
-                              />
-                            </div>
-                          </div>
-                          <div className="form-input-main-div">
-                            <label className="form-label" htmlFor="phoneNo">
-                              Phone No.
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please provide your phone number
-                                </div>
-                              </div>
-                            </label>
-                            <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="phoneNo"
-                                name="phoneNo"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="phoneNo"
-                                component="div"
-                                className="text-red-500"
-                              />
-                            </div>
-                          </div>
-                          <div className="form-input-main-div">
-                            <label className="form-label" htmlFor="mobileNo">
-                              Mobile No.
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please provide your mobile number
-                                </div>
-                              </div>
-                            </label>
-                            <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="mobileNo"
-                                name="mobileNo"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="mobileNo"
-                                component="div"
-                                className="text-red-500"
-                              />
-                            </div>
-                          </div>
-                          <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="emailAddress"
-                            >
-                              Email Address
-                            </label>
-                            <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="emailAddress"
+                              <TextInputField
+                                required={true}
+                                label="Email Address"
                                 name="emailAddress"
-                                className="form-input input-disabled"
                                 disabled={true}
-                              />
-                              <ErrorMessage
-                                name="emailAddress"
-                                component="div"
-                                className="text-red-500"
+                                className="input-disabled"
                               />
                             </div>
                           </div>
@@ -377,24 +256,10 @@ const StepThree = () => {
                           </div>
 
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="permanentAddressHouseNoStreet"
-                            >
-                              House No. Street*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Applicant’s present address, maximum 35
-                                  characters (each line)
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
                               <MyDependentField
+                                required={true}
+                                label="House No. Street"
                                 name="permanentAddressHouseNoStreet"
                                 dependentFields={values.houseNoStreet}
                                 sameAddress={values.sameAddress}
@@ -402,23 +267,10 @@ const StepThree = () => {
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="villageTownCity"
-                            >
-                              Village/Town?City*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Enter your Village/Town/City
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
                               <MyDependentField
+                                required={true}
+                                label="Village/Town/City"
                                 name="permanentAddressVillageTownCity"
                                 dependentFields={values.villageTownCity}
                                 sameAddress={values.sameAddress}
@@ -426,23 +278,10 @@ const StepThree = () => {
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="permanentAddressStateProvinceDistrict"
-                            >
-                              State/Province/District*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Enter your State/Province/District{' '}
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
                               <MyDependentField
+                                required={true}
+                                label="State/Province/District"
                                 name="permanentAddressStateProvinceDistrict"
                                 dependentFields={values.stateProvinceDistrict}
                                 sameAddress={values.sameAddress}
@@ -502,201 +341,68 @@ const StepThree = () => {
                         {/* father mothers details */}
                         <div className="formMain">
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="fatherFullName"
-                            >
-                              Full Name
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Applicant’s father name
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="fatherFullName"
+                              <TextInputField
+                                label="Full Name"
                                 name="fatherFullName"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="fatherFullName"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Enter your full name"
+                                required={true}
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="fatherNationality"
-                            >
-                              Nationality/Region*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Nationality / region of father
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                required
-                                component="select"
-                                id="fatherNationality"
+                              <SelectField
+                                label="Nationality/Region"
                                 name="fatherNationality"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select Country*
-                                </option>
-                                {Country?.getAllCountries()?.map(
-                                  (country, index) => (
-                                    <option key={index} value={country?.name}>
-                                      {country?.name}
-                                    </option>
-                                  )
+                                placeholder="Select Nationality"
+                                required={true}
+                                options={Country?.getAllCountries()?.map(
+                                  country => ({
+                                    value: country?.name,
+                                    label: country?.name,
+                                  })
                                 )}
-                              </Field>
-                              <ErrorMessage
-                                name="fatherNationality"
-                                component="div"
-                                className="text-red-500"
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="fatherPreviousNationality"
-                            >
-                              Previous Nationality/Region*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Previous nationality / Region of Father
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              {/* <Field
-                            name="fatherPreviousNationality"
-                            component="select"
-                            className="p-2 border rounded select-input"
-                          >
-                            <option value="">Select Nationality</option>
-                            <option value="option1">Option 1</option>
-                            <option value="option2">Option 2</option>
-                          </Field> */}
-                              <Field
-                                required
-                                component="select"
-                                id="fatherPreviousNationality"
+                              <SelectField
+                                label="Previous Nationality/Region"
                                 name="fatherPreviousNationality"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select Country*
-                                </option>
-                                {Country?.getAllCountries()?.map(
-                                  (country, index) => (
-                                    <option key={index} value={country?.name}>
-                                      {country?.name}
-                                    </option>
-                                  )
+                                placeholder="Select Previous Nationality"
+                                required={true}
+                                options={Country?.getAllCountries()?.map(
+                                  country => ({
+                                    value: country?.name,
+                                    label: country?.name,
+                                  })
                                 )}
-                              </Field>
-                              <ErrorMessage
-                                name="fatherPreviousNationality"
-                                component="div"
-                                className="text-red-500"
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="fatherPlaceOfBirth"
-                            >
-                              Place of birth
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please enter your place of birth
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="fatherPlaceOfBirth"
+                              <TextInputField
+                                label="Place of birth"
                                 name="fatherPlaceOfBirth"
-                                className="form-input"
+                                placeholder="Enter your place of birth"
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="fatherCountry"
-                            >
-                              Country of Birth
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please select country / region of birth
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              {/* <Field
-                            name="fatherCountry"
-                            component="select"
-                            className="p-2 border rounded select-input"
-                          >
-                            <option value="">Select Country</option>
-                            <option value="option1">Option 1</option>
-                            <option value="option2">Option 2</option>
-                          </Field> */}
-                              <Field
-                                required
-                                component="select"
-                                id="fatherCountry"
+                              <SelectField
+                                label="Country of Birth"
                                 name="fatherCountry"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select Country*
-                                </option>
-                                {Country?.getAllCountries()?.map(
-                                  (country, index) => (
-                                    <option key={index} value={country?.name}>
-                                      {country?.name}
-                                    </option>
-                                  )
+                                placeholder="Select Country"
+                                options={Country?.getAllCountries()?.map(
+                                  country => ({
+                                    value: country?.name,
+                                    label: country?.name,
+                                  })
                                 )}
-                              </Field>
-                              <ErrorMessage
-                                name="fatherCountry"
-                                component="div"
-                                className="text-red-500"
                               />
                             </div>
                           </div>
@@ -704,193 +410,69 @@ const StepThree = () => {
                             Mother’s Details
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="motherFullName"
-                            >
-                              Full Name*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Applicant’s mother name
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="motherFullName"
+                              <TextInputField
+                                label="Full Name"
                                 name="motherFullName"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="motherFullName"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Enter your full name"
+                                required={true}
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="motherNationality"
-                            >
-                              Nationality/Region*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please select nationality / region of mother
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              {/* <Field
-                            name="motherNationality"
-                            component="select"
-                            className="p-2 border rounded select-input"
-                          >
-                            <option value="">Select Nationality</option>
-                            <option value="option1">Option 1</option>
-                            <option value="option2">Option 2</option>
-                          </Field> */}
-                              <Field
-                                required
-                                component="select"
-                                id="motherNationality"
+                              <SelectField
+                                label="Nationality/Region"
                                 name="motherNationality"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select Country*
-                                </option>
-                                {Country?.getAllCountries()?.map(
-                                  (country, index) => (
-                                    <option key={index} value={country?.name}>
-                                      {country?.name}
-                                    </option>
-                                  )
+                                placeholder="Select Nationality"
+                                required={true}
+                                options={Country?.getAllCountries()?.map(
+                                  country => ({
+                                    value: country?.name,
+                                    label: country?.name,
+                                  })
                                 )}
-                              </Field>
-                              <ErrorMessage
-                                name="motherNationality"
-                                component="div"
-                                className="text-red-500"
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="motherPreviousNationality"
-                            >
-                              Previous Nationality/Region*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please select previous nationality / region of
-                                  mother
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                required
-                                component="select"
-                                id="motherPreviousNationality"
+                              <SelectField
+                                label="Previous Nationality/Region"
                                 name="motherPreviousNationality"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select Country*
-                                </option>
-                                {Country?.getAllCountries()?.map(
-                                  (country, index) => (
-                                    <option key={index} value={country?.name}>
-                                      {country?.name}
-                                    </option>
-                                  )
+                                placeholder="Select Previous Nationality"
+                                required={true}
+                                options={Country?.getAllCountries()?.map(
+                                  country => ({
+                                    value: country?.name,
+                                    label: country?.name,
+                                  })
                                 )}
-                              </Field>
-                              <ErrorMessage
-                                name="motherPreviousNationality"
-                                component="div"
-                                className="text-red-500"
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="motherPlaceOfBirth"
-                            >
-                              Place of birth
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please enter place of birth
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="motherPlaceOfBirth"
+                              <TextInputField
+                                label="Place of birth"
                                 name="motherPlaceOfBirth"
-                                className="form-input"
+                                placeholder="Enter your place of birth"
                               />
                             </div>
                           </div>
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="motherCountryOfBirth"
-                            >
-                              Country of Birth
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please select Country / region of birth
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                required
-                                component="select"
-                                id="motherCountryOfBirth"
+                              <SelectField
+                                label="Country of Birth"
                                 name="motherCountryOfBirth"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select Country*
-                                </option>
-                                {Country?.getAllCountries()?.map(
-                                  (country, index) => (
-                                    <option key={index} value={country?.name}>
-                                      {country?.name}
-                                    </option>
-                                  )
+                                placeholder="Select Country"
+                                required={true}
+                                options={Country?.getAllCountries()?.map(
+                                  country => ({
+                                    value: country?.name,
+                                    label: country?.name,
+                                  })
                                 )}
-                              </Field>
-                              <ErrorMessage
-                                name="motherCountryOfBirth"
-                                component="div"
-                                className="text-red-500"
                               />
                             </div>
                           </div>
@@ -943,39 +525,17 @@ const StepThree = () => {
                       <div>
                         <div className="formMain">
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="applicantMaritalStatus"
-                            >
-                              Applicant’s Marital Status
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Applicant’s Marital Status
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                id="applicantMaritalStatus"
+                              <SelectField
+                                label="Marital Status"
                                 name="applicantMaritalStatus"
-                                component="select"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select Marital Status
-                                </option>
-                                <option value="single">Single</option>
-                                <option value="married">Married</option>
-                                <option value="divorced">Divorced</option>
-                              </Field>
-                              <ErrorMessage
-                                name="applicantMaritalStatus"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Select Marital Status"
+                                required={true}
+                                options={[
+                                  { value: 'single', label: 'Single' },
+                                  { value: 'married', label: 'Married' },
+                                  { value: 'divorced', label: 'Divorced' },
+                                ]}
                               />
                             </div>
                           </div>
@@ -987,203 +547,74 @@ const StepThree = () => {
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="spouseFullName"
-                                >
-                                  Full Name
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please enter spouse&apos;s full name
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="spouseFullName"
+                                  <TextInputField
+                                    label="Full Name"
                                     name="spouseFullName"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="spouseFullName"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter your full name"
+                                    required={true}
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="spouseNationality"
-                                >
-                                  Nationality/Region*
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please select spouse&apos;s nationality
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    required
-                                    component="select"
-                                    id="spouseNationality"
+                                  <SelectField
+                                    label="Nationality/Region"
                                     name="spouseNationality"
-                                    className="p-2 border rounded select-input"
-                                  >
-                                    <option value="" disabled>
-                                      Select Country*
-                                    </option>
-                                    {Country?.getAllCountries()?.map(
-                                      (country, index) => (
-                                        <option
-                                          key={index}
-                                          value={country?.name}
-                                        >
-                                          {country?.name}
-                                        </option>
-                                      )
+                                    placeholder="Select Nationality"
+                                    required={true}
+                                    options={Country?.getAllCountries()?.map(
+                                      country => ({
+                                        value: country?.name,
+                                        label: country?.name,
+                                      })
                                     )}
-                                  </Field>
-                                  <ErrorMessage
-                                    name="spouseNationality"
-                                    component="div"
-                                    className="text-red-500"
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="spousePreviousNationality"
-                                >
-                                  Previous Nationality/Region*
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please select spouse&apos;s previous
-                                      nationality
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    required
-                                    component="select"
-                                    id="spousePreviousNationality"
+                                  <SelectField
+                                    label="Previous Nationality/Region"
                                     name="spousePreviousNationality"
-                                    className="p-2 border rounded select-input"
-                                  >
-                                    <option value="" disabled>
-                                      Select Country*
-                                    </option>
-                                    {Country?.getAllCountries()?.map(
-                                      (country, index) => (
-                                        <option
-                                          key={index}
-                                          value={country?.name}
-                                        >
-                                          {country?.name}
-                                        </option>
-                                      )
+                                    placeholder="Select Previous Nationality"
+                                    required={true}
+                                    options={Country?.getAllCountries()?.map(
+                                      country => ({
+                                        value: country?.name,
+                                        label: country?.name,
+                                      })
                                     )}
-                                  </Field>
-                                  <ErrorMessage
-                                    name="spousePreviousNationality"
-                                    component="div"
-                                    className="text-red-500"
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="spousePlaceOfBirth"
-                                >
-                                  Place of Birth
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please enter spouse&apos;s place of birth
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="spousePlaceOfBirth"
+                                  <TextInputField
+                                    required={true}
+                                    label="Place of birth"
                                     name="spousePlaceOfBirth"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="spousePlaceOfBirth"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter your place of birth"
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="spouseCountryOfBirth"
-                                >
-                                  Country/Region of birth
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please select spouse&apos;s country/region
-                                      of birth
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    required
-                                    component="select"
-                                    id="spouseCountryOfBirth"
+                                  <SelectField
+                                    label="Country of Birth"
                                     name="spouseCountryOfBirth"
-                                    className="p-2 border rounded select-input"
-                                  >
-                                    <option value="" disabled>
-                                      Select Country*
-                                    </option>
-                                    {Country?.getAllCountries()?.map(
-                                      (country, index) => (
-                                        <option
-                                          key={index}
-                                          value={country?.name}
-                                        >
-                                          {country?.name}
-                                        </option>
-                                      )
+                                    placeholder="Select Country"
+                                    required={true}
+                                    options={Country?.getAllCountries()?.map(
+                                      country => ({
+                                        value: country?.name,
+                                        label: country?.name,
+                                      })
                                     )}
-                                  </Field>
-                                  <ErrorMessage
-                                    name="spouseCountryOfBirth"
-                                    component="div"
-                                    className="text-red-500"
                                   />
                                 </div>
                               </div>
@@ -1236,23 +667,12 @@ const StepThree = () => {
 
                           {values.parentsPakistanNational === 'yes' && (
                             <div className="form-input-main-div">
-                              <label
-                                className="form-label"
-                                htmlFor="parentDetails"
-                              >
-                                If Yes, give details*
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  id="parentDetails"
+                                <TextInputField
+                                  label="If Yes, give details"
                                   name="parentDetails"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="parentDetails"
-                                  component="div"
-                                  className="text-red-500"
+                                  placeholder="Enter details"
+                                  required={true}
                                 />
                               </div>
                             </div>
@@ -1287,64 +707,28 @@ const StepThree = () => {
                         {/* profession occupation */}
                         <div className="formMain">
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="presentOccupation"
-                            >
-                              Present Occupation*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please select your present occupation
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                required
-                                component="select"
-                                id="presentOccupation"
+                              <SelectField
+                                label="Present Occupation"
                                 name="presentOccupation"
-                                className="p-2 border rounded select-input"
-                              >
-                                <option value="" disabled>
-                                  Select Occupation*
-                                </option>
-                                {occupationList?.map(occupation => (
-                                  <option key={occupation} value={occupation}>
-                                    {occupation}
-                                  </option>
-                                ))}
-                              </Field>
-                              <ErrorMessage
-                                name="presentOccupation"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Select Occupation"
+                                required={true}
+                                options={occupationList?.map(occupation => ({
+                                  value: occupation,
+                                  label: occupation,
+                                }))}
                               />
                             </div>
                           </div>
 
                           {values.presentOccupation === 'Others' ? (
                             <div className="form-input-main-div">
-                              <label
-                                className="form-label"
-                                htmlFor="employerName"
-                              ></label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  id="presentOtherOccupation"
+                                <TextInputField
+                                  label="Present Other Occupation"
+                                  name="presentOtherOccupation"
                                   placeholder="Enter occupation"
-                                  name="presentOtherOccupation"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="presentOtherOccupation"
-                                  component="div"
-                                  className="text-red-500"
+                                  required={true}
                                 />
                               </div>
                             </div>
@@ -1353,29 +737,16 @@ const StepThree = () => {
                           )}
                           {values.presentOccupation === 'House Wife' ? (
                             <div className="form-input-main-div">
-                              <label
-                                className="form-label"
-                                htmlFor="employerName"
-                              >
-                                Specify below occupation detail of*
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  className="p-2 border rounded select-input"
-                                  component="select"
-                                  id="houseWifeOccupationDetails"
+                                <SelectField
+                                  label="House Wife Occupation Details"
                                   name="houseWifeOccupationDetails"
-                                >
-                                  <option value="" disabled>
-                                    Select
-                                  </option>
-                                  <option value="father">Father</option>
-                                  <option value="spouse">Spouse</option>
-                                </Field>
-                                <ErrorMessage
-                                  name="houseWifeOccupationDetails"
-                                  component="div"
-                                  className="text-red-500"
+                                  placeholder="Select Occupation"
+                                  required={true}
+                                  options={[
+                                    { value: 'father', label: 'Father' },
+                                    { value: 'spouse', label: 'Spouse' },
+                                  ]}
                                 />
                               </div>
                             </div>
@@ -1384,148 +755,67 @@ const StepThree = () => {
                           )}
 
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="employerName"
-                            >
-                              Employer Name/Business*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Enter your employer name / business
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="employerName"
+                              <TextInputField
+                                label="Employer Name"
                                 name="employerName"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="employerName"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Enter employer name"
+                                required={true}
                               />
                             </div>
                           </div>
 
                           <div className="form-input-main-div">
-                            <label className="form-label" htmlFor="designation">
-                              Designation
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please provide your designation
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="designation"
+                              <TextInputField
+                                label="Designation"
                                 name="designation"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="designation"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Enter designation"
+                                required={true}
                               />
                             </div>
                           </div>
 
                           <div className="form-input-main-div">
-                            <label className="form-label" htmlFor="address">
-                              Address*
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please enter your address
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="address"
+                              <TextInputField
+                                label="Address"
                                 name="address"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="address"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Enter address"
+                                required={true}
                               />
                             </div>
                           </div>
 
                           <div className="form-input-main-div">
-                            <label className="form-label" htmlFor="phone">
-                              Phone
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please provide your phone number
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              <Field
-                                type="text"
-                                id="applicantPhone"
-                                name="applicantPhone"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="applicantPhone"
-                                component="div"
-                                className="text-red-500"
-                              />
+                              <Field name="applicantPhone">
+                                {({ field, form }) => (
+                                  <PhoneInputField
+                                    label="Phone Number"
+                                    name="applicantPhone"
+                                    placeholder="Enter phone number"
+                                    value={field.value}
+                                    onChange={value => {
+                                      form.setFieldValue(field.name, value);
+                                    }}
+                                    onBlur={field.onBlur}
+                                    error={form.errors.applicantPhone}
+                                    touched={form.touched.applicantPhone}
+                                    required={true}
+                                    form={form}
+                                  />
+                                )}
+                              </Field>
                             </div>
                           </div>
 
                           <div className="form-input-main-div">
-                            <label
-                              className="form-label"
-                              htmlFor="pastOccupationIfAny"
-                            >
-                              Past Occupation, if any
-                              <div className="relative group">
-                                <BsQuestionCircleFill
-                                  className="text-primary info-icon"
-                                  size={20}
-                                />
-                                <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                  Please enter your past occupation if any
-                                </div>
-                              </div>
-                            </label>
                             <div className="input-error-wrapper">
-                              {/* presentOccupationIfAny replace with pastOccupationIfAny */}
-                              <Field
-                                type="text"
-                                id="pastOccupationIfAny"
+                              <TextInputField
+                                label="Past Occupation, if any"
                                 name="pastOccupationIfAny"
-                                className="form-input"
-                              />
-                              <ErrorMessage
-                                name="pastOccupationIfAny"
-                                component="div"
-                                className="text-red-500"
+                                placeholder="Enter past occupation"
                               />
                             </div>
                           </div>
@@ -1572,125 +862,45 @@ const StepThree = () => {
                           {values.militaryOrganization === 'yes' && (
                             <>
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="organization"
-                                >
-                                  Organization
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please enter name of the organisation
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="organization"
+                                  <TextInputField
+                                    label="Organization"
                                     name="organization"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="organization"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter organization"
+                                    required={true}
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="militaryDesignation"
-                                >
-                                  Designation
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please enter your designation
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="militaryDesignation"
+                                  <TextInputField
+                                    label="Designation"
                                     name="militaryDesignation"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="militaryDesignation"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter designation"
+                                    required={true}
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="militaryRank"
-                                >
-                                  Rank
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please provide the rank you were on
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="militaryRank"
+                                  <TextInputField
+                                    label="Rank"
                                     name="militaryRank"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="militaryRank"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter rank"
+                                    required={true}
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="placeOfPosting"
-                                >
-                                  Place of Posting
-                                  <div className="relative group">
-                                    <BsQuestionCircleFill
-                                      className="text-primary info-icon"
-                                      size={20}
-                                    />
-                                    <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
-                                      Please provide place of posting
-                                    </div>
-                                  </div>
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="placeOfPosting"
+                                  <TextInputField
+                                    label="Place of posting"
                                     name="placeOfPosting"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="placeOfPosting"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter place of posting"
+                                    required={true}
                                   />
                                 </div>
                               </div>

@@ -260,11 +260,25 @@ export const step3ValidationSchema = {
     ),
     postalZipCode: Yup.string().required('Postal/Zip Code is required'),
     phoneNo: Yup.string()
-      .matches(/^[0-9]{10}$/, 'Phone number must be a valid 10-digit number')
-      .required('Phone is required'),
+      .test(
+        'is-valid-phone',
+        'Phone number must be a valid international format',
+        value => {
+          if (!value) return false;
+          return isValidPhoneNumber(value);
+        }
+      )
+      .required('Phone number is required'),
     mobileNo: Yup.string()
-      .matches(/^[0-9]{10}$/, 'Phone number must be a valid 10-digit number')
-      .required('Phone is required'),
+      .test(
+        'is-valid-phone',
+        'mobile number must be a valid international format',
+        value => {
+          if (!value) return false;
+          return isValidPhoneNumber(value);
+        }
+      )
+      .required('mobile number is required'),
     emailAddress: Yup.string()
       .email('Invalid email address')
       .required('Email Address is required'),
@@ -359,8 +373,15 @@ export const step3ValidationSchema = {
     designation: Yup.string().required('desigation is required'),
     address: Yup.string().required('Address is required'),
     applicantPhone: Yup.string()
-      .matches(/^[0-9]{10}$/, 'Phone number must be a valid 10-digit number')
-      .required('Phone is required'),
+      .test(
+        'is-valid-phone',
+        'Phone number must be a valid international format',
+        value => {
+          if (!value) return false;
+          return isValidPhoneNumber(value);
+        }
+      )
+      .required('Phone number is required'),
     pastOccupationIfAny: Yup.string(),
 
     militaryOrganization: Yup.string().required('Please select an option'),

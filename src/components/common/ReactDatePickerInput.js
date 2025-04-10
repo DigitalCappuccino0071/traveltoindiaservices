@@ -25,14 +25,12 @@ const CustomInput = React.forwardRef(
           // Format as DD-MM-YYYY
           displayValue = format(dateObj, 'dd-MM-yyyy');
         } else {
-          console.warn('Invalid date value received:', value);
           // Try to extract a format from the string if it's not a valid date
           if (typeof value === 'string') {
             displayValue = value;
           }
         }
       } catch (e) {
-        console.error('Error formatting date for display:', e);
         // Last resort fallback
         displayValue = typeof value === 'string' ? value : '';
       }
@@ -101,7 +99,6 @@ export default function ReactDatePickerInput({
       selectedDate = null;
     }
   } catch (e) {
-    console.error('Error parsing date:', e);
     selectedDate = null;
   }
 
@@ -134,12 +131,7 @@ export default function ReactDatePickerInput({
       // Add exactly 4 days
       arrivalMinDate.setDate(currentDate.getDate() + 4);
 
-      console.log('Today:', format(currentDate, 'dd-MM-yyyy'));
-      console.log(
-        'Min arrival date (4 days later):',
-        format(arrivalMinDate, 'dd-MM-yyyy')
-      );
-
+      // Remove console.logs that might cause re-rendering
       // Use provided minDate if available, otherwise use calculated one
       minDateValue = minDate || arrivalMinDate;
 
@@ -226,13 +218,21 @@ export default function ReactDatePickerInput({
     return true;
   };
 
-  // Use useEffect to update validation when selectedDate changes
+  // Fix dependency array to prevent infinite loops
+  // Only run the effect once on mount and when selected prop changes
   useEffect(() => {
-    if (selectedDate) {
-      validateDate(selectedDate);
+    if (selected) {
+      // Validate the date
+      const valid = validateDate(selectedDate);
+
+      // Set touched to true to show validation feedback immediately
       setIsTouched(true);
+
+      // Update isValid state based on validation result
+      setIsValid(valid);
     }
-  }, [selectedDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, selectedDate]);
 
   // Modify the date change handler to ensure proper date objects
   const handleDateChange = date => {
@@ -244,18 +244,16 @@ export default function ReactDatePickerInput({
 
     // Make sure we have a valid date object before updating Formik
     if (date) {
-      console.log('Date selected:', date); // For debugging
+      // Remove console.log to prevent unnecessary re-renders
 
       // Ensure we're passing a valid Date object to Formik
       try {
         const dateObj = new Date(date);
         if (!isNaN(dateObj.getTime())) {
           setFieldValue(name, dateObj);
-        } else {
-          console.error('Invalid date selected:', date);
         }
       } catch (e) {
-        console.error('Error processing selected date:', e);
+        // Silently handle error to prevent console spam
       }
     } else {
       // If date is null/undefined, clear the field
