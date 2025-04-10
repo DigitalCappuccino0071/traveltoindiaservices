@@ -174,20 +174,12 @@ export default function FormikForm({
           <div className="form-input-main-div">
             <label className="form-label">Contact no*</label>
             <div className="input-error-wrapper form-input">
-              {/* <PhoneInput
-                    placeholder="Enter phone number"
-                    value={contactValue}
-                    inputclassName="phone-input-class"
-                    className="form-input"
-                    onChange={setContactValue}
-                  /> */}
-
               <Field name="contactNo">
                 {({ field, form }) => (
                   <PhoneInput
                     placeholder="Enter phone number"
                     value={field.value}
-                    inputclassName="phone-input-class"
+                    // inputclassName="phone-input-class"
                     onChange={value => {
                       form.setFieldValue(field.name, value);
 

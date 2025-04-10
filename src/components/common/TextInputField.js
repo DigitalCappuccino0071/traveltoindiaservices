@@ -1,8 +1,7 @@
-'use client';
-import { useField, useFormikContext } from 'formik';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ErrorMessage, useField } from 'formik';
 
-export default function MyDependentField({
+export default function TextInputField({
   label,
   name,
   type = 'text',
@@ -11,20 +10,10 @@ export default function MyDependentField({
   disabled = false,
   className = '',
   autoComplete,
-  dependentFields = '',
-  sameAddress = false,
 }) {
-  const { setFieldValue } = useFormikContext();
   const [field, meta, helpers] = useField(name);
   const [isTouched, setIsTouched] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
-  // Set field value based on dependentFields when sameAddress is true
-  useEffect(() => {
-    if (dependentFields.trim() !== '' && sameAddress) {
-      setFieldValue(name, `${dependentFields}`);
-    }
-  }, [setFieldValue, name, sameAddress, dependentFields]);
 
   // Validate immediately when value changes
   useEffect(() => {
@@ -86,7 +75,7 @@ export default function MyDependentField({
           onChange={handleChange}
           onBlur={handleBlur}
           onFocus={handleFocus}
-          disabled={disabled || sameAddress}
+          disabled={disabled}
           className={inputClass}
           placeholder={placeholder}
           required={required}
@@ -125,8 +114,14 @@ export default function MyDependentField({
           </div>
         )}
       </div>
-      {hasError && (
+      {hasError ? (
         <div className="mt-1 text-sm text-red-500">{meta.error}</div>
+      ) : (
+        <ErrorMessage name={name}>
+          {errorMsg => (
+            <div className="mt-1 text-sm text-red-500">{errorMsg}</div>
+          )}
+        </ErrorMessage>
       )}
     </div>
   );

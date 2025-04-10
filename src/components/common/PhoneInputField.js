@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PhoneInput from 'react-phone-number-input';
 import { isValidPhoneNumber } from 'react-phone-number-input';
+import Image from 'next/image';
 import 'react-phone-number-input/style.css';
 import {
   FaChevronDown,
@@ -64,6 +65,18 @@ export default function PhoneInputField({
     }
   }, [open]);
 
+  // Update selectedCountry when value changes
+  useEffect(() => {
+    // Extract country code from phone number
+    if (value && typeof value === 'string' && value.startsWith('+')) {
+      const countryCode = value.split(' ')[0];
+      // Just store the country code part, don't set anything during render
+      if (countryCode) {
+        setSelectedCountry(countryCode);
+      }
+    }
+  }, [value]);
+
   // Validate phone number using isValidPhoneNumber like in the Zod validation
   const validatePhoneNumber = phoneNumber => {
     if (!phoneNumber) return required ? 'Phone number is required' : null;
@@ -89,18 +102,8 @@ export default function PhoneInputField({
     onChange(newValue);
 
     if (form && name) {
-      // Set field touched to trigger immediate validation
-      form.setFieldValue(name, newValue);
-      form.setFieldTouched(name, true, false);
-
-      // Custom validation - useful if Formik's validation isn't running immediately
-      const validationError = validatePhoneNumber(newValue);
-      if (validationError) {
-        form.setFieldError(name, validationError);
-      } else {
-        // Clear error if validation passes
-        form.setFieldError(name, undefined);
-      }
+      // Set field value without running validations immediately
+      form.setFieldValue(name, newValue, false); // false means don't validate on change
     }
   };
 
@@ -112,13 +115,8 @@ export default function PhoneInputField({
     if (onBlur) onBlur(e);
 
     if (form && name) {
+      // Trigger validation just once on blur
       form.setFieldTouched(name, true, true);
-
-      // Validate on blur
-      const validationError = validatePhoneNumber(value);
-      if (validationError) {
-        form.setFieldError(name, validationError);
-      }
     }
   };
 
@@ -186,8 +184,6 @@ export default function PhoneInputField({
           international
           defaultCountry="US"
           countrySelectComponent={({ value, onChange, options }) => {
-            setSelectedCountry(value);
-
             // Filter options based on search query
             const filteredOptions = searchQuery
               ? options.filter(option =>
@@ -203,14 +199,21 @@ export default function PhoneInputField({
                   type="button"
                   aria-label="Select country"
                   className="flex items-center h-full p-2 space-x-1 text-gray-700 border-r border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 rounded-l"
-                  onClick={() => setOpen(!open)}
+                  onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setOpen(prev => !prev);
+                  }}
                 >
                   <span className="flex items-center">
                     {value ? (
-                      <img
+                      <Image
                         src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${value}.svg`}
                         alt={value}
-                        className="w-5 h-4 mr-1 rounded-sm object-cover"
+                        width={20}
+                        height={16}
+                        style={{ height: 'auto' }}
+                        className="mr-1 rounded-sm object-cover"
                       />
                     ) : (
                       <FaGlobe className="w-4 h-4 mr-1 text-gray-500" />
@@ -257,7 +260,7 @@ export default function PhoneInputField({
                       {filteredOptions.length > 0 ? (
                         filteredOptions.map((option, index) => (
                           <button
-                            key={option.value}
+                            key={`${option.value || 'option'}-${index}`}
                             type="button"
                             role="option"
                             aria-selected={option.value === selectedCountry}
@@ -266,7 +269,9 @@ export default function PhoneInputField({
                                 ? 'bg-gray-100'
                                 : 'hover:bg-gray-50'
                             }`}
-                            onClick={() => {
+                            onClick={e => {
+                              e.preventDefault();
+                              e.stopPropagation();
                               onChange(option.value);
                               setOpen(false);
                               setSearchQuery('');
@@ -275,10 +280,13 @@ export default function PhoneInputField({
                           >
                             <div className="flex items-center">
                               {option.value && (
-                                <img
+                                <Image
                                   src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${option.value}.svg`}
                                   alt={option.label}
-                                  className="w-5 h-4 mr-2 rounded-sm object-cover"
+                                  width={20}
+                                  height={16}
+                                  style={{ height: 'auto' }}
+                                  className="mr-2 rounded-sm object-cover"
                                 />
                               )}
                               <span>{option.label}</span>
@@ -299,8 +307,8 @@ export default function PhoneInputField({
               </div>
             );
           }}
-          className="w-full flex"
-          inputClassName="w-full p-2 outline-none focus:ring-0"
+          className="flex w-full p-2 outline-none focus:ring-0"
+          // inputClassName="w-full p-2 outline-none focus:ring-0"
         />
         {validationStatus === 'error' && (
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-red-500">

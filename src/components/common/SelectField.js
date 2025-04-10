@@ -1,32 +1,20 @@
-'use client';
-import { useField, useFormikContext } from 'formik';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ErrorMessage, useField } from 'formik';
 
-export default function MyDependentField({
+export default function SelectField({
   label,
   name,
-  type = 'text',
-  placeholder = '',
+  options = [],
   required = false,
+  placeholder = 'Select',
   disabled = false,
   className = '',
-  autoComplete,
-  dependentFields = '',
-  sameAddress = false,
+  onChange,
 }) {
-  const { setFieldValue } = useFormikContext();
   const [field, meta, helpers] = useField(name);
   const [isTouched, setIsTouched] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
 
-  // Set field value based on dependentFields when sameAddress is true
-  useEffect(() => {
-    if (dependentFields.trim() !== '' && sameAddress) {
-      setFieldValue(name, `${dependentFields}`);
-    }
-  }, [setFieldValue, name, sameAddress, dependentFields]);
-
-  // Validate immediately when value changes
+  // Validate when value changes
   useEffect(() => {
     if (field.value) {
       setIsTouched(true);
@@ -39,18 +27,17 @@ export default function MyDependentField({
     field.onChange(e);
     setIsTouched(true);
     helpers.setTouched(true);
+
+    // Call custom onChange if provided
+    if (onChange) {
+      onChange(e);
+    }
   };
 
   // Handle blur event
   const handleBlur = e => {
     field.onBlur(e);
-    setIsFocused(false);
     setIsTouched(true);
-  };
-
-  // Handle focus event
-  const handleFocus = () => {
-    setIsFocused(true);
   };
 
   // Determine if field has error
@@ -65,13 +52,11 @@ export default function MyDependentField({
       ? 'border-red-500 bg-red-50'
       : isSuccess
       ? 'border-green-500 bg-green-50'
-      : isFocused
-      ? 'border-primary'
       : 'border-gray-300'
   } ${className}`;
 
   return (
-    <div className="text-input-wrapper w-full">
+    <div className="select-field-wrapper">
       {label && (
         <label htmlFor={name} className="block mb-1 text-sm font-medium">
           {label}
@@ -79,21 +64,26 @@ export default function MyDependentField({
         </label>
       )}
       <div className="relative">
-        <input
+        <select
           id={name}
-          type={type}
           {...field}
           onChange={handleChange}
           onBlur={handleBlur}
-          onFocus={handleFocus}
-          disabled={disabled || sameAddress}
+          disabled={disabled}
           className={inputClass}
-          placeholder={placeholder}
           required={required}
-          autoComplete={autoComplete}
-        />
+        >
+          <option value="" disabled>
+            {placeholder}
+          </option>
+          {options.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
         {hasError && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500">
+          <div className="absolute right-10 top-2.5 text-red-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -109,7 +99,7 @@ export default function MyDependentField({
           </div>
         )}
         {isSuccess && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
+          <div className="absolute right-10 top-2.5 text-green-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -125,8 +115,14 @@ export default function MyDependentField({
           </div>
         )}
       </div>
-      {hasError && (
+      {hasError ? (
         <div className="mt-1 text-sm text-red-500">{meta.error}</div>
+      ) : (
+        <ErrorMessage name={name}>
+          {errorMsg => (
+            <div className="mt-1 text-sm text-red-500">{errorMsg}</div>
+          )}
+        </ErrorMessage>
       )}
     </div>
   );
