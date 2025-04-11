@@ -20,8 +20,13 @@ import { ImSpinner2 } from 'react-icons/im';
 import { LuImagePlus } from 'react-icons/lu';
 import { useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
+import {
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaInfoCircle,
+} from 'react-icons/fa';
 
-const StepSix = () => {
+export default function StepSix() {
   const pathName = usePathname();
   const { state } = useFormContext();
   const router = useRouter();
@@ -34,6 +39,7 @@ const StepSix = () => {
   });
 
   const [isUploading, setIsUploading] = useState(false);
+  const [activeUpload, setActiveUpload] = useState(null);
 
   // Define validation schema directly in the component
   const validationSchema = Yup.object().shape({
@@ -131,6 +137,7 @@ const StepSix = () => {
       if (!file) return;
 
       setIsUploading(true);
+      setActiveUpload(fieldName);
       try {
         if (fieldName === 'profilePicture') {
           const result = await uploadSingleImage.mutateAsync(file);
@@ -179,6 +186,7 @@ const StepSix = () => {
         );
       } finally {
         setIsUploading(false);
+        setActiveUpload(null);
       }
     },
     [uploadSingleImage, uploadMultipleImages]
@@ -233,8 +241,8 @@ const StepSix = () => {
   if (isPending) {
     return (
       <div className="flex items-center justify-center flex-1 h-full pt-20">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
+        <ImSpinner2 className="w-6 h-6 text-primary animate-spin mr-3" />
+        <span className="text-lg">Loading your application information...</span>
       </div>
     );
   }
@@ -242,7 +250,6 @@ const StepSix = () => {
   if (error) {
     return router.push('/visa/step-five');
   }
-  //
 
   if (getAllStepsDataIsSuccess) {
     if (!getAllStepsData?.data?.step5Data) {
@@ -256,7 +263,7 @@ const StepSix = () => {
 
     return (
       <>
-        <BannerPage heading="Upload Your Picture" />
+        <BannerPage heading="Upload Your Documents" />
         <SavedFormId />
 
         <Formik
@@ -338,14 +345,57 @@ const StepSix = () => {
           {({ values, isValid, handleSubmit, setFieldValue, isSubmitting }) => (
             <>
               <Form onSubmit={handleSubmit} className="container pt-4 pb-16">
-                {/* upload file start  */}
-                <div className="mb-6 space-y-8">
-                  <div>
-                    <label className="mb-3 block font-semibold text-[#07074D]">
-                      Upload Your Image
-                    </label>
-                    <div className="flex items-center w-full max-w-lg gap-8 p-2 mb-5 overflow-hidden border rounded-md h-36">
-                      <div className="bg-gray-200 rounded-lg">
+                <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+                  <div className="flex items-center mb-4">
+                    <FaInfoCircle className="text-primary mr-2 text-xl" />
+                    <h2 className="text-2xl font-semibold">
+                      Application Information
+                    </h2>
+                  </div>
+
+                  <div className="p-4 bg-blue-50 rounded-md mb-6 border border-blue-200">
+                    <p className="mb-2 font-semibold">
+                      Temporary Application ID:{' '}
+                      <span className="text-primary bg-blue-100 px-2 py-1 rounded">
+                        {state?.formId}
+                      </span>
+                    </p>
+                    <p className="mb-1">
+                      <span className="font-semibold">Important:</span> Ensure
+                      that your photo meets the specifications below.
+                    </p>
+                    <p className="mb-1">
+                      If you're{' '}
+                      <span className="font-semibold">
+                        not ready to upload your photo now
+                      </span>
+                      , you can complete this step later.
+                    </p>
+                    <p>
+                      Note your Temporary Application ID and use the{' '}
+                      <span className="font-bold text-primary">
+                        Save and Temporarily Exit
+                      </span>{' '}
+                      button. You can resume your application using the
+                      "Complete Partially Filled Form" option on the home page.
+                    </p>
+                  </div>
+
+                  {/* Profile Picture Upload */}
+                  <div className="mb-6">
+                    <div className="flex items-center mb-3">
+                      <h3 className="text-lg font-semibold">
+                        Upload Your Profile Picture
+                      </h3>
+                      {uploadedPublicIds.profilePicture && (
+                        <span className="ml-2 text-green-500 flex items-center text-sm">
+                          <FaCheckCircle className="mr-1" /> Uploaded
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="rounded-lg border-2 border-dashed border-gray-300 transition-all hover:border-primary bg-gray-50">
+                      <div className="p-4">
                         <SingleFileUpload
                           id="uploadPicture"
                           name="profilePicture"
@@ -355,7 +405,7 @@ const StepSix = () => {
                             <ErrorMessage
                               name="profilePicture"
                               component="div"
-                              className="text-red-500"
+                              className="text-red-500 mt-1 text-sm"
                             />
                           }
                           accept="image/png, image/jpeg"
@@ -364,186 +414,386 @@ const StepSix = () => {
                           }
                         />
 
-                        <label
-                          htmlFor="uploadPicture"
-                          className="relative flex items-center justify-center rounded-md border border-dashed border-[#e0e0e0] p-12 text-center"
-                        >
-                          <LuImagePlus size={40} className="text-gray-500" />
-                        </label>
+                        {isUploading && activeUpload === 'profilePicture' && (
+                          <div className="mt-2 flex items-center justify-center p-2 bg-blue-50 rounded-md text-primary text-sm">
+                            <ImSpinner2 className="w-4 h-4 animate-spin mr-2" />
+                            <span>Uploading your photo...</span>
+                          </div>
+                        )}
                       </div>
-                      {values.profilePicture ? (
-                        <div className="flex items-center w-full">
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            <div>
-                              <div className="relative overflow-hidden">
-                                {typeof values.profilePicture === 'object' && (
-                                  <Image
-                                    src={URL.createObjectURL(
-                                      values.profilePicture
-                                    )}
-                                    alt={`Uploaded Image`}
-                                    width={100}
-                                    height={100}
-                                  />
-                                )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Document Upload Section */}
+                <div className="bg-white shadow-sm rounded-lg p-4 mb-6">
+                  <div className="flex items-center mb-4">
+                    <h2 className="text-lg font-semibold">
+                      Required Documents
+                    </h2>
+                    <hr className="h-0.5 text-primary bg-primary ml-4 w-16" />
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Passport upload */}
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <h3 className="text-base font-semibold">
+                          Copy of Passport
+                        </h3>
+                        {uploadedPublicIds.passport.length > 0 && (
+                          <span className="ml-2 text-green-500 flex items-center text-sm">
+                            <FaCheckCircle className="mr-1" />
+                            <span>
+                              {uploadedPublicIds.passport.length} file(s)
+                              uploaded
+                            </span>
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="rounded-lg border-2 border-dashed border-gray-300 transition-all hover:border-primary bg-gray-50">
+                        <div className="p-4">
+                          <FileUploadMain
+                            name="passport"
+                            id="passport-upload"
+                            setFieldValue={setFieldValue}
+                            values={values}
+                            errorMessage={
+                              <ErrorMessage
+                                name="passport"
+                                component="div"
+                                className="text-red-500 mt-1 text-sm"
+                              />
+                            }
+                            accept="image/png, image/jpeg"
+                            multiple="multiple"
+                            onFileSelect={file =>
+                              handleImageUpload(file, 'passport')
+                            }
+                          />
+
+                          {!values.passport || values.passport.length === 0 ? (
+                            <label
+                              htmlFor="passport-upload"
+                              className="flex flex-col items-center justify-center h-32 bg-gray-50 rounded-lg cursor-pointer transition-colors hover:bg-gray-100"
+                            >
+                              <div className="text-center">
+                                <div className="mb-2 flex justify-center">
+                                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-50 text-primary">
+                                    <LuImagePlus size={24} />
+                                  </div>
+                                </div>
+                                <h4 className="text-sm font-medium text-gray-700">
+                                  Click to select passport images
+                                </h4>
+                                <p className="text-xs text-gray-500">
+                                  Multiple pages allowed • JPG, PNG
+                                </p>
+                              </div>
+                            </label>
+                          ) : (
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-sm font-medium text-gray-700">
+                                  Uploaded Files
+                                </h4>
+                                <label
+                                  htmlFor="passport-upload"
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-md cursor-pointer hover:bg-primary/90 transition-colors text-sm"
+                                >
+                                  <LuImagePlus size={16} />
+                                  <span>Add More</span>
+                                </label>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                {values.passport.map((file, index) => (
+                                  <div
+                                    key={index}
+                                    className="bg-white p-2 rounded-md border border-gray-200 flex items-center gap-2"
+                                  >
+                                    <div className="w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center">
+                                      <LuImagePlus
+                                        size={18}
+                                        className="text-gray-400"
+                                      />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium text-gray-900 truncate">
+                                        {typeof file === 'object'
+                                          ? file.name
+                                          : `File ${index + 1}`}
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        {typeof file === 'object'
+                                          ? `${(file.size / 1024).toFixed(
+                                              1
+                                            )} KB`
+                                          : 'Uploaded'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
                             </div>
+                          )}
+
+                          {isUploading && activeUpload === 'passport' && (
+                            <div className="mt-2 flex items-center justify-center p-2 bg-blue-50 rounded-md text-primary text-sm">
+                              <ImSpinner2 className="w-4 h-4 animate-spin mr-2" />
+                              <span>Uploading passport document...</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Business visa specific documents */}
+                    {visaService === 'eBUSINESS VISA' && (
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <h3 className="text-base font-semibold">
+                            Business Card
+                          </h3>
+                          {uploadedPublicIds.businessCard.length > 0 && (
+                            <span className="ml-2 text-green-500 flex items-center text-sm">
+                              <FaCheckCircle className="mr-1" />
+                              <span>
+                                {uploadedPublicIds.businessCard.length} file(s)
+                                uploaded
+                              </span>
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="rounded-lg border-2 border-dashed border-gray-300 transition-all hover:border-primary bg-gray-50">
+                          <div className="p-4">
+                            <FileUploadMain
+                              name="businessCard"
+                              id="business-card-upload"
+                              setFieldValue={setFieldValue}
+                              values={values}
+                              errorMessage={
+                                <ErrorMessage
+                                  name="businessCard"
+                                  component="div"
+                                  className="text-red-500 mt-1 text-sm"
+                                />
+                              }
+                              accept="image/png, image/jpeg"
+                              multiple="multiple"
+                              onFileSelect={file =>
+                                handleImageUpload(file, 'businessCard')
+                              }
+                            />
+
+                            {!values.businessCard ||
+                            values.businessCard.length === 0 ? (
+                              <label
+                                htmlFor="business-card-upload"
+                                className="flex flex-col items-center justify-center h-32 bg-gray-50 rounded-lg cursor-pointer transition-colors hover:bg-gray-100"
+                              >
+                                <div className="text-center">
+                                  <div className="mb-2 flex justify-center">
+                                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-50 text-primary">
+                                      <LuImagePlus size={24} />
+                                    </div>
+                                  </div>
+                                  <h4 className="text-sm font-medium text-gray-700">
+                                    Click to select business card
+                                  </h4>
+                                  <p className="text-xs text-gray-500">
+                                    Multiple images allowed • JPG, PNG
+                                  </p>
+                                </div>
+                              </label>
+                            ) : (
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="text-sm font-medium text-gray-700">
+                                    Uploaded Files
+                                  </h4>
+                                  <label
+                                    htmlFor="business-card-upload"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-md cursor-pointer hover:bg-primary/90 transition-colors text-sm"
+                                  >
+                                    <LuImagePlus size={16} />
+                                    <span>Add More</span>
+                                  </label>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                  {values.businessCard.map((file, index) => (
+                                    <div
+                                      key={index}
+                                      className="bg-white p-2 rounded-md border border-gray-200 flex items-center gap-2"
+                                    >
+                                      <div className="w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center">
+                                        <LuImagePlus
+                                          size={18}
+                                          className="text-gray-400"
+                                        />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                          {typeof file === 'object'
+                                            ? file.name
+                                            : `File ${index + 1}`}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                          {typeof file === 'object'
+                                            ? `${(file.size / 1024).toFixed(
+                                                1
+                                              )} KB`
+                                            : 'Uploaded'}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {isUploading && activeUpload === 'businessCard' && (
+                              <div className="mt-2 flex items-center justify-center p-2 bg-blue-50 rounded-md text-primary text-sm">
+                                <ImSpinner2 className="w-4 h-4 animate-spin mr-2" />
+                                <span>Uploading business card...</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      ) : (
-                        <div className="text-sm">
-                          <p>Choose the Photo To Upload</p>
-                          <p>No file chosen yet</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {/* upload file end  */}
-
-                <div className="py-4 space-y-2 font-medium">
-                  <p>
-                    Temporary Application ID:{' '}
-                    <span className="text-primary">{state?.formId}</span>
-                  </p>
-                  <p>
-                    Kindly ensure that the photo is as per specifications
-                    mentioned below.
-                  </p>
-                  <p>
-                    In case you are{' '}
-                    <span className="font-bold">
-                      not ready for photo upload you can do it later,
-                    </span>
-                    Please note down the
-                  </p>
-                  <p>
-                    Temporary Application ID, close the window and{' '}
-                    <span className="font-bold">Press Save and Exit</span>.
-                  </p>
-                  <p>
-                    You can complete your application later using{' '}
-                    <span className="font-bold">
-                      Complete Partially Filled Dorm
-                    </span>{' '}
-                    option on home page.
-                  </p>
-                </div>
-
-                <div className="py-8">
-                  <div>
-                    <h2 className="text-3xl font-semibold">Upload Documents</h2>
-                    <hr className="h-1 text-primary bg-primary w-36" />
-                  </div>
-
-                  <div className="space-y-2 divide-y-2 divide-primary">
-                    {/* passport upload start  */}
-                    <div className="grid grid-cols-3 py-8 text-sm">
-                      <div>
-                        <b>Document Description</b>
-                        <h2 className="py-4 font-medium">Copy of Passport</h2>
-                      </div>
-                      <div>
-                        <b>Upload File</b>
-                        <FileUploadMain
-                          name="passport"
-                          setFieldValue={setFieldValue}
-                          values={values}
-                          errorMessage={
-                            <ErrorMessage
-                              name="passport"
-                              component="div"
-                              className="text-red-500"
-                            />
-                          }
-                          accept="image/png, image/jpeg"
-                          multiple="multiple"
-                          onFileSelect={file =>
-                            handleImageUpload(file, 'passport')
-                          }
-                        />
-                      </div>
-                    </div>
-                    {/* passport upload end  */}
-
-                    {/* ebusiness visa code start */}
-                    {visaService === 'eBUSINESS VISA' && (
-                      <div className="grid grid-cols-3 py-8 text-sm">
-                        <div>
-                          <b>Business Description</b>
-                          <h2 className="py-4 font-medium">
-                            Copy of Business card
-                          </h2>
-                        </div>
-                        <div>
-                          <b>Upload File</b>
-                          <FileUploadMain
-                            name="businessCard"
-                            setFieldValue={setFieldValue}
-                            values={values}
-                            errorMessage={
-                              <ErrorMessage
-                                name="businessCard"
-                                component="div"
-                                className="text-red-500"
-                              />
-                            }
-                            accept="image/png, image/jpeg"
-                            multiple="multiple"
-                            onFileSelect={file =>
-                              handleImageUpload(file, 'businessCard')
-                            }
-                          />
-                        </div>
                       </div>
                     )}
-                    {/* ebusiness visa code end here */}
 
-                    {/* emedical code start here */}
+                    {/* Medical visa specific documents */}
                     {visaService === 'eMEDICAL VISA' && (
-                      <div className="grid grid-cols-3 py-8 text-sm">
-                        <div>
-                          <b>Medical Description</b>
-                          <h2 className="py-4 font-medium">
-                            Copy of Medical card
-                          </h2>
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <h3 className="text-base font-semibold">
+                            Medical Card
+                          </h3>
+                          {uploadedPublicIds.eMedicalCard.length > 0 && (
+                            <span className="ml-2 text-green-500 flex items-center text-sm">
+                              <FaCheckCircle className="mr-1" />
+                              <span>
+                                {uploadedPublicIds.eMedicalCard.length} file(s)
+                                uploaded
+                              </span>
+                            </span>
+                          )}
                         </div>
-                        <div>
-                          <b>Upload File</b>
-                          <FileUploadMain
-                            name="eMedicalCard"
-                            setFieldValue={setFieldValue}
-                            values={values}
-                            errorMessage={
-                              <ErrorMessage
-                                name="eMedicalCard"
-                                component="div"
-                                className="text-red-500"
-                              />
-                            }
-                            accept="image/png, image/jpeg"
-                            multiple="multiple"
-                            onFileSelect={file =>
-                              handleImageUpload(file, 'eMedicalCard')
-                            }
-                          />
+
+                        <div className="rounded-lg border-2 border-dashed border-gray-300 transition-all hover:border-primary bg-gray-50">
+                          <div className="p-4">
+                            <FileUploadMain
+                              name="eMedicalCard"
+                              id="medical-card-upload"
+                              setFieldValue={setFieldValue}
+                              values={values}
+                              errorMessage={
+                                <ErrorMessage
+                                  name="eMedicalCard"
+                                  component="div"
+                                  className="text-red-500 mt-1 text-sm"
+                                />
+                              }
+                              accept="image/png, image/jpeg"
+                              multiple="multiple"
+                              onFileSelect={file =>
+                                handleImageUpload(file, 'eMedicalCard')
+                              }
+                            />
+
+                            {!values.eMedicalCard ||
+                            values.eMedicalCard.length === 0 ? (
+                              <label
+                                htmlFor="medical-card-upload"
+                                className="flex flex-col items-center justify-center h-32 bg-gray-50 rounded-lg cursor-pointer transition-colors hover:bg-gray-100"
+                              >
+                                <div className="text-center">
+                                  <div className="mb-2 flex justify-center">
+                                    <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-50 text-primary">
+                                      <LuImagePlus size={24} />
+                                    </div>
+                                  </div>
+                                  <h4 className="text-sm font-medium text-gray-700">
+                                    Click to select medical card
+                                  </h4>
+                                  <p className="text-xs text-gray-500">
+                                    Multiple images allowed • JPG, PNG
+                                  </p>
+                                </div>
+                              </label>
+                            ) : (
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="text-sm font-medium text-gray-700">
+                                    Uploaded Files
+                                  </h4>
+                                  <label
+                                    htmlFor="medical-card-upload"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-md cursor-pointer hover:bg-primary/90 transition-colors text-sm"
+                                  >
+                                    <LuImagePlus size={16} />
+                                    <span>Add More</span>
+                                  </label>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                  {values.eMedicalCard.map((file, index) => (
+                                    <div
+                                      key={index}
+                                      className="bg-white p-2 rounded-md border border-gray-200 flex items-center gap-2"
+                                    >
+                                      <div className="w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center">
+                                        <LuImagePlus
+                                          size={18}
+                                          className="text-gray-400"
+                                        />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                          {typeof file === 'object'
+                                            ? file.name
+                                            : `File ${index + 1}`}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                          {typeof file === 'object'
+                                            ? `${(file.size / 1024).toFixed(
+                                                1
+                                              )} KB`
+                                            : 'Uploaded'}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {isUploading && activeUpload === 'eMedicalCard' && (
+                              <div className="mt-2 flex items-center justify-center p-2 bg-blue-50 rounded-md text-primary text-sm">
+                                <ImSpinner2 className="w-4 h-4 animate-spin mr-2" />
+                                <span>Uploading medical card...</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}
-                    {/* emedical code end here */}
                   </div>
                 </div>
 
-                <div className="space-x-4 space-y-4 text-center md:space-y-0">
+                {/* Form Navigation Buttons */}
+                <div className="flex flex-wrap justify-center gap-4 mt-8">
                   <Link href="/visa/step-five/update">
-                    <button className="formbtnBorder">Back</button>
+                    <button className="formbtnBorder px-8 py-3">Back</button>
                   </Link>
+
                   <button
                     type="submit"
                     disabled={isUploading || isSubmitting}
-                    className={`formbtn cursor-pointer inline-flex items-center gap-3 ${
+                    className={`formbtn px-8 py-3 inline-flex items-center gap-3 ${
                       isUploading || isSubmitting
-                        ? 'cursor-not-allowed opacity-50'
+                        ? 'cursor-not-allowed opacity-70'
                         : ''
                     }`}
                   >
@@ -556,17 +806,17 @@ const StepSix = () => {
                         <ImSpinner2 className="animate-spin" /> Submitting...
                       </>
                     ) : (
-                      'Next'
+                      'Continue to Next Step'
                     )}
                   </button>
-                  {/* save and temporary exit button  */}
+
                   <button
                     disabled={
                       temporaryExitUpdateMutation.isPending || isUploading
                     }
-                    className={`formbtnDark cursor-pointer inline-flex items-center gap-3 ${
+                    className={`formbtnDark px-8 py-3 inline-flex items-center gap-3 ${
                       temporaryExitUpdateMutation.isPending || isUploading
-                        ? 'cursor-not-allowed opacity-50'
+                        ? 'cursor-not-allowed opacity-70'
                         : ''
                     }`}
                     type="button"
@@ -574,7 +824,7 @@ const StepSix = () => {
                   >
                     {temporaryExitUpdateMutation.isPending ? (
                       <>
-                        <ImSpinner2 className="animate-spin" /> Loading
+                        <ImSpinner2 className="animate-spin" /> Saving...
                       </>
                     ) : (
                       'Save and Temporarily Exit'
@@ -591,6 +841,4 @@ const StepSix = () => {
       </>
     );
   }
-};
-
-export default StepSix;
+}

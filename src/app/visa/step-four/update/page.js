@@ -25,6 +25,7 @@ import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
 import PhoneInputField from '@/components/common/PhoneInputField';
 import MultiReactSelectFormik from '@/components/india/MultiReactSelectFormik';
 import { BsFillQuestionCircleFill, BsQuestionCircleFill } from 'react-icons/bs';
+import MultiSelectField from '@/components/common/MultiSelectField';
 
 const StepFour = () => {
   const { state } = useFormContext();
@@ -144,6 +145,15 @@ const StepFour = () => {
           <Formik
             initialValues={{
               ...cleanedStep4Data,
+              countryVisitedInLast10Years:
+                cleanedStep4Data.countryVisitedInLast10Years
+                  ? cleanedStep4Data.countryVisitedInLast10Years.map(
+                      country => ({
+                        label: country,
+                        value: country,
+                      })
+                    )
+                  : [],
               visaService: step1Data.data ? step1Data.data.visaService : '',
               portOfArrival: step1Data.data ? step1Data.data.portOfArrival : '',
               durationOfVisa: getDurationOfVisa(
@@ -1431,7 +1441,7 @@ const StepFour = () => {
                               <label className="form-label">
                                 Countries Visited in last 10 years
                                 <div className="relative group">
-                                  <BsFillQuestionCircleFill
+                                  <BsQuestionCircleFill
                                     className="text-primary info-icon"
                                     size={20}
                                   />
@@ -1443,29 +1453,22 @@ const StepFour = () => {
                               </label>
 
                               <div className="input-error-wrapper">
-                                <Select
+                                <MultiSelectField
                                   defaultValue={values.countryVisitedInLast10Years?.map(
                                     value => ({
                                       label: value,
                                       value: value,
                                     })
                                   )}
-                                  isMulti
                                   name="countryVisitedInLast10Years"
+                                  placeholder="Select countries"
+                                  required={true}
                                   options={Country?.getAllCountries()?.map(
                                     country => ({
                                       value: country?.name,
                                       label: country?.name,
                                     })
                                   )}
-                                  className="basic-multi-select"
-                                  classNamePrefix="select"
-                                  onChange={value => {
-                                    setFieldValue(
-                                      'countryVisitedInLast10Years',
-                                      value
-                                    );
-                                  }}
                                 />
                               </div>
                             </div>
@@ -1673,8 +1676,8 @@ const StepFour = () => {
                       </div>
                       <div className="hidden col-span-4 px-4 py-3 border-2 bg-primary/10 border-primary/60 rounded-xl md:block">
                         <h2 className="sidetext py- ">
-                          Have you visited “South Asian Association for Regional
-                          Cooperation” (SAARC) countries (expect your own
+                          Have you visited "South Asian Association for Regional
+                          Cooperation" (SAARC) countries (expect your own
                           country) during last 3 years? Yes/No
                         </h2>
 

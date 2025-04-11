@@ -3,7 +3,7 @@ import PhoneInputField from '@/components/common/PhoneInputField';
 import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
 import SelectField from '@/components/common/SelectField';
 import TextInputField from '@/components/common/TextInputField';
-import MultiReactSelectFormik from '@/components/india/MultiReactSelectFormik';
+import MultiSelectField from '@/components/common/MultiSelectField';
 import BannerPage from '@/components/india/common/BannerPage';
 import SavedFormId from '@/components/india/common/SavedFormId';
 import {
@@ -1452,18 +1452,17 @@ export default function StepFour() {
                             </label>
 
                             <div className="input-error-wrapper">
-                              <MultiReactSelectFormik
+                              <MultiSelectField
+                                label="Countries Visited in last 10 years"
+                                name="countryVisitedInLast10Years"
+                                placeholder="Select countries"
+                                required={true}
                                 options={Country?.getAllCountries()?.map(
                                   country => ({
                                     value: country?.name,
                                     label: country?.name,
                                   })
                                 )}
-                                value={values.countryVisitedInLast10Years}
-                                onChange={setFieldValue}
-                                onBlur={setFieldTouched}
-                                error={errors.countryVisitedInLast10Years}
-                                touched={touched.countryVisitedInLast10Years}
                               />
                             </div>
                           </div>
@@ -1696,8 +1695,8 @@ export default function StepFour() {
                     </div>
                     <div className="hidden col-span-4 px-4 py-3 border-2 bg-primary/10 border-primary/60 rounded-xl md:block">
                       <h2 className="sidetext py- ">
-                        Have you visited “South Asian Association for Regional
-                        Cooperation” (SAARC) countries (expect your own country)
+                        Have you visited "South Asian Association for Regional
+                        Cooperation" (SAARC) countries (expect your own country)
                         during last 3 years? Yes/No
                       </h2>
 
