@@ -6,14 +6,28 @@ import apiEndpoint from '@/services/apiEndpoint';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 import { ImSpinner2 } from 'react-icons/im';
 import { CldImage } from 'next-cloudinary';
+import { format } from 'date-fns';
+import Loading from '@/components/india/common/Loading';
+import useUpdate from '@/hooks/useUpdate';
 
 const StepSeven = () => {
+  const pathName = usePathname();
   const { state } = useFormContext();
   const router = useRouter();
+
+  const formatDate = dateString => {
+    if (!dateString) return '';
+    try {
+      return format(new Date(dateString), 'dd/MM/yyyy');
+    } catch (error) {
+      return dateString;
+    }
+  };
+
   const {
     isPending,
     error,
@@ -26,6 +40,20 @@ const StepSeven = () => {
       axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
     enabled: !!state.formId,
   });
+  const temporaryExitUpdateMutation = useUpdate(
+    apiEndpoint.UPDATE_VISA_ADD_STEP1_LAST_EXIT_STEP_URL,
+    state.formId,
+    'temporary step 7 saved successfully',
+    '/',
+    refetch
+  );
+
+  const handleTemporaryExit = () => {
+    temporaryExitUpdateMutation.mutate({
+      lastExitStepUrl: pathName,
+    });
+    localStorage.clear();
+  };
 
   if (getAllStepsDataIsSuccess) {
     const { step1Data, step2Data, step3Data, step4Data, step5Data, step6Data } =
@@ -81,162 +109,11 @@ const StepSeven = () => {
                 height="100"
                 className="rounded-md"
                 src={`${step6Data?.profilePicture}`}
-                // src={`visa-images/ygvdlenxytq4q2ybl9ge`}
                 sizes="100vw"
                 alt="profile image"
               />
             ) : null}
-            {/* <Image
-              src={step6Data.profilePicture}
-              width={140}
-              height={100}
-              className="object-cover"
-              alt="profile picture"
-            /> */}
           </div>
-
-          {/* <div className="px-4 pt-5">
-            <h2 className="text-3xl font-semibold">Detail</h2>
-            <hr className="w-full h-1 text-primary bg-primary" />
-            <div className="space-y-2 divide-y-[1px] pt-5">
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  Application Type
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.applicationType}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  Nationality Region
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.nationalityRegion}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  Passport Type
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.passportType}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  Port Of Arrival
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.portOfArrival}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  Date Of Birth
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.dateOfBirth}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  Email Id
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.emailId}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  Contact No
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.contactNo}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  Visa Service
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.visaService}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  eTouristVisa
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.eTouristVisa}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  eTouristVisa30Days
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.eTouristVisa30Days}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  eTouristVisa1Year
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.eTouristVisa1Year}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  eTouristVisa5Years
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.eTouristVisa5Years}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  eMedicalVisa
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.eMedicalVisa}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  eBusinessVisa
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.eBusinessVisa}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  eConference Visa
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.eConferenceVisa}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  eMedicalAttendantVisa
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.eMedicalAttendantVisa}
-                </p>
-              </div>
-              <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
-                <h2 className="py-1 text-sm font-semibold text-secondary">
-                  expectedDateOfArrival
-                </h2>
-                <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.expectedDateOfArrival}
-                </p>
-              </div>
-            </div>
-          </div> */}
 
           <div className="px-4 pt-5">
             <h2 className="text-3xl font-semibold">Applicant Detail</h2>
@@ -290,7 +167,7 @@ const StepSeven = () => {
                   Date of Birth*
                 </h2>
                 <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step1Data?.dateOfBirth}
+                  {formatDate(step1Data?.dateOfBirth)}
                 </p>
               </div>
               <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
@@ -405,7 +282,7 @@ const StepSeven = () => {
                   Date of Issue *
                 </h2>
                 <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step2Data?.dateOfIssue}
+                  {formatDate(step2Data?.dateOfIssue)}
                 </p>
               </div>
               <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
@@ -413,7 +290,7 @@ const StepSeven = () => {
                   Date of Expiry *
                 </h2>
                 <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                  {step2Data?.dateOfExpiry}
+                  {formatDate(step2Data?.dateOfExpiry)}
                 </p>
               </div>
               <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
@@ -447,7 +324,7 @@ const StepSeven = () => {
                       Date of Issue*
                     </h2>
                     <p className="font-bold leading-relaxed tracking-wide text-justify capitalize ">
-                      {step2Data?.dateOfIssuePassportIC}
+                      {formatDate(step2Data?.dateOfIssuePassportIC)}
                     </p>
                   </div>
                   <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
@@ -573,7 +450,7 @@ const StepSeven = () => {
           </div>
 
           <div className="px-4 pt-10">
-            <h2 className="text-3xl font-semibold">Father’s Details</h2>
+            <h2 className="text-3xl font-semibold">Father's Details</h2>
             <hr className="w-full h-1 text-primary bg-primary" />
             <div className="space-y-2 divide-y-[1px] pt-5">
               <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
@@ -619,7 +496,7 @@ const StepSeven = () => {
             </div>
           </div>
           <div className="px-4 pt-10">
-            <h2 className="text-3xl font-semibold">Mother’s Details</h2>
+            <h2 className="text-3xl font-semibold">Mother's Details</h2>
             <hr className="w-full h-1 text-primary bg-primary" />
             <div className="space-y-2 divide-y-[1px] pt-5">
               <div className="grid pt-5 md:items-center md:justify-between md:grid-cols-2 md:space-x-20 md:pt-0 ">
@@ -1828,8 +1705,23 @@ const StepSeven = () => {
               </button>
             </Link>
             {/* save and temporary exit button  */}
-            <button className="formbtnDark" type="button">
-              Save and Temporarily Exit
+            <button
+              disabled={temporaryExitUpdateMutation.isPending}
+              className={`formbtnDark px-8 py-3 inline-flex items-center gap-3 ${
+                temporaryExitUpdateMutation.isPending
+                  ? 'cursor-not-allowed opacity-70'
+                  : ''
+              }`}
+              type="button"
+              onClick={handleTemporaryExit}
+            >
+              {temporaryExitUpdateMutation.isPending ? (
+                <>
+                  <ImSpinner2 className="animate-spin" /> Saving...
+                </>
+              ) : (
+                'Save and Temporarily Exit'
+              )}
             </button>
           </div>
         </div>
@@ -1837,12 +1729,7 @@ const StepSeven = () => {
     );
   }
   if (isPending) {
-    return (
-      <div className="flex justify-center flex-1 h-full pt-20 md:items-center">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

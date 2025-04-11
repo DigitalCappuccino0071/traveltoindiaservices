@@ -87,7 +87,7 @@ const StepEight = () => {
   const handlePayLater = () => {
     paymentUpdateMutation.mutate({
       lastExitStepUrl: pathName,
-      visaStatus: 'pending payment',
+      visaStatus: 'hold on',
     });
   };
 
