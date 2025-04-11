@@ -30,17 +30,18 @@ const StepTwo = () => {
   const router = useRouter();
 
   const {
-    isPending,
-    error,
-    data: step1Data,
-    isSuccess: getStep1DataIsSuccess,
+    isPending: getAllStepsDataIsPending,
+    error: getAllStepsDataError,
+    data: getAllStepsData,
+    isSuccess: getAllStepsDataIsSuccess,
     refetch,
   } = useQuery({
-    queryKey: ['getStep1Data'],
+    queryKey: ['getAllStepsDataStep3'],
     queryFn: () =>
-      axiosInstance.get(`${apiEndpoint.GET_VISA_STEP1_BY_ID}${state.formId}`),
+      axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
     enabled: !!state.formId,
   });
+
   const postMutation = usePost(
     apiEndpoint.VISA_ADD_STEP2,
     2,
@@ -63,11 +64,11 @@ const StepTwo = () => {
     localStorage.clear();
   };
 
-  if (error) {
+  if (getAllStepsDataError) {
     return router.push('/visa/step-one');
   }
 
-  if (isPending) {
+  if (getAllStepsDataIsPending) {
     return (
       <div className="flex items-center justify-center flex-1 h-full pt-20">
         <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
@@ -76,14 +77,13 @@ const StepTwo = () => {
     );
   }
 
-  if (getStep1DataIsSuccess) {
-    if (!step1Data?.data?.step2) {
+  if (getAllStepsDataIsSuccess) {
+    if (!getAllStepsData?.data?.step2Data) {
       return router.push('/visa/step-one');
     }
-    if (step1Data?.data?.step2) {
+    if (getAllStepsData?.data?.step2Data) {
       return router.push('/visa/step-two/update');
     }
-
     return (
       <>
         <BannerPage heading="Applicant Detail Form" />
@@ -91,9 +91,11 @@ const StepTwo = () => {
         <Formik
           initialValues={{
             ...step2ValidationSchema.initialValues,
-            dateOfBirth: step1Data.data ? step1Data.data.dateOfBirth : '',
-            nationalityRegion: step1Data.data
-              ? step1Data.data.nationalityRegion
+            dateOfBirth: getAllStepsData.data
+              ? getAllStepsData.data.step1Data.dateOfBirth
+              : '',
+            nationalityRegion: getAllStepsData.data
+              ? getAllStepsData.data.step1Data.nationalityRegion
               : '',
           }}
           validationSchema={step2ValidationSchema.yupSchema}

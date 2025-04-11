@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ErrorMessage, useField } from 'formik';
+import { FaLock } from 'react-icons/fa';
 
 export default function SelectField({
   label,
@@ -10,9 +11,11 @@ export default function SelectField({
   disabled = false,
   className = '',
   onChange,
+  disabledReason = '',
 }) {
   const [field, meta, helpers] = useField(name);
   const [isTouched, setIsTouched] = useState(false);
+  const [showOptionTooltip, setShowOptionTooltip] = useState(null);
 
   // Validate when value changes
   useEffect(() => {
@@ -52,8 +55,20 @@ export default function SelectField({
       ? 'border-red-500 bg-red-50'
       : isSuccess
       ? 'border-green-500 bg-green-50'
+      : disabled
+      ? 'border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed opacity-75'
       : 'border-gray-300'
   } ${className}`;
+
+  // Handle mouse over for option tooltip
+  const handleOptionMouseOver = optionId => {
+    setShowOptionTooltip(optionId);
+  };
+
+  // Handle mouse out for option tooltip
+  const handleOptionMouseOut = () => {
+    setShowOptionTooltip(null);
+  };
 
   return (
     <div className="select-field-wrapper">
@@ -61,6 +76,9 @@ export default function SelectField({
         <label htmlFor={name} className="block mb-1 text-sm font-medium">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
+          {disabled && (
+            <span className="ml-2 text-gray-500 text-xs italic">(Locked)</span>
+          )}
         </label>
       )}
       <div className="relative">
@@ -72,17 +90,27 @@ export default function SelectField({
           disabled={disabled}
           className={inputClass}
           required={required}
+          aria-disabled={disabled}
         >
           <option value="" disabled>
             {placeholder}
           </option>
           {options.map(option => (
-            <option key={option.value} value={option.value}>
+            <option
+              key={option.value}
+              value={option.value}
+              disabled={option.disabled}
+              className={option.disabled ? 'text-gray-400' : ''}
+              data-disabled={option.disabled ? 'true' : 'false'}
+              data-disabled-reason={option.disabledReason || ''}
+            >
               {option.label}
+              {option.disabled && ' (Unavailable)'}
             </option>
           ))}
         </select>
-        {hasError && (
+
+        {hasError && !disabled && (
           <div className="absolute right-10 top-2.5 text-red-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +126,8 @@ export default function SelectField({
             </svg>
           </div>
         )}
-        {isSuccess && (
+
+        {isSuccess && !disabled && (
           <div className="absolute right-10 top-2.5 text-green-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -114,8 +143,30 @@ export default function SelectField({
             </svg>
           </div>
         )}
+
+        {disabled && (
+          <div className="absolute right-10 top-2.5 text-gray-500">
+            <FaLock className="h-4 w-4" />
+          </div>
+        )}
       </div>
-      {hasError ? (
+
+      {/* Display the disabled reason directly below the field */}
+      {disabled && disabledReason && (
+        <div className="mt-1 text-sm text-amber-600 flex items-start">
+          <FaLock className="w-3 h-3 mt-0.5 mr-1 flex-shrink-0" />
+          <span>{disabledReason}</span>
+        </div>
+      )}
+
+      {/* Helper text to explain disabled options if needed */}
+      {options.some(option => option.disabled) && !disabled && (
+        <div className="mt-1 text-xs text-gray-500 italic">
+          Some options may be unavailable based on your selections
+        </div>
+      )}
+
+      {hasError && !disabled ? (
         <div className="mt-1 text-sm text-red-500">{meta.error}</div>
       ) : (
         <ErrorMessage name={name}>
@@ -124,6 +175,14 @@ export default function SelectField({
           )}
         </ErrorMessage>
       )}
+
+      {/* Style for disabled options */}
+      <style jsx>{`
+        select option[data-disabled='true'] {
+          color: #9ca3af;
+          font-style: italic;
+        }
+      `}</style>
     </div>
   );
 }
