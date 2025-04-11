@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ErrorMessage, useField } from 'formik';
+import { FaLock } from 'react-icons/fa';
 
 export default function TextInputField({
   label,
@@ -10,6 +11,7 @@ export default function TextInputField({
   disabled = false,
   className = '',
   autoComplete,
+  disabledReason = '',
 }) {
   const [field, meta, helpers] = useField(name);
   const [isTouched, setIsTouched] = useState(false);
@@ -54,6 +56,8 @@ export default function TextInputField({
       ? 'border-red-500 bg-red-50'
       : isSuccess
       ? 'border-green-500 bg-green-50'
+      : disabled
+      ? 'border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed opacity-75'
       : isFocused
       ? 'border-primary'
       : 'border-gray-300'
@@ -65,6 +69,9 @@ export default function TextInputField({
         <label htmlFor={name} className="block mb-1 text-sm font-medium">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
+          {disabled && (
+            <span className="ml-2 text-gray-500 text-xs italic">(Locked)</span>
+          )}
         </label>
       )}
       <div className="relative">
@@ -80,8 +87,9 @@ export default function TextInputField({
           placeholder={placeholder}
           required={required}
           autoComplete={autoComplete}
+          aria-disabled={disabled}
         />
-        {hasError && (
+        {hasError && !disabled && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +105,7 @@ export default function TextInputField({
             </svg>
           </div>
         )}
-        {isSuccess && (
+        {isSuccess && !disabled && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -113,8 +121,22 @@ export default function TextInputField({
             </svg>
           </div>
         )}
+        {disabled && (
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <FaLock className="h-4 w-4" />
+          </div>
+        )}
       </div>
-      {hasError ? (
+
+      {/* Display the disabled reason directly below the field */}
+      {disabled && disabledReason && (
+        <div className="mt-1 text-sm text-amber-600 flex items-start">
+          <FaLock className="w-3 h-3 mt-0.5 mr-1 flex-shrink-0" />
+          <span>{disabledReason}</span>
+        </div>
+      )}
+
+      {hasError && !disabled ? (
         <div className="mt-1 text-sm text-red-500">{meta.error}</div>
       ) : (
         <ErrorMessage name={name}>

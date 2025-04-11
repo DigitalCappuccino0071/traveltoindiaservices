@@ -462,7 +462,14 @@ export const step4ValidationSchema = {
     visaType: Yup.string().required('Type of Visa is required'),
     visaService: Yup.string().required('Type of Visa service is required'),
     contactNo: Yup.string()
-      .matches(/^[0-9]{10}$/, 'Phone number must be a valid 10-digit number')
+      .test(
+        'is-valid-phone',
+        'Phone number must be a valid international format',
+        value => {
+          if (!value) return false;
+          return isValidPhoneNumber(value);
+        }
+      )
       .required('Phone number is required'),
     placesToVisit: Yup.string().required('Places to be visited is required'),
     placesToVisit2: Yup.string().required('Places to be visited is required'),
@@ -570,11 +577,15 @@ export const step4ValidationSchema = {
         is: 'eMedicalVisa',
         then: schema =>
           schema
-            .matches(
-              /^[0-9]{10}$/,
-              'Phone number must be a valid 10-digit number'
+            .test(
+              'is-valid-phone',
+              'Phone number must be a valid international format',
+              value => {
+                if (!value) return false;
+                return isValidPhoneNumber(value);
+              }
             )
-            .required('Phone is required'),
+            .required('Phone number is required'),
         otherwise: schema => schema.notRequired(),
       }
     ),
@@ -658,11 +669,15 @@ export const step4ValidationSchema = {
         // is: 'TO SET UP INDUSTRIAL/BUSINESS VENTURE',
         then: schema =>
           schema
-            .matches(
-              /^[0-9]{10}$/,
-              'Phone number must be a valid 10-digit number'
+            .test(
+              'is-valid-phone',
+              'Phone number must be a valid international format',
+              value => {
+                if (!value) return false;
+                return isValidPhoneNumber(value);
+              }
             )
-            .required('Phone is required'),
+            .required('Phone number is required'),
         otherwise: schema => schema.notRequired(),
       }
     ),
@@ -737,11 +752,15 @@ export const step4ValidationSchema = {
         },
         then: schema =>
           schema
-            .matches(
-              /^[0-9]{10}$/,
-              'Phone number must be a valid 10-digit number'
+            .test(
+              'is-valid-phone',
+              'Phone number must be a valid international format',
+              value => {
+                if (!value) return false;
+                return isValidPhoneNumber(value);
+              }
             )
-            .required('Phone is required'),
+            .required('Phone number is required'),
         otherwise: schema => schema.notRequired(),
       }
     ),
@@ -813,11 +832,15 @@ export const step4ValidationSchema = {
         is: 'CONDUCTING TOURS',
         then: schema =>
           schema
-            .matches(
-              /^[0-9]{10}$/,
-              'Phone number must be a valid 10-digit number'
+            .test(
+              'is-valid-phone',
+              'Phone number must be a valid international format',
+              value => {
+                if (!value) return false;
+                return isValidPhoneNumber(value);
+              }
             )
-            .required('Phone is required'),
+            .required('Phone number is required'),
         otherwise: schema => schema.notRequired(),
       }
     ),
@@ -963,11 +986,15 @@ export const step4ValidationSchema = {
         is: 'eConferenceVisa',
         then: schema =>
           schema
-            .matches(
-              /^[0-9]{10}$/,
-              'Phone number must be a valid 10-digit number'
+            .test(
+              'is-valid-phone',
+              'Phone number must be a valid international format',
+              value => {
+                if (!value) return false;
+                return isValidPhoneNumber(value);
+              }
             )
-            .required('Phone is required'),
+            .required('Phone number is required'),
         otherwise: schema => schema.notRequired(),
       }
     ),
@@ -1007,17 +1034,31 @@ export const step4ValidationSchema = {
     referenceDistrict: Yup.string().required('District is required'),
 
     referencePhone: Yup.string()
-      .matches(/^[0-9]{10}$/, 'Phone number must be a valid 10-digit number')
-      .required('Phone is required'),
+      .test(
+        'is-valid-phone',
+        'Phone number must be a valid international format',
+        value => {
+          if (!value) return false;
+          return isValidPhoneNumber(value);
+        }
+      )
+      .required('Phone number is required'),
     referenceNameInHomeCountry: Yup.string().required(
-      'Reference Name in France is required'
+      'Reference Name in Home Country is required'
     ),
     referenceAddressInHomeCountry: Yup.string().required(
       'Address in France is required'
     ),
     referencePhoneInHomeCountry: Yup.string()
-      .matches(/^[0-9]{10}$/, 'Phone number must be a valid 10-digit number')
-      .required('Phone is required'),
+      .test(
+        'is-valid-phone',
+        'Phone number must be a valid international format',
+        value => {
+          if (!value) return false;
+          return isValidPhoneNumber(value);
+        }
+      )
+      .required('Phone number is required'),
   }),
   initialValues: {
     lastExitStepUrl: '',
@@ -1172,11 +1213,15 @@ export const step6ValidationSchemaMedicalBusiness = {
           hospitalName: Yup.string().required(),
           hospitalAddress: Yup.string().required(),
           hospitalNumber: Yup.string()
-            .matches(
-              /^[0-9]{10}$/,
-              'Phone number must be a valid 10-digit number'
+            .test(
+              'is-valid-phone',
+              'Phone number must be a valid international format',
+              value => {
+                if (!value) return false;
+                return isValidPhoneNumber(value);
+              }
             )
-            .required('Phone is required'),
+            .required('Phone number is required'),
         })
       ),
     eBusinessVisa: Yup.array()
@@ -1193,11 +1238,15 @@ export const step6ValidationSchemaMedicalBusiness = {
           companyName: Yup.string().required(),
           companyAddress: Yup.string().required(),
           companyNumber: Yup.string()
-            .matches(
-              /^[0-9]{10}$/,
-              'Phone number must be a valid 10-digit number'
+            .test(
+              'is-valid-phone',
+              'Phone number must be a valid international format',
+              value => {
+                if (!value) return false;
+                return isValidPhoneNumber(value);
+              }
             )
-            .required('Phone is required'),
+            .required('Phone number is required'),
         })
       ),
   }),

@@ -19,6 +19,12 @@ import axiosInstance from '@/services/api';
 import { useFormContext } from '@/context/formContext';
 import apiEndpoint from '@/services/apiEndpoint';
 import SavedFormId from '@/components/india/common/SavedFormId';
+import TextInputField from '@/components/common/TextInputField';
+import SelectField from '@/components/common/SelectField';
+import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
+import PhoneInputField from '@/components/common/PhoneInputField';
+import MultiReactSelectFormik from '@/components/india/MultiReactSelectFormik';
+import { BsFillQuestionCircleFill, BsQuestionCircleFill } from 'react-icons/bs';
 
 const StepFour = () => {
   const { state } = useFormContext();
@@ -187,95 +193,71 @@ const StepFour = () => {
                       </h2>
                       <hr className="h-1 text-primary bg-primary w-36" />
                     </div>
-                    <div className="grid grid-cols-12 gap-8 ">
+                    <div className="grid gap-8 md:grid-cols-12 ">
                       <div className="col-span-8">
                         <div>
                           <div className="formMain">
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Type of Visa*
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <TextInputField
+                                  label="Type of Visa"
                                   name="visaType"
-                                  className="form-input input-disabled"
+                                  placeholder="Enter type of visa"
+                                  required={true}
                                   disabled={true}
                                 />
-                                <ErrorMessage
-                                  name="visaType"
-                                  component="div"
-                                  className="text-red-600"
-                                />
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Visa Service*
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <TextInputField
+                                  label="Type of Visa Service"
                                   name="visaService"
-                                  className="form-input input-disabled"
+                                  placeholder="Enter type of visa service"
+                                  required={true}
                                   disabled={true}
                                 />
-                                <ErrorMessage
-                                  name="visaService"
-                                  component="div"
-                                  className="text-red-600"
-                                />
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label" htmlFor="mobileNo">
-                                Contact No.
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  id="contactNo"
-                                  name="contactNo"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="contactNo"
-                                  component="div"
-                                  className="text-red-500"
-                                />
+                                <Field name="contactNo">
+                                  {({ field, form }) => (
+                                    <PhoneInputField
+                                      label="Contact No."
+                                      name="contactNo"
+                                      placeholder="Enter contact number"
+                                      value={field.value}
+                                      onChange={value => {
+                                        form.setFieldValue(field.name, value);
+                                      }}
+                                      onBlur={field.onBlur}
+                                      error={form.errors.contactNo}
+                                      touched={form.touched.contactNo}
+                                      required={true}
+                                      form={form}
+                                    />
+                                  )}
+                                </Field>
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Places to be visited*
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <TextInputField
+                                  label="Places to be visited"
                                   name="placesToVisit"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="placesToVisit"
-                                  component="div"
-                                  className="text-red-600"
+                                  placeholder="Enter places to be visited"
+                                  required={true}
                                 />
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Places to be visited 2
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <TextInputField
+                                  label="Places to be visited"
                                   name="placesToVisit2"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="placesToVisit2"
-                                  component="div"
-                                  className="text-red-600"
+                                  placeholder="Enter places to be visited"
+                                  required={true}
                                 />
                               </div>
                             </div>
@@ -321,70 +303,42 @@ const StepFour = () => {
                             {values.bookedHotel === 'yes' && (
                               <>
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Name of the tour operator
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
+                                    <TextInputField
+                                      label="Name of the tour operator"
                                       name="bookedHotelTourOperatorName"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="bookedHotelTourOperatorName"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter name of the tour operator"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Address of the tour operator
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
+                                    <TextInputField
+                                      label="Address of the tour operator"
                                       name="bookedHotelTourOperatorAddress"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="bookedHotelTourOperatorAddress"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter address of the tour operator"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Name of Hotel/Resort etc.
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
+                                    <TextInputField
+                                      label="Name of the hotel/resort"
                                       name="bookedHotelName"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="bookedHotelName"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter name of the hotel/resort"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Place/City of Hotel/Resort etc.
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
+                                    <TextInputField
+                                      label="Place of stay"
                                       name="bookedHotelPlace"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="bookedHotelPlace"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter place of stay"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
@@ -393,89 +347,54 @@ const StepFour = () => {
                             {/* hotel resorts code end here */}
 
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Duration of Visa
-                              </label>
-                              <Field
-                                type="text"
+                              <TextInputField
+                                label="Duration of Visa"
                                 name="durationOfVisa"
-                                className="form-input input-disabled"
+                                placeholder="Enter duration of visa"
                                 disabled={true}
-                              />
-                              <ErrorMessage
-                                name="durationOfVisa"
-                                component="div"
-                                className="text-red-600"
+                                required={true}
                               />
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                No. of Entries
-                              </label>
-                              <Field
-                                type="text"
+                              <TextInputField
+                                label="Number of Entries"
                                 name="numberOfEntries"
-                                className="form-input input-disabled"
+                                placeholder="Enter number of entries"
                                 disabled={true}
-                              />
-                              <ErrorMessage
-                                name="numberOfEntries"
-                                component="div"
-                                className="text-red-600"
+                                required={true}
                               />
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Port of Arrival in India*
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <TextInputField
+                                  label="Port of Arrival in India"
                                   name="portOfArrival"
-                                  className="form-input input-disabled"
+                                  placeholder="Enter port of arrival"
                                   disabled={true}
-                                />
-                                <ErrorMessage
-                                  name="portOfArrival"
-                                  component="div"
-                                  className="text-red-600"
+                                  required={true}
                                 />
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Expected Port of Exit from India
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
+                                <SelectField
+                                  label="Expected Port of Exit"
                                   name="expectedPortOfExit"
-                                  component="select"
-                                  className="p-2 border rounded select-input"
-                                >
-                                  <option value="">Select </option>
-
-                                  {airportsSeaports.map(
-                                    (airportSeaport, index) => (
-                                      <option
-                                        key={index}
-                                        value={airportSeaport}
-                                      >
-                                        {airportSeaport}
-                                      </option>
-                                    )
+                                  placeholder="Select Expected Port of Exit"
+                                  required={true}
+                                  options={airportsSeaports?.map(
+                                    airportSeaport => ({
+                                      value: airportSeaport,
+                                      label: airportSeaport,
+                                    })
                                   )}
-                                </Field>
-                                <ErrorMessage
-                                  name="expectedPortOfExit"
-                                  component="div"
-                                  className="text-red-600"
                                 />
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col justify-center col-span-4 px-4 pt-10 border-2 bg-primary/10 border-primary/60 rounded-xl">
+                      <div className="flex-col justify-center hidden col-span-4 px-4 pt-10 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
                         <h2 className="py-5 sidetext ">
                           If you intend to visit Protected/Restricted/
                           Cantonment areas, you would require prior permission
@@ -492,7 +411,7 @@ const StepFour = () => {
                       </h2>
                       <hr className="h-1 text-primary bg-primary w-36" />
                     </div>
-                    <div className="grid grid-cols-12 gap-8 ">
+                    <div className="grid gap-8 md:grid-cols-12 ">
                       <div className="col-span-8">
                         <div>
                           <div className="formMain">
@@ -540,121 +459,75 @@ const StepFour = () => {
                             {values.visitedIndiaBefore === 'yes' && (
                               <div className="space-y-4">
                                 <div className="form-input-main-div">
-                                  <label className="form-label">Address*</label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
+                                    <TextInputField
+                                      label="Address of stay during your last visit"
                                       name="visitedIndiaBeforeVisaAddress"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="visitedIndiaBeforeVisaAddress"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter address of stay during your last visit"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Cities previously visited in India*
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      as="textarea"
+                                    <TextInputField
+                                      label="Cities previously visited in India"
                                       name="visitedIndiaBeforeCitiesVisitedInIndia"
-                                      rows="4"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="visitedIndiaBeforeCitiesVisitedInIndia"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter cities previously visited in India"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Last Indian Visa no./Currently valid Indian
-                                    Visa no.*
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
+                                    <TextInputField
+                                      label="Last Indian Visa no./Currently valid Indian Visa no."
                                       name="visitedIndiaBeforeLastIndianVisaNo"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="visitedIndiaBeforeLastIndianVisaNo"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter last Indian Visa no./Currently valid Indian Visa no."
+                                      required={true}
                                     />
                                   </div>
                                 </div>
 
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Type of Visa*
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      component="select"
-                                      id="visitedIndiaBeforeTypeOfVisa"
+                                    <SelectField
+                                      label="Type of Visa"
                                       name="visitedIndiaBeforeTypeOfVisa"
-                                      className="p-2 border rounded select-input"
-                                    >
-                                      <option disabled value="">
-                                        Select*
-                                      </option>
-                                      {visaTypesList?.map(visaTypeL => (
-                                        <option
-                                          key={visaTypeL}
-                                          value={visaTypeL}
-                                        >
-                                          {visaTypeL}
-                                        </option>
-                                      ))}
-                                    </Field>
-                                    <ErrorMessage name="visitedIndiaBeforeTypeOfVisa">
-                                      {errorMsg => (
-                                        <div style={{ color: 'red' }}>
-                                          {errorMsg}
-                                        </div>
+                                      placeholder="Select Type of Visa"
+                                      required={true}
+                                      options={visaTypesList?.map(
+                                        visaTypeL => ({
+                                          value: visaTypeL,
+                                          label: visaTypeL,
+                                        })
                                       )}
-                                    </ErrorMessage>
-                                  </div>
-                                </div>
-                                <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Place of Issue*
-                                  </label>
-                                  <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
-                                      name="visitedIndiaBeforePlaceOfIssue"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="visitedIndiaBeforePlaceOfIssue"
-                                      component="div"
-                                      className="text-red-600"
                                     />
                                   </div>
                                 </div>
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Date of Issue*
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="date"
-                                      name="visitedIndiaBeforeDateOfIssue"
-                                      id="visitedIndiaBeforeDateOfIssue"
-                                      className="form-input"
+                                    <TextInputField
+                                      label="Place of Issue"
+                                      name="visitedIndiaBeforePlaceOfIssue"
+                                      placeholder="Enter place of issue"
+                                      required={true}
                                     />
-                                    <ErrorMessage
+                                  </div>
+                                </div>
+                                <div className="form-input-main-div">
+                                  <div className="input-error-wrapper">
+                                    <ReactDatePickerInput
+                                      className="new-form-input"
                                       name="visitedIndiaBeforeDateOfIssue"
-                                      component="div"
-                                      className="text-red-600"
+                                      selected={
+                                        values.visitedIndiaBeforeDateOfIssue
+                                      }
+                                      setFieldValue={setFieldValue}
+                                      maxDate={new Date()}
+                                      variant="dob"
+                                      label="Date Of Issue"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
@@ -696,20 +569,14 @@ const StepFour = () => {
 
                             {values.permissionRefused === 'yes' && (
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  If so, when and by whom (Mention Control No.
-                                  and date also)
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="If so, when and by whom (Mention Control No. and
+                                date also)"
                                     name="refusalDetails"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="refusalDetails"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter if so, when and by whom (Mention Control No. and
+                                date also)"
+                                    required={true}
                                   />
                                 </div>
                               </div>
@@ -718,7 +585,7 @@ const StepFour = () => {
                         </div>
                       </div>
                       {values.visitedIndiaBefore === 'yes' && (
-                        <div className="flex flex-col justify-between col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl">
+                        <div className="flex flex-col justify-between col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl md:block">
                           <div>
                             <h2 className="py-5 sidetext ">
                               If yes please give details
@@ -729,12 +596,12 @@ const StepFour = () => {
                           </div>
 
                           <div>
-                            <h2 className="pt-20 sidetext ">
+                            <h2 className="pt-8 sidetext ">
                               Cities in India visited (comma seperated)
                             </h2>
                           </div>
 
-                          <div className="pt-36">
+                          <div className="pt-32">
                             <h2 className="py-5 sidetext">
                               Last Indian visa no. / Currently valid Visa no.
                             </h2>
@@ -774,102 +641,87 @@ const StepFour = () => {
                         <hr className="h-1 text-primary bg-primary w-36" />
                       </div>
 
-                      <div className="grid grid-cols-12 gap-8 ">
+                      <div className="grid gap-8 md:grid-cols-12 ">
                         <div className="col-span-8">
                           <div>
                             <div className="formMain">
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Name of the Hospital where Medical treatment
-                                  is to be carried out
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="Name of the Hospital where Medical treatment is
+                                to be carried out"
                                     name="eMedicalNameOfHospital"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eMedicalNameOfHospital"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Name of the Hospital where Medical treatment is
+                                to be carried out"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Address of Hospital
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="Address of the Hospital where Medical treatment is
+                                to be carried out"
                                     name="eMedicalAddressOfHospital"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eMedicalAddressOfHospital"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Address of the Hospital where Medical treatment is
+                                to be carried out"
+                                    required={true}
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="eMEDICALPhoneOfHospital"
-                                >
-                                  Phone No.
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eMEDICALPhoneOfHospital"
-                                    name="eMedicalPhoneOfHospital"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eMedicalPhoneOfHospital"
-                                    component="div"
-                                    className="text-red-500"
-                                  />
-                                </div>
-                              </div>
-                              <div className="form-input-main-div">
-                                <label className="form-label">State</label>
-                                <div className="input-error-wrapper">
-                                  <Field
-                                    name="eMedicalStateOfHospital"
-                                    component="select"
-                                    className="p-2 border rounded select-input"
-                                  >
-                                    <option value="">Select </option>
-                                    {State?.getStatesOfCountry('IN')?.map(
-                                      (ele, index) => (
-                                        <option key={index} value={ele?.name}>
-                                          {ele?.name}
-                                        </option>
-                                      )
+                                  <Field name="eMedicalPhoneOfHospital">
+                                    {({ field, form }) => (
+                                      <PhoneInputField
+                                        label="Phone No."
+                                        name="eMedicalPhoneOfHospital"
+                                        placeholder="Enter phone number"
+                                        value={field.value}
+                                        onChange={value => {
+                                          form.setFieldValue(field.name, value);
+                                        }}
+                                        onBlur={field.onBlur}
+                                        error={
+                                          form.errors.eMedicalPhoneOfHospital
+                                        }
+                                        touched={
+                                          form.touched.eMedicalPhoneOfHospital
+                                        }
+                                        required={true}
+                                        form={form}
+                                      />
                                     )}
                                   </Field>
-                                  <ErrorMessage
+                                </div>
+                              </div>
+
+                              <div className="form-input-main-div">
+                                <div className="input-error-wrapper">
+                                  <SelectField
+                                    label="State"
                                     name="eMedicalStateOfHospital"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Select State"
+                                    required={true}
+                                    options={State?.getStatesOfCountry(
+                                      'IN'
+                                    )?.map((ele, index) => ({
+                                      value: ele?.name,
+                                      label: ele?.name,
+                                    }))}
                                   />
                                 </div>
                               </div>
-                              <div className="form-input-main-div">
-                                <label className="form-label">District</label>
-                                <div className="input-error-wrapper">
-                                  <Field
-                                    name="eMedicalDistrictOfHospital"
-                                    component="select"
-                                    className="p-2 border rounded select-input"
-                                  >
-                                    <option value="">Select </option>
 
-                                    {City?.getCitiesOfState(
+                              <div className="form-input-main-div">
+                                <div className="input-error-wrapper">
+                                  <SelectField
+                                    label="District"
+                                    name="eMedicalDistrictOfHospital"
+                                    placeholder="Select District"
+                                    required={true}
+                                    options={City?.getCitiesOfState(
                                       'IN',
                                       State?.getStatesOfCountry('IN')
                                         .filter(
@@ -878,44 +730,27 @@ const StepFour = () => {
                                             values?.eMedicalStateOfHospital
                                         )
                                         .map(state => state.isoCode)[0] ?? ''
-                                    )?.map((elecity, indexcity) => (
-                                      <option
-                                        key={indexcity}
-                                        value={elecity?.name}
-                                      >
-                                        {elecity?.name}
-                                      </option>
-                                    ))}
-                                  </Field>
-                                  <ErrorMessage
-                                    name="eMedicalDistrictOfHospital"
-                                    component="div"
-                                    className="text-red-500"
+                                    )?.map((elecity, indexcity) => ({
+                                      value: elecity?.name,
+                                      label: elecity?.name,
+                                    }))}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Type of Medical Treatment required
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eMEDICALtypeOfMedicalTreatment"
+                                  <TextInputField
+                                    label="Type of Medical Treatment required"
                                     name="eMedicalTypeOfMedicalTreatment"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eMedicalTypeOfMedicalTreatment"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Type of Medical Treatment required"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col justify-end col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl">
+                        <div className="flex-col justify-end hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
                           <h2 className="py-6 sidetext ">No. of entries</h2>
                           <h2 className="py-4 sidetext ">
                             Port of arrival in India
@@ -946,81 +781,65 @@ const StepFour = () => {
                         <hr className="h-1 text-primary bg-primary w-36" />
                       </div>
 
-                      <div className="grid grid-cols-12 gap-8 ">
+                      <div className="grid gap-8 md:grid-cols-12 ">
                         <div className="col-span-8">
                           <div>
                             <div className="formMain">
                               <b>Details of the Applicants Company</b>
                               <div className="form-input-main-div">
-                                <label className="form-label">Name</label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="Name"
                                     name="eBusinessCompanyName"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessCompanyName"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Name"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">Address</label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="Address"
                                     name="eBusinessCompanyAddress"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessCompanyAddress"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Address"
+                                    required={true}
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="eBUSINESSCompanyPhone"
-                                >
-                                  Phone No.
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eBUSINESSCompanyPhone"
-                                    name="eBusinessCompanyPhone"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessCompanyPhone"
-                                    component="div"
-                                    className="text-red-500"
-                                  />
+                                  <Field name="eBusinessCompanyPhone">
+                                    {({ field, form }) => (
+                                      <PhoneInputField
+                                        label="Phone No."
+                                        name="eBusinessCompanyPhone"
+                                        placeholder="Enter phone number"
+                                        value={field.value}
+                                        onChange={value => {
+                                          form.setFieldValue(field.name, value);
+                                        }}
+                                        onBlur={field.onBlur}
+                                        error={
+                                          form.errors.eBusinessCompanyPhone
+                                        }
+                                        touched={
+                                          form.touched.eBusinessCompanyPhone
+                                        }
+                                        required={true}
+                                        form={form}
+                                      />
+                                    )}
+                                  </Field>
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="eBUSINESSCompanyWebsite"
-                                >
-                                  Website
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eBUSINESSCompanyWebsite"
+                                  <TextInputField
+                                    label="Website"
                                     name="eBusinessCompanyWebsite"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessCompanyWebsite"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter Website"
+                                    required={true}
                                   />
                                 </div>
                               </div>
@@ -1030,20 +849,12 @@ const StepFour = () => {
                               visaServiceSelectedValue ===
                                 'SALE/PURCHASE/TRADE' ? (
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Natures of Business/ Product
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
-                                      id="eBUSINESSCompanyNatures"
+                                    <TextInputField
+                                      label="Nature of Business"
                                       name="eBusinessCompanyNatures"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="eBusinessCompanyNatures"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter Nature of Business"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
@@ -1056,53 +867,54 @@ const StepFour = () => {
                                   {' '}
                                   <b>Details of Indian Firm</b>
                                   <div className="form-input-main-div">
-                                    <label className="form-label">Name</label>
                                     <div className="input-error-wrapper">
-                                      <Field
-                                        type="text"
-                                        id="eBusinessAttendTechMeetingName"
+                                      <TextInputField
+                                        label="Name"
                                         name="eBusinessAttendTechMeetingName"
-                                        className="form-input"
-                                      />
-                                      <ErrorMessage
-                                        name="eBusinessAttendTechMeetingName"
-                                        component="div"
-                                        className="text-red-600"
+                                        placeholder="Enter Name"
+                                        required={true}
                                       />
                                     </div>
                                   </div>
                                   <div className="form-input-main-div">
-                                    <label className="form-label">
-                                      Address
-                                    </label>
                                     <div className="input-error-wrapper">
-                                      <Field
-                                        type="text"
-                                        id="eBusinessAttendTechMeetingAddress"
+                                      <TextInputField
+                                        label="Address"
                                         name="eBusinessAttendTechMeetingAddress"
-                                        className="form-input"
-                                      />
-                                      <ErrorMessage
-                                        name="eBusinessAttendTechMeetingAddress"
-                                        component="div"
-                                        className="text-red-600"
+                                        placeholder="Enter Address"
+                                        required={true}
                                       />
                                     </div>
                                   </div>
                                   <div className="form-input-main-div">
-                                    <label className="form-label">Phone</label>
                                     <div className="input-error-wrapper">
-                                      <Field
-                                        type="text"
-                                        id="eBusinessAttendTechMeetingPhone"
-                                        name="eBusinessAttendTechMeetingPhone"
-                                        className="form-input"
-                                      />
-                                      <ErrorMessage
-                                        name="eBusinessAttendTechMeetingPhone"
-                                        component="div"
-                                        className="text-red-600"
-                                      />
+                                      <Field name="eBusinessAttendTechMeetingPhone">
+                                        {({ field, form }) => (
+                                          <PhoneInputField
+                                            label="Phone No."
+                                            name="eBusinessAttendTechMeetingPhone"
+                                            placeholder="Enter phone number"
+                                            value={field.value}
+                                            onChange={value => {
+                                              form.setFieldValue(
+                                                field.name,
+                                                value
+                                              );
+                                            }}
+                                            onBlur={field.onBlur}
+                                            error={
+                                              form.errors
+                                                .eBusinessAttendTechMeetingPhone
+                                            }
+                                            touched={
+                                              form.touched
+                                                .eBusinessAttendTechMeetingPhone
+                                            }
+                                            required={true}
+                                            form={form}
+                                          />
+                                        )}
+                                      </Field>
                                     </div>
                                   </div>
                                 </>
@@ -1117,53 +929,31 @@ const StepFour = () => {
                                       representative in India
                                     </label>
                                     <div className="input-error-wrapper">
-                                      <Field
-                                        type="text"
-                                        id="eBusinessRecruitManpowerNamecontactCompanyRepresentative"
+                                      <TextInputField
+                                        label="Name"
                                         name="eBusinessRecruitManpowerNamecontactCompanyRepresentative"
-                                        className="form-input"
-                                      />
-                                      <ErrorMessage
-                                        name="eBusinessRecruitManpowerNamecontactCompanyRepresentative"
-                                        component="div"
-                                        className="text-red-600"
+                                        placeholder="Enter Name"
+                                        required={true}
                                       />
                                     </div>
                                   </div>
                                   <div className="form-input-main-div">
-                                    <label className="form-label">
-                                      Nature of Job for which recruiting
-                                    </label>
                                     <div className="input-error-wrapper">
-                                      <Field
-                                        type="text"
-                                        id="eBusinessRecruitManpowerNatureOfJob"
+                                      <TextInputField
+                                        label="Nature of Job"
                                         name="eBusinessRecruitManpowerNatureOfJob"
-                                        className="form-input"
-                                      />
-                                      <ErrorMessage
-                                        name="eBusinessRecruitManpowerNatureOfJob"
-                                        component="div"
-                                        className="text-red-600"
+                                        placeholder="Enter Nature of Job"
+                                        required={true}
                                       />
                                     </div>
                                   </div>
                                   <div className="form-input-main-div">
-                                    <label className="form-label">
-                                      Places where recruitment is to be
-                                      conducted
-                                    </label>
                                     <div className="input-error-wrapper">
-                                      <Field
-                                        type="text"
-                                        id="eBusinessRecruitManpowerPlacesRecruitmentConducted"
+                                      <TextInputField
+                                        label="Places of Recruitment Conducted"
                                         name="eBusinessRecruitManpowerPlacesRecruitmentConducted"
-                                        className="form-input"
-                                      />
-                                      <ErrorMessage
-                                        name="eBusinessRecruitManpowerPlacesRecruitmentConducted"
-                                        component="div"
-                                        className="text-red-600"
+                                        placeholder="Enter Places of Recruitment Conducted"
+                                        required={true}
                                       />
                                     </div>
                                   </div>
@@ -1173,21 +963,12 @@ const StepFour = () => {
                               {visaServiceSelectedValue ===
                               'PARTICIPATION IN EXHIBITIONS,BUSINESS/TRADE FAIRS' ? (
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Name and address of the exhibition/trade
-                                    fair
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
-                                      id="eBusinessParticipationInExhibitionsNameAndAddress"
+                                    <TextInputField
+                                      label="Name and Address"
                                       name="eBusinessParticipationInExhibitionsNameAndAddress"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="eBusinessParticipationInExhibitionsNameAndAddress"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter Name and Address"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
@@ -1195,15 +976,7 @@ const StepFour = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col justify-end col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl">
-                          <h2 className="py-6 sidetext ">No. of entries</h2>
-                          <h2 className="py-4 sidetext ">
-                            Port of arrival in India
-                          </h2>
-                          <h2 className="py-4 sidetext ">
-                            Expected port of exit from India
-                          </h2>
-                        </div>
+                        <div className="flex-col justify-end hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl"></div>
                       </div>
                     </div>
                   ) : null}
@@ -1219,7 +992,7 @@ const StepFour = () => {
                         <hr className="h-1 text-primary bg-primary w-36" />
                       </div>
 
-                      <div className="grid grid-cols-12 gap-8 ">
+                      <div className="grid gap-8 md:grid-cols-12 ">
                         <div className="col-span-8">
                           <div>
                             <div className="formMain">
@@ -1229,32 +1002,21 @@ const StepFour = () => {
                                   native country
                                 </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="Name and Address"
                                     name="eBusinessConductingToursNameAndAddress"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessConductingToursNameAndAddress"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Name and Address"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Cities to be visited during the tour
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="Cities"
                                     name="eBusinessConductingToursCities"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessConductingToursCities"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Cities"
+                                    required={true}
                                   />
                                 </div>
                               </div>
@@ -1262,72 +1024,57 @@ const StepFour = () => {
                                 Details of the Travel agent/associate in India
                               </b>
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="purposecontactNo"
-                                >
-                                  Name
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eBusinessConductingToursTravelAgencyName"
+                                  <TextInputField
+                                    label="Name"
                                     name="eBusinessConductingToursTravelAgencyName"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessConductingToursTravelAgencyName"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter Name"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="purposecontactNo"
-                                >
-                                  Phone
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eBusinessConductingToursTravelAgencyPhone"
-                                    name="eBusinessConductingToursTravelAgencyPhone"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessConductingToursTravelAgencyPhone"
-                                    component="div"
-                                    className="text-red-500"
-                                  />
+                                  <Field name="eBusinessConductingToursTravelAgencyPhone">
+                                    {({ field, form }) => (
+                                      <PhoneInputField
+                                        label="Phone No."
+                                        name="eBusinessConductingToursTravelAgencyPhone"
+                                        placeholder="Enter phone number"
+                                        value={field.value}
+                                        onChange={value => {
+                                          form.setFieldValue(field.name, value);
+                                        }}
+                                        onBlur={field.onBlur}
+                                        error={
+                                          form.errors
+                                            .eBusinessConductingToursTravelAgencyPhone
+                                        }
+                                        touched={
+                                          form.touched
+                                            .eBusinessConductingToursTravelAgencyPhone
+                                        }
+                                        required={true}
+                                        form={form}
+                                      />
+                                    )}
+                                  </Field>
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="purposecontactNo"
-                                >
-                                  Address
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eBusinessConductingToursTravelAgencyAddress"
+                                  <TextInputField
+                                    label="Address"
                                     name="eBusinessConductingToursTravelAgencyAddress"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eBusinessConductingToursTravelAgencyAddress"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter Address"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col justify-end col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl">
+                        <div className="flex-col justify-end hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
                           <h2 className="py-6 sidetext ">No. of entries</h2>
                           <h2 className="py-4 sidetext ">
                             Port of arrival in India
@@ -1355,33 +1102,21 @@ const StepFour = () => {
                         <hr className="h-1 text-primary bg-primary w-36" />
                       </div>
 
-                      <div className="grid grid-cols-12 gap-8 ">
+                      <div className="grid gap-8 md:grid-cols-12 ">
                         <div className="col-span-8">
                           <div>
                             <div className="formMain">
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Name of the principal e-Medical Visa holder
-                                  (i.e. the patient)
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="Name"
                                     name="eMedicalAttendantNameVisaHolder"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eMedicalAttendantNameVisaHolder"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Name"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="flex items-start py-2 space-x-2">
-                                <label>
-                                  Visa No. / Application id of principal
-                                  e-Medical Visa holder
-                                </label>
                                 <div className="flex space-x-4">
                                   <div className="px-2 space-x-2">
                                     <Field
@@ -1410,20 +1145,12 @@ const StepFour = () => {
                               {values.eMedicalAttendantAppOrVisa ===
                               'visaNo' ? (
                                 <div className="form-input-main-div">
-                                  <label className="form-label">
-                                    Visa number of principal e-Medical Visa
-                                    holder (only on select Visa No.)
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
+                                    <TextInputField
+                                      label="Visa Number"
                                       name="eMedicalAttendantVisaNumberOfVisaHolder"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="eMedicalAttendantVisaNumberOfVisaHolder"
-                                      component="div"
-                                      className="text-red-600"
+                                      placeholder="Enter Visa Number"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
@@ -1432,108 +1159,80 @@ const StepFour = () => {
                               {values.eMedicalAttendantAppOrVisa ===
                               'applicationId' ? (
                                 <div className="form-input-main-div">
-                                  <label
-                                    className="form-label"
-                                    htmlFor="eMEDICALATTENDANTApplicationIdOfVisaHolder"
-                                  >
-                                    Application id of principal e-Medical Visa
-                                    holder (only on select Application id)
-                                  </label>
                                   <div className="input-error-wrapper">
-                                    <Field
-                                      type="text"
-                                      id="eMEDICALATTENDANTApplicationIdOfVisaHolder"
+                                    <TextInputField
+                                      label="Application Id"
                                       name="eMedicalAttendantApplicationIdOfVisaHolder"
-                                      className="form-input"
-                                    />
-                                    <ErrorMessage
-                                      name="eMedicalAttendantApplicationIdOfVisaHolder"
-                                      component="div"
-                                      className="text-red-500"
+                                      placeholder=" Application id of principal e-Medical Visa
+                                  holder (only on select Application id)"
+                                      required={true}
                                     />
                                   </div>
                                 </div>
                               ) : null}
 
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="eMEDICALATTENDANTPassportNumberOfVisaHolder"
-                                >
-                                  Passport number of principal e-Medical Visa
-                                  holder
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eMEDICALATTENDANTPassportNumberOfVisaHolder"
+                                  <TextInputField
+                                    label="Passport Number"
                                     name="eMedicalAttendantPassportNumberOfVisaHolder"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eMedicalAttendantPassportNumberOfVisaHolder"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder=" Passport number of principal e-Medical Visa
+                                holder"
+                                    required={true}
                                   />
                                 </div>
                               </div>
 
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Date of birth of principal e-Medical Visa
-                                  holder
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="date"
-                                    id="eMEDICALATTENDANTDobOfVisaHolder"
+                                  <TextInputField
+                                    label="Date of birth"
                                     name="eMedicalAttendantDobOfVisaHolder"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eMedicalAttendantDobOfVisaHolder"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Date of birth of principal e-Medical Visa holder"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Nationality of principal e-Medical Visa Select
-                                  nationality v holder
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eMEDICALATTENDANTNationalityOfVisaHolder"
+                                  <TextInputField
+                                    label="Nationality"
                                     name="eMedicalAttendantNationalityOfVisaHolder"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eMedicalAttendantNationalityOfVisaHolder"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Nationality of principal e-Medical Visa Select
+                                nationality v holder"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col justify-end col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl">
-                          <h2 className="py-6 sidetext ">No. of entries</h2>
-                          <h2 className="py-4 sidetext ">
-                            Port of arrival in India
-                          </h2>
-                          <h2 className="py-4 sidetext ">
-                            Expected port of exit from India
-                          </h2>
+                        <div className="flex-col justify-between hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
+                          <div>
+                            <h2 className="py-2 sidetext ">
+                              Name of the principal e-Medical Visa holder (i.e.
+                              the patient)
+                            </h2>
+                          </div>
+                          <div>
+                            <h2 className="py-4 sidetext ">
+                              Passport number of principal e-Medical Visa holder
+                            </h2>
+                            <h2 className="py-6 sidetext ">
+                              Date of birth of principal e-Medical Visa holder
+                            </h2>
+                            <h2 className="py-4 sidetext ">
+                              Nationality of principal e-Medical Visa Select
+                              nationality v holder
+                            </h2>
+                          </div>
                         </div>
                       </div>
                     </div>
                   ) : null}
 
                   {/* feilds for visa type--- eMEDICAL ATTENDANT VISA end  */}
-                  {/* feilds for visa type ---confrence visa start  */}
+                  {/* feilds for visa type ---conference visa start  */}
                   {visaServiceSelected === 'eConferenceVisa' ? (
                     <div>
                       <div>
@@ -1546,217 +1245,176 @@ const StepFour = () => {
                         <hr className="h-1 text-primary bg-primary w-36" />
                       </div>
 
-                      <div className="grid grid-cols-12 gap-8 ">
+                      <div className="grid gap-8 md:grid-cols-12 ">
                         <div className="col-span-8">
                           <div>
                             <div className="formMain">
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Name/subject of the conference
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
+                                  <TextInputField
+                                    label="Name of conference"
                                     name="eConferenceNameOfConference"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eConferenceNameOfConference"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Name of conference"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <b>Duration of conference</b>
                               <div className="form-input-main-div">
-                                <label className="form-label">Start date</label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="date"
+                                  <ReactDatePickerInput
+                                    className="new-form-input"
                                     name="eConferenceStartDate"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eConferenceStartDate"
-                                    component="div"
-                                    className="text-red-600"
+                                    selected={values.eConferenceStartDate}
+                                    setFieldValue={setFieldValue}
+                                    label="Start Date"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">End date</label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="date"
+                                  <ReactDatePickerInput
+                                    className="new-form-input"
                                     name="eConferenceEndDate"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eConferenceEndDate"
-                                    component="div"
-                                    className="text-red-600"
+                                    selected={values.eConferenceEndDate}
+                                    setFieldValue={setFieldValue}
+                                    label="End Date"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <b>Venue of conference</b>
                               <div className="form-input-main-div">
-                                <label
-                                  className="form-label"
-                                  htmlFor="eCONFERENCEAddress"
-                                >
-                                  Address
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eCONFERENCEAddress"
+                                  <TextInputField
+                                    label="Address"
                                     name="eConferenceAddress"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eConferenceAddress"
-                                    component="div"
-                                    className="text-red-500"
+                                    placeholder="Enter Address"
+                                    required={true}
                                   />
                                 </div>
                               </div>
-                              <div className="form-input-main-div">
-                                <label className="form-label">State</label>
-                                <div className="input-error-wrapper">
-                                  <Field
-                                    name="eConferenceState"
-                                    component="select"
-                                    className="p-2 border rounded select-input"
-                                  >
-                                    <option value="">Select </option>
-                                    <option value="option1">Option1</option>
-                                  </Field>
-                                  <ErrorMessage
-                                    name="eConferenceState"
-                                    component="div"
-                                    className="text-red-500"
-                                  />
-                                </div>
-                              </div>
-                              <div className="form-input-main-div">
-                                <label className="form-label">District</label>
-                                <div className="input-error-wrapper">
-                                  <Field
-                                    name="eConferenceDistrict"
-                                    component="select"
-                                    className="p-2 border rounded select-input"
-                                  >
-                                    <option value="">Select </option>
 
-                                    <option value="option1">Option1 </option>
-                                  </Field>
-                                  <ErrorMessage
-                                    name="eConferenceDistrict"
-                                    component="div"
-                                    className="text-red-500"
+                              <div className="form-input-main-div">
+                                <div className="input-error-wrapper">
+                                  <SelectField
+                                    name="eConferenceState"
+                                    label="State"
+                                    required={true}
+                                    placeholder="Select"
+                                    options={State?.getStatesOfCountry(
+                                      'IN'
+                                    )?.map((ele, index) => ({
+                                      value: ele?.name,
+                                      label: ele?.name,
+                                    }))}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">Pincode</label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eCONFERENCEPincode"
-                                    name="eConferencePincode"
-                                    className="form-input"
+                                  <SelectField
+                                    disabled={!values?.eConferenceState}
+                                    disabledReason={'Please select state first'}
+                                    name="eConferenceDistrict"
+                                    label="District"
+                                    required={true}
+                                    placeholder="Select"
+                                    options={City?.getCitiesOfState(
+                                      'IN',
+                                      State?.getStatesOfCountry('IN')
+                                        .filter(
+                                          state =>
+                                            state?.name ===
+                                            values?.eConferenceState
+                                        )
+                                        .map(state => state.isoCode)[0] ?? ''
+                                    )?.map((elecity, indexcity) => ({
+                                      value: elecity?.name,
+                                      label: elecity?.name,
+                                    }))}
                                   />
-                                  <ErrorMessage
+                                </div>
+                              </div>
+                              <div className="form-input-main-div">
+                                <div className="input-error-wrapper">
+                                  <TextInputField
+                                    label="Pincode"
                                     name="eConferencePincode"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Pincode"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <b>Details of organizer of conference</b>
                               <div className="form-input-main-div">
-                                <label className="form-label">
-                                  Name of organizer
-                                </label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eCONFERENCENameOfOrganizer"
+                                  <TextInputField
+                                    label="Name of organizer"
                                     name="eConferenceNameOfOrganizer"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eConferenceNameOfOrganizer"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Name of organizer"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">Address</label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eCONFERENCEAddressOfOrganizer"
+                                  <TextInputField
+                                    label="Address"
                                     name="eConferenceAddressOfOrganizer"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eConferenceAddressOfOrganizer"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Address"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">Phone no</label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eCONFERENCEPhoneOfOrganizer"
-                                    name="eConferencePhoneOfOrganizer"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eConferencePhoneOfOrganizer"
-                                    component="div"
-                                    className="text-red-600"
-                                  />
+                                  <Field name="eConferencePhoneOfOrganizer">
+                                    {({ field, form }) => (
+                                      <PhoneInputField
+                                        label="Phone no"
+                                        name="eConferencePhoneOfOrganizer"
+                                        placeholder="Enter phone number"
+                                        value={field.value}
+                                        onChange={value => {
+                                          form.setFieldValue(field.name, value);
+                                        }}
+                                        onBlur={field.onBlur}
+                                        error={
+                                          form.errors
+                                            .eConferencePhoneOfOrganizer
+                                        }
+                                        touched={
+                                          form.touched
+                                            .eConferencePhoneOfOrganizer
+                                        }
+                                        required={true}
+                                        form={form}
+                                      />
+                                    )}
+                                  </Field>
                                 </div>
                               </div>
                               <div className="form-input-main-div">
-                                <label className="form-label">Email id</label>
                                 <div className="input-error-wrapper">
-                                  <Field
-                                    type="text"
-                                    id="eCONFERENCEEmailOfOrganizer"
+                                  <TextInputField
+                                    label="Email"
                                     name="eConferenceEmailOfOrganizer"
-                                    className="form-input"
-                                  />
-                                  <ErrorMessage
-                                    name="eConferenceEmailOfOrganizer"
-                                    component="div"
-                                    className="text-red-600"
+                                    placeholder="Enter Email"
+                                    required={true}
                                   />
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col justify-end col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl">
-                          <h2 className="py-6 sidetext ">No. of entries</h2>
-                          <h2 className="py-4 sidetext ">
-                            Port of arrival in India
-                          </h2>
-                          <h2 className="py-4 sidetext ">
-                            Expected port of exit from India
-                          </h2>
-                        </div>
+                        <div className="flex-col justify-end hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl"></div>
                       </div>
                     </div>
                   ) : null}
 
-                  {/* feilds for visa type ---confrence visa end  */}
+                  {/* feilds for visa type ---conference visa end  */}
 
                   <div>
                     <div>
@@ -1765,13 +1423,23 @@ const StepFour = () => {
                       </h2>
                       <hr className="h-1 text-primary bg-primary w-36" />
                     </div>
-                    <div className="grid grid-cols-12 gap-8 ">
+                    <div className="grid gap-8 md:grid-cols-12 ">
                       <div className="col-span-8">
                         <div>
                           <div className="formMain">
                             <div className="form-input-main-div">
                               <label className="form-label">
                                 Countries Visited in last 10 years
+                                <div className="relative group">
+                                  <BsFillQuestionCircleFill
+                                    className="text-primary info-icon"
+                                    size={20}
+                                  />
+                                  <div className="absolute p-2 text-xs text-white transition-all scale-0 bg-gray-800 rounded -top-12 -right-32 group-hover:scale-100 ">
+                                    Please select countries visited in last 10
+                                    years
+                                  </div>
+                                </div>
                               </label>
 
                               <div className="input-error-wrapper">
@@ -1804,7 +1472,7 @@ const StepFour = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col justify-center col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl">
+                      <div className="flex-col justify-center hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
                         <h2 className="sidetext">
                           If information furnished is found to be incorrect at
                           the time of entry or anything during stay in India,
@@ -1821,7 +1489,7 @@ const StepFour = () => {
                       </h2>
                       <hr className="h-1 text-primary bg-primary w-36" />
                     </div>
-                    <div className="grid grid-cols-12 gap-8 ">
+                    <div className="grid gap-8 md:grid-cols-12 ">
                       <div className="col-span-8">
                         <div>
                           <div className="formMain">
@@ -2003,7 +1671,7 @@ const StepFour = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="col-span-4 px-4 py-3 border-2 bg-primary/10 border-primary/60 rounded-xl">
+                      <div className="hidden col-span-4 px-4 py-3 border-2 bg-primary/10 border-primary/60 rounded-xl md:block">
                         <h2 className="sidetext py- ">
                           Have you visited “South Asian Association for Regional
                           Cooperation” (SAARC) countries (expect your own
@@ -2021,130 +1689,164 @@ const StepFour = () => {
                       <hr className="h-1 text-primary bg-primary w-36" />
                     </div>
 
-                    <div className="grid grid-cols-12 gap-8 ">
+                    <div className="grid gap-8 md:grid-cols-12 ">
                       <div className="col-span-8">
                         <div>
                           <div className="formMain">
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Reference Name in India
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <TextInputField
+                                  label="Reference Name in India"
                                   name="referenceNameInIndia"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="referenceNameInIndia"
-                                  component="div"
-                                  className="text-red-600"
+                                  placeholder="Enter Reference Name in India"
+                                  required={true}
                                 />
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">Address</label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <TextInputField
+                                  label="Reference Address"
                                   name="referenceAddress"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="referenceAddress"
-                                  component="div"
-                                  className="text-red-600"
+                                  placeholder="Enter Reference Address"
+                                  required={true}
                                 />
                               </div>
                             </div>
 
+                            {/* state and district */}
                             <div className="form-input-main-div">
-                              <label className="form-label">Phone*</label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  name="referencePhone"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="referencePhone"
-                                  component="div"
-                                  className="text-red-600"
+                                <SelectField
+                                  label="State"
+                                  name="referenceState"
+                                  placeholder="Select State"
+                                  required={true}
+                                  options={State?.getStatesOfCountry('IN')?.map(
+                                    (ele, index) => ({
+                                      value: ele?.name,
+                                      label: ele?.name,
+                                    })
+                                  )}
                                 />
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">
-                                Reference Name in Home Country*
-                              </label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <SelectField
+                                  disabledReason={'Please select state first'}
+                                  disabled={!values?.referenceState}
+                                  label="District"
+                                  name="referenceDistrict"
+                                  placeholder="Select District"
+                                  required={true}
+                                  options={City?.getCitiesOfState(
+                                    'IN',
+                                    State?.getStatesOfCountry('IN')
+                                      .filter(
+                                        state =>
+                                          state?.name === values?.referenceState
+                                      )
+                                      .map(state => state.isoCode)[0] ?? ''
+                                  )?.map((elecity, indexcity) => ({
+                                    value: elecity?.name,
+                                    label: elecity?.name,
+                                  }))}
+                                />
+                              </div>
+                            </div>
+                            {/* state and district code end here */}
+
+                            <div className="form-input-main-div">
+                              <div className="input-error-wrapper">
+                                <Field name="referencePhone">
+                                  {({ field, form }) => (
+                                    <PhoneInputField
+                                      label="Contact No."
+                                      name="referencePhone"
+                                      placeholder="Enter contact number"
+                                      value={field.value}
+                                      onChange={value => {
+                                        form.setFieldValue(field.name, value);
+                                      }}
+                                      onBlur={field.onBlur}
+                                      error={form.errors.referencePhone}
+                                      touched={form.touched.referencePhone}
+                                      required={true}
+                                      form={form}
+                                    />
+                                  )}
+                                </Field>
+                              </div>
+                            </div>
+                            <div className="form-input-main-div">
+                              <div className="input-error-wrapper">
+                                <TextInputField
+                                  label="Reference Name in Home Country"
                                   name="referenceNameInHomeCountry"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="referenceNameInHomeCountry"
-                                  component="div"
-                                  className="text-red-600"
+                                  placeholder="Enter Reference Name in Home Country"
+                                  required={true}
                                 />
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">Address*</label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
+                                <TextInputField
                                   name="referenceAddressInHomeCountry"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="referenceAddressInHomeCountry"
-                                  component="div"
-                                  className="text-red-600"
+                                  placeholder="Enter Reference Address in Home Country"
+                                  required={true}
+                                  label="Reference Address in Home Country"
                                 />
                               </div>
                             </div>
                             <div className="form-input-main-div">
-                              <label className="form-label">Phone*</label>
                               <div className="input-error-wrapper">
-                                <Field
-                                  type="text"
-                                  name="referencePhoneInHomeCountry"
-                                  className="form-input"
-                                />
-                                <ErrorMessage
-                                  name="referencePhoneInHomeCountry"
-                                  component="div"
-                                  className="text-red-600"
-                                />
+                                <Field name="referencePhoneInHomeCountry">
+                                  {({ field, form }) => (
+                                    <PhoneInputField
+                                      label="Contact No."
+                                      name="referencePhoneInHomeCountry"
+                                      placeholder="Enter contact number"
+                                      value={field.value}
+                                      onChange={value => {
+                                        form.setFieldValue(field.name, value);
+                                      }}
+                                      onBlur={field.onBlur}
+                                      error={
+                                        form.errors.referencePhoneInHomeCountry
+                                      }
+                                      touched={
+                                        form.touched.referencePhoneInHomeCountry
+                                      }
+                                      required={true}
+                                      form={form}
+                                    />
+                                  )}
+                                </Field>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col justify-between col-span-4 px-4 py-6 border-2 bg-primary/10 border-primary/60 rounded-xl">
+                      <div className="flex-col justify-between hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
                         <div>
                           <h2 className="py-4 sidetext">
-                            Reference Name and Address in India
+                            Reference Name in India
                           </h2>
-                        </div>
-
-                        <div className="pt-48">
-                          <h2 className="py-4 sidetext">Phone no.</h2>
-                          <h2 className="py-4 sidetext">
-                            Please mention one contact details in Home Country
-                            to be contracted in case of emergency
-                          </h2>
-
                           <h2 className="py-6 sidetext">
-                            Address of the Referred person
+                            Reference Address in India
                           </h2>
-                        </div>
-
-                        <div>
                           <h2 className="py-4 sidetext">
-                            Phone no. of the Referred Person
+                            Reference number of contact purpose
+                          </h2>
+                          <h2 className="py-6 sidetext">
+                            Reference home country name
+                          </h2>
+                          <h2 className="py-4 sidetext">
+                            Reference home country adress
+                          </h2>
+                          <h2 className="py-6 sidetext">
+                            Reference home country contact number
                           </h2>
                         </div>
                       </div>
