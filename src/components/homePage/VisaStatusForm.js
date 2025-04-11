@@ -24,6 +24,7 @@ export default function VisaStatusForm({ isFormModalOpen, handleFormModal }) {
   const { dispatch } = useFormContext();
   const router = useRouter();
   const [isFormOpen, setFormOpen] = useState(false);
+  const [checkedIds, setCheckedIds] = useState([]);
   const postUserLogin = usePostUserLogin({
     apiEndpointUrl: apiEndpoint.EVISA_USER_LOGIN,
     queryKey: ['make payment for completed form'],
@@ -37,6 +38,11 @@ export default function VisaStatusForm({ isFormModalOpen, handleFormModal }) {
   useEffect(() => {
     localStorage.removeItem('formId');
   }, [dispatch, isFormOpen]);
+
+  const handleCheckAnotherId = () => {
+    postUserLogin.reset();
+    setCheckedIds(prev => [...prev, postUserLogin?.data?.data?.data?._id]);
+  };
 
   return (
     <>
@@ -66,13 +72,33 @@ export default function VisaStatusForm({ isFormModalOpen, handleFormModal }) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-                  <div className="px-4 pt-3 pb-4 -mx-4 ">
+                  <div className="px-4 pt-3 pb-4 -mx-4">
                     <div className="max-w-xl mx-auto">
-                      <h2 className="inline-block text-xl font-semibold text-left text-gray-800">
-                        Visa Status
-                      </h2>
-                      <p className="pl-px text-xs text-gray-700">
-                        Enter Temporary Application ID
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-semibold text-gray-800">
+                          Check Visa Status
+                        </h2>
+                        <button
+                          onClick={handleFormModal}
+                          className="p-2 text-gray-500 hover:text-gray-700"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Enter Temporary Application ID to check status
                       </p>
 
                       <Formik
@@ -89,52 +115,46 @@ export default function VisaStatusForm({ isFormModalOpen, handleFormModal }) {
                         {({ values, isValid, handleSubmit }) => (
                           <>
                             <Form onSubmit={handleSubmit} className="mt-2">
-                              <div className="flex flex-col gap-2 formMain">
+                              <div className="flex flex-col gap-2">
                                 <Field
                                   type="text"
                                   placeholder="Enter Temporary Application ID"
-                                  className="form-input"
+                                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                   name="formId"
                                 />
                                 <ErrorMessage
                                   name="formId"
                                   component="div"
-                                  className="text-red-600"
+                                  className="text-sm text-red-600"
                                 />
 
-                                {postUserLogin.error ? (
-                                  <div className="text-red-600">
+                                {postUserLogin.error && (
+                                  <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg">
                                     {postUserLogin?.error['response']?.data
-                                      ?.error ?? 'something goes wrong'}
-                                    {/* <Link href="/visa/step-one">Create</Link> */}
+                                      ?.error ?? 'Something went wrong'}
                                   </div>
-                                ) : null}
+                                )}
+
                                 <div className="flex flex-col gap-3 mt-3">
                                   <button
                                     type="submit"
-                                    disabled={!isValid}
-                                    className={`formbtn w-full justify-center cursor-pointer inline-flex items-center gap-3 ${
-                                      !isValid
-                                        ? 'cursor-not-allowed opacity-50'
-                                        : ''
+                                    disabled={
+                                      !isValid || postUserLogin.isPending
+                                    }
+                                    className={`w-full py-2 px-4 rounded-lg text-white font-medium transition-colors ${
+                                      !isValid || postUserLogin.isPending
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-primary hover:bg-primary-dark'
                                     }`}
                                   >
                                     {postUserLogin.isPending ? (
-                                      <>
+                                      <span className="flex items-center justify-center gap-2">
                                         <BiLoaderAlt className="w-4 h-4 animate-spin" />
                                         Loading...
-                                      </>
+                                      </span>
                                     ) : (
-                                      'Submit'
+                                      'Check Status'
                                     )}
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    className="flex items-center justify-center w-full formbtnBorder"
-                                    onClick={handleFormModal}
-                                  >
-                                    Close
                                   </button>
                                 </div>
                               </div>
@@ -143,61 +163,67 @@ export default function VisaStatusForm({ isFormModalOpen, handleFormModal }) {
                         )}
                       </Formik>
 
-                      {postUserLogin.isSuccess &&
-                        postUserLogin?.data?.data?.data?.visaStatus ===
-                          'visa sent' && (
-                          <div
-                            className={`
-                            absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full gap-3 p-5 mt-3 text-center text-red-600 bg-white`}
-                          >
-                            {/* <button
-                              type="button"
-                              className="flex items-center gap-2 text-secondary"
-                              onClick={handleBackToForm}
-                            >
-                              <BiArrowBack /> Go Back To Form
-                            </button> */}
-                            <p>
-                              Visa Status for this application Id : {''}
+                      {postUserLogin.isSuccess && (
+                        <div className="mt-4 space-y-4">
+                          <div className="p-4 bg-blue-50 rounded-lg">
+                            <p className="text-blue-800">
+                              Application ID:{' '}
                               <Highlight
                                 text={postUserLogin?.data?.data?.data?._id}
                                 className="font-semibold"
                               />
                             </p>
-                            <p>
-                              Visa Status:{' '}
-                              <Highlight
-                                text={
-                                  postUserLogin?.data?.data?.data?.visaStatus
-                                }
-                                className="font-semibold"
-                              />
+                            <p className="mt-2 text-blue-800">
+                              Status:{' '}
+                              {postUserLogin?.data?.data?.data?.visaStatus ===
+                              'hold on' ? (
+                                <span className="text-purple-800">
+                                  Payment Required - Please complete payment to
+                                  proceed
+                                </span>
+                              ) : (
+                                <Highlight
+                                  text={
+                                    postUserLogin?.data?.data?.data?.visaStatus
+                                  }
+                                  className="font-semibold"
+                                />
+                              )}
                             </p>
+                            {postUserLogin?.data?.data?.data?.visaStatus ===
+                              'hold on' && (
+                              <button
+                                onClick={() => {
+                                  dispatch({
+                                    type: 'SET_FORM_ID',
+                                    payload:
+                                      postUserLogin?.data?.data?.data?._id,
+                                  });
+                                  router.push('/visa/step-eight');
+                                }}
+                                className="w-full mt-3 py-2 px-4 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+                              >
+                                Complete Payment Now
+                              </button>
+                            )}
+                            {postUserLogin?.data?.data?.data?.paid && (
+                              <Link
+                                href={`/thankyou?success=true&orderId=${postUserLogin?.data?.data?.data?._id}&session_id=${postUserLogin?.data?.data?.data?.paymentId}`}
+                                className="block w-full mt-3 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-center"
+                              >
+                                View Application Details
+                              </Link>
+                            )}
                           </div>
-                        )}
-                      {postUserLogin.isSuccess &&
-                        postUserLogin?.data?.data?.data?.visaStatus !==
-                          'visa sent' && (
-                          <div
-                            className={`
-                            absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full gap-3 p-5 mt-3 text-center text-red-600 bg-white`}
+
+                          <button
+                            onClick={handleCheckAnotherId}
+                            className="w-full py-2 px-4 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors"
                           >
-                            <p>
-                              Visa Status for this application Id : {''}
-                              <Highlight
-                                text={postUserLogin?.data?.data?.data?._id}
-                                className="font-semibold"
-                              />
-                            </p>
-                            <p>
-                              Visa Status:{' '}
-                              <Highlight
-                                text="Pending"
-                                className="font-semibold"
-                              />
-                            </p>
-                          </div>
-                        )}
+                            Check Another ID
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Dialog.Panel>

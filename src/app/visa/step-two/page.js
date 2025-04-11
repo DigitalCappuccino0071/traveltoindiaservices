@@ -23,6 +23,7 @@ import { ImSpinner2 } from 'react-icons/im';
 import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
 import TextInputField from '@/components/common/TextInputField';
 import SelectField from '@/components/common/SelectField';
+import Loading from '@/components/india/common/Loading';
 
 const StepTwo = () => {
   const pathName = usePathname();
@@ -69,12 +70,7 @@ const StepTwo = () => {
   }
 
   if (getAllStepsDataIsPending) {
-    return (
-      <div className="flex items-center justify-center flex-1 h-full pt-20">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
-      </div>
-    );
+    return <Loading />;
   }
 
   if (getAllStepsDataIsSuccess) {
