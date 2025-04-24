@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/services/api';
@@ -20,6 +20,8 @@ import TextInputField from '@/components/common/TextInputField';
 import SelectField from '@/components/common/SelectField';
 import PhoneInputField from '@/components/common/PhoneInputField';
 import { useRouter } from 'next/navigation';
+import PaymentStatus from '@/components/india/common/PaymentStatus';
+import Loading from '@/components/india/common/Loading';
 
 export default function Step3Update() {
   const { state } = useFormContext();
@@ -45,24 +47,37 @@ export default function Step3Update() {
     refetch
   );
 
-  // If no formId, redirect to step one
-  if (!state?.formId) {
-    return router.push('/visa/step-one');
-  }
+  useEffect(() => {
+    if (!state?.formId) {
+      router.push('/visa/step-one');
+      return;
+    }
 
-  // If error in query and it's not a 404 (no data), redirect to step one
-  if (error && error?.response?.status !== 404) {
-    console.log('error', error);
-    return router.push('/visa/step-one');
-  }
+    if (error && error?.response?.status !== 404) {
+      console.log('getAllStepsDataError', error);
+      router.push('/visa/step-one');
+      return;
+    }
+
+    if (getAllStepsDataIsSuccess) {
+      if (!getAllStepsData?.data?.step2Data) {
+        router.push('/visa/step-two');
+        return;
+      }
+
+      if (getAllStepsData?.data?.step3Data) {
+        router.push('/visa/step-three/update');
+        return;
+      }
+
+      if (getAllStepsData?.data?.step1Data?.paid) {
+        return <PaymentStatus />;
+      }
+    }
+  }, [state?.formId, error, getAllStepsDataIsSuccess, getAllStepsData, router]);
 
   if (isPending) {
-    return (
-      <div className="flex items-center justify-center flex-1 h-full pt-20">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
-      </div>
-    );
+    return <Loading />;
   }
 
   if (getAllStepsDataIsSuccess) {
@@ -966,7 +981,4 @@ export default function Step3Update() {
       );
     }
   }
-
-  // If we get here, something went wrong, redirect to step one
-  return router.push('/visa/step-one');
 }
