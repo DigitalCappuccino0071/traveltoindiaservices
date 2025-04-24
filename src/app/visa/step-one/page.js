@@ -71,6 +71,7 @@ export default function StepOne() {
       // If step1Data exists and is paid, show payment status
       else if (getAllStepsData?.data?.step1Data?.paid) {
         console.log('Found paid application - showing payment status');
+        return <PaymentStatus />;
         // No redirect needed - component will render PaymentStatus
       }
     }
@@ -88,9 +89,9 @@ export default function StepOne() {
   }
 
   // Show payment status if the application is already paid
-  if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step1Data?.paid) {
-    return <PaymentStatus />;
-  }
+  // if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step1Data?.paid) {
+  //   return <PaymentStatus />;
+  // }
 
   // Otherwise, show the form for new applications
   // This handles:

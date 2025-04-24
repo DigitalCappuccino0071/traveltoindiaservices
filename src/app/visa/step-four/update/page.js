@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { Formik, Form, Field, ErrorMessage, FieldArray } from 'formik';
 import { ImSpinner2 } from 'react-icons/im';
@@ -27,6 +27,8 @@ import MultiReactSelectFormik from '@/components/india/MultiReactSelectFormik';
 import { BsFillQuestionCircleFill, BsQuestionCircleFill } from 'react-icons/bs';
 import MultiSelectField from '@/components/common/MultiSelectField';
 import { useRouter } from 'next/navigation';
+import PaymentStatus from '@/components/india/common/PaymentStatus';
+import Loading from '@/components/india/common/Loading';
 
 const StepFour = () => {
   const { state } = useFormContext();
@@ -78,24 +80,37 @@ const StepFour = () => {
     (_, index) => startYear + index
   );
 
-  // If no formId, redirect to step one
-  if (!state?.formId) {
-    return router.push('/visa/step-one');
-  }
+  useEffect(() => {
+    if (!state?.formId) {
+      router.push('/visa/step-one');
+      return;
+    }
 
-  // If error in query and it's not a 404 (no data), redirect to step one
-  if (error && error?.response?.status !== 404) {
-    console.log('error', error);
-    return router.push('/visa/step-one');
-  }
+    if (error && error?.response?.status !== 404) {
+      console.log('getAllStepsDataError', error);
+      router.push('/visa/step-one');
+      return;
+    }
+
+    if (getAllStepsDataIsSuccess) {
+      if (!getAllStepsData?.data?.step3Data) {
+        router.push('/visa/step-three');
+        return;
+      }
+
+      if (getAllStepsData?.data?.step4Data) {
+        router.push('/visa/step-four/update');
+        return;
+      }
+
+      if (getAllStepsData?.data?.step1Data?.paid) {
+        return <PaymentStatus />;
+      }
+    }
+  }, [state?.formId, error, getAllStepsDataIsSuccess, getAllStepsData, router]);
 
   if (isPending) {
-    return (
-      <div className="flex items-center justify-center flex-1 h-full pt-20">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
-      </div>
-    );
+    return <Loading />;
   }
 
   if (getStep1DataIsSuccess && getAllStepsDataIsSuccess) {
@@ -1913,16 +1928,6 @@ const StepFour = () => {
       );
     }
   }
-  if (isPending) {
-    return (
-      <div className="flex items-center justify-center flex-1 h-full pt-20">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
-      </div>
-    );
-  }
-  // If we get here, something went wrong, redirect to step one
-  return router.push('/visa/step-one');
 };
 
 export default StepFour;
