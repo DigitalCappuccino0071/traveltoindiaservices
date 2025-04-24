@@ -26,10 +26,11 @@ import PhoneInputField from '@/components/common/PhoneInputField';
 import MultiReactSelectFormik from '@/components/india/MultiReactSelectFormik';
 import { BsFillQuestionCircleFill, BsQuestionCircleFill } from 'react-icons/bs';
 import MultiSelectField from '@/components/common/MultiSelectField';
+import { useRouter } from 'next/navigation';
 
 const StepFour = () => {
   const { state } = useFormContext();
-
+  const router = useRouter();
   const {
     isPending: getAllStepsDataIsPending,
     error: getAllStepsDataIsError,
