@@ -53,6 +53,17 @@ const StepFive = () => {
     localStorage.clear();
   };
 
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (error && error?.response?.status !== 404) {
+    console.log('error', error);
+    return router.push('/visa/step-one');
+  }
+
   if (isPending) {
     return (
       <div className="flex items-center justify-center flex-1 h-full pt-20">
@@ -62,7 +73,9 @@ const StepFive = () => {
     );
   }
 
-  if (error) {
+  if (error && error?.response?.status !== 404) {
+    // If error in query and it's not a 404 (no data), redirect to step one
+    console.log('error', error);
     return router.push('/visa/step-one');
   }
 
@@ -229,6 +242,9 @@ const StepFive = () => {
       </>
     );
   }
+
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 };
 
 export default StepFive;

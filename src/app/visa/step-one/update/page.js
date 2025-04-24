@@ -19,9 +19,11 @@ import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
 import PhoneInputField from '@/components/common/PhoneInputField';
 import SelectField from '@/components/common/SelectField';
 import TextInputField from '@/components/common/TextInputField';
+import { useRouter } from 'next/navigation';
 
 export default function StepOneUpdate() {
   const { state } = useFormContext();
+  const router = useRouter();
 
   const {
     isPending,
@@ -43,6 +45,26 @@ export default function StepOneUpdate() {
     '/visa/step-two',
     refetch
   );
+
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (error && error?.response?.status !== 404) {
+    console.log('error', error);
+    return router.push('/visa/step-one');
+  }
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center flex-1 h-full pt-20">
+        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
+        loading
+      </div>
+    );
+  }
 
   if (getAllStepsDataIsSuccess) {
     if (getAllStepsData.data.step1Data) {
@@ -70,8 +92,14 @@ export default function StepOneUpdate() {
                   setSubmitting(false);
                 }}
               >
-                {({ values, isValid, setFieldValue, handleChange }) => (
-                  <Form className="formMain">
+                {({
+                  values,
+                  isValid,
+                  handleSubmit,
+                  setFieldValue,
+                  handleChange,
+                }) => (
+                  <Form onSubmit={handleSubmit} className="formMain">
                     <div className="form-input-main-div">
                       <div className="input-error-wrapper">
                         <SelectField
@@ -194,37 +222,8 @@ export default function StepOneUpdate() {
                         />
                       </div>
                     </div>
-                    {/* <div className="form-input-main-div">
-                      <label className="form-label">Contact no*</label>
-                      <div className="input-error-wrapper form-input">
-                        <Field name="contactNo">
-                          {({ field, form }) => (
-                            <PhoneInput
-                              placeholder="Enter phone number"
-                              value={field.value}
-                              inputclassName="phone-input-class"
-                              onChange={value => {
-                                form.setFieldValue(field.name, value);
-
-                                if (field.value) {
-                                  form.setFieldValue({
-                                    ...form.values,
-                                    contactNo: value,
-                                  });
-                                }
-                              }}
-                            />
-                          )}
-                        </Field>
-
-                        <ErrorMessage
-                          name="contactNo"
-                          component="div"
-                          className="text-red-600"
-                        />
-                      </div>
-                    </div> */}
                     <div className="form-input-main-div">
+                      {/* <label className="form-label">Contact no*</label> */}
                       <div className="input-error-wrapper">
                         <Field name="contactNo">
                           {({ field, form }) => (
@@ -252,9 +251,10 @@ export default function StepOneUpdate() {
                         Visa Service*
                       </label>
 
-                      {/* multi step radio button start  */}
+                      {/* multi step radio button start visa services code start here  */}
                       <div className="space-y-4 text-sm input-error-wrapper">
                         <div>
+                          {/* eEmergency x misc */}
                           {values?.nationalityRegion?.toLocaleLowerCase() ===
                           'afghanistan' ? (
                             <div>
@@ -725,7 +725,7 @@ export default function StepOneUpdate() {
                                         id="eMedicalVisaValue"
                                         name="eMedicalVisa"
                                         className="mt-1"
-                                        value={`SHORT TERM MEDICAL TREATMENT OF SELF`}
+                                        value="SHORT TERM MEDICAL TREATMENT OF SELF"
                                       />
                                       <label htmlFor="eMedicalVisaValue">
                                         SHORT TERM MEDICAL TREATMENT OF SELF
@@ -770,7 +770,7 @@ export default function StepOneUpdate() {
                                         id="eBusinessVisaValue"
                                         name="eBusinessVisa"
                                         className="mt-1"
-                                        value={`TO SET UP INDUSTRIAL/BUSINESS VENTURE`}
+                                        value="TO SET UP INDUSTRIAL/BUSINESS VENTURE"
                                       />
                                       <label htmlFor="eBusinessVisaValue">
                                         TO SET UP INDUSTRIAL/BUSINESS VENTURE
@@ -782,7 +782,7 @@ export default function StepOneUpdate() {
                                         id="eBusinessVisaValue2"
                                         name="eBusinessVisa"
                                         className="mt-1"
-                                        value={`SALE/PURCHASE/TRADE`}
+                                        value="SALE/PURCHASE/TRADE"
                                       />
                                       <label htmlFor="eBusinessVisaValue2">
                                         SALE/PURCHASE/TRADE
@@ -794,7 +794,7 @@ export default function StepOneUpdate() {
                                         id="eBusinessVisaValue3"
                                         name="eBusinessVisa"
                                         className="mt-1"
-                                        value={`ATTEND TECHNICAL/BUSINESS MEETINGS`}
+                                        value="ATTEND TECHNICAL/BUSINESS MEETINGS"
                                       />
                                       <label htmlFor="eBusinessVisaValue3">
                                         ATTEND TECHNICAL/BUSINESS MEETINGS
@@ -806,7 +806,7 @@ export default function StepOneUpdate() {
                                         id="eBusinessVisaValue4"
                                         name="eBusinessVisa"
                                         className="mt-1"
-                                        value={`TO RECRUIT MANPOWER`}
+                                        value="TO RECRUIT MANPOWER"
                                       />
                                       <label htmlFor="eBusinessVisaValue4">
                                         TO RECRUIT MANPOWER
@@ -818,7 +818,7 @@ export default function StepOneUpdate() {
                                         id="eBusinessVisaValue5"
                                         name="eBusinessVisa"
                                         className="mt-1"
-                                        value={`PARTICIPATION IN EXHIBITIONS,BUSINESS/TRADE FAIRS`}
+                                        value="PARTICIPATION IN EXHIBITIONS,BUSINESS/TRADE FAIRS"
                                       />
                                       <label htmlFor="eBusinessVisaValue5">
                                         PARTICIPATION IN
@@ -844,7 +844,7 @@ export default function StepOneUpdate() {
                                         id="eBusinessVisaValue7"
                                         name="eBusinessVisa"
                                         className="mt-1"
-                                        value={`CONDUCTING TOURS`}
+                                        value="CONDUCTING TOURS"
                                       />
                                       <label htmlFor="eBusinessVisaValue7">
                                         CONDUCTING TOURS
@@ -942,8 +942,7 @@ export default function StepOneUpdate() {
                                         id="eMedicalAttendantVisaValue"
                                         name="eMedicalAttendantVisa"
                                         className="mt-1"
-                                        value={`TO ACCOMPANY PATIENT TRAVELLING TO INDIA ON
-                              EMEDICAL VISA`}
+                                        value="TO ACCOMPANY PATIENT TRAVELLING TO INDIA ON EMEDICAL VISA"
                                       />
                                       <label htmlFor="eMedicalAttendantVisaValue">
                                         TO ACCOMPANY PATIENT TRAVELLING TO INDIA
@@ -957,7 +956,7 @@ export default function StepOneUpdate() {
                           </>
                         )}
                       </div>
-                      {/* multi step radio button end  */}
+                      {/* multi step radio button end visa services  */}
                     </div>
 
                     <div className="form-input-main-div">
@@ -965,7 +964,7 @@ export default function StepOneUpdate() {
                         <ReactDatePickerInput
                           className="new-form-input"
                           name="expectedDateOfArrival"
-                          selected={new Date(values.expectedDateOfArrival)}
+                          selected={values.expectedDateOfArrival}
                           setFieldValue={setFieldValue}
                           label="Expected Date of Arrival"
                           required={true}
@@ -1007,12 +1006,6 @@ export default function StepOneUpdate() {
     }
   }
 
-  if (isPending) {
-    return (
-      <div className="flex items-center justify-center flex-1 h-full pt-20">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
-      </div>
-    );
-  }
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 }

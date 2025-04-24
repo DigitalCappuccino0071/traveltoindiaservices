@@ -91,6 +91,13 @@ const StepEight = () => {
     });
   };
 
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+
   if (isPending) {
     return (
       <div className="flex items-center justify-center flex-1 h-full pt-20">
@@ -100,7 +107,7 @@ const StepEight = () => {
     );
   }
 
-  if (error) {
+  if (error && error?.response?.status !== 404) {
     return (
       <div className="container py-12 text-center">
         <h2 className="text-xl text-red-600">Error loading application</h2>
@@ -388,6 +395,9 @@ const StepEight = () => {
       </>
     );
   }
+
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 };
 
 export default StepEight;

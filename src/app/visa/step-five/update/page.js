@@ -8,10 +8,12 @@ import apiEndpoint from '@/services/apiEndpoint';
 import { useQuery } from '@tanstack/react-query';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { ImSpinner2 } from 'react-icons/im';
 
 export default function Step5Update() {
+  const router = useRouter();
   const { state } = useFormContext();
 
   const {
@@ -34,6 +36,17 @@ export default function Step5Update() {
     '/visa/step-six',
     refetch
   );
+
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (error && error?.response?.status !== 404) {
+    console.log('error', error);
+    return router.push('/visa/step-one');
+  }
 
   if (getAllStepsDataIsSuccess) {
     getAllStepsData?.data?.step5Data;
@@ -174,4 +187,7 @@ export default function Step5Update() {
       </div>
     );
   }
+
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 }
