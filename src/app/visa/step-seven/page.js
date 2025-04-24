@@ -55,6 +55,17 @@ const StepSeven = () => {
     localStorage.clear();
   };
 
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (error && error?.response?.status !== 404) {
+    console.log('error', error);
+    return router.push('/visa/step-one');
+  }
+
   if (getAllStepsDataIsSuccess) {
     const { step1Data, step2Data, step3Data, step4Data, step5Data, step6Data } =
       getAllStepsData.data;
@@ -1732,9 +1743,8 @@ const StepSeven = () => {
     return <Loading />;
   }
 
-  if (error) {
-    return router.push('/visa/step-one');
-  }
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 };
 
 export default StepSeven;

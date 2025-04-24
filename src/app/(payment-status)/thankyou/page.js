@@ -357,12 +357,12 @@ export default function ThankyouPage() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <Link
+                  {/* <Link
                     href={`/visa/application/${orderId}`}
                     className="flex items-center justify-center bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-lg transition duration-150 w-full"
                   >
                     <FaClipboardCheck className="mr-2" /> View Your Application
-                  </Link>
+                  </Link> */}
                   <button
                     onClick={() => {
                       router.push('/');
@@ -475,11 +475,11 @@ export default function ThankyouPage() {
                 assistance, our support team is here to help.
               </p>
               <a
-                href="mailto:support@example.com"
+                href="mailto:Info@traveltoindiaservices.com"
                 className="text-primary hover:underline flex items-center"
               >
                 <FaEnvelope className="mr-2" />
-                support@example.com
+                Info@traveltoindiaservices.com
               </a>
             </div>
           </div>

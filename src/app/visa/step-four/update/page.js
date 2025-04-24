@@ -76,8 +76,29 @@ const StepFour = () => {
     { length: currentYear - startYear + 1 },
     (_, index) => startYear + index
   );
+
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (error && error?.response?.status !== 404) {
+    console.log('error', error);
+    return router.push('/visa/step-one');
+  }
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center flex-1 h-full pt-20">
+        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
+        loading
+      </div>
+    );
+  }
+
   if (getStep1DataIsSuccess && getAllStepsDataIsSuccess) {
-    if (getAllStepsData.data.step4Data) {
+    if (getAllStepsData?.data?.step4Data) {
       const { __v, _id, createdAt, updatedAt, ...cleanedStep4Data } =
         getAllStepsData?.data?.step4Data;
       const visaServiceSelected = step1Data?.data?.visaService
@@ -1899,6 +1920,8 @@ const StepFour = () => {
       </div>
     );
   }
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 };
 
 export default StepFour;

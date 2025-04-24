@@ -238,6 +238,17 @@ export default function StepSix() {
     return isValid;
   }, [uploadedPublicIds, getAllStepsData]);
 
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (error && error?.response?.status !== 404) {
+    console.log('error', error);
+    return router.push('/visa/step-one');
+  }
+
   if (isPending) {
     return (
       <div className="flex items-center justify-center flex-1 h-full pt-20">
@@ -245,10 +256,6 @@ export default function StepSix() {
         <span className="text-lg">Loading your application information...</span>
       </div>
     );
-  }
-
-  if (error) {
-    return router.push('/visa/step-five');
   }
 
   if (getAllStepsDataIsSuccess) {
@@ -841,4 +848,7 @@ export default function StepSix() {
       </>
     );
   }
+
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 }

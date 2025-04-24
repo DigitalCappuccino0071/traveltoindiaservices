@@ -19,9 +19,11 @@ import SavedFormId from '@/components/india/common/SavedFormId';
 import TextInputField from '@/components/common/TextInputField';
 import SelectField from '@/components/common/SelectField';
 import PhoneInputField from '@/components/common/PhoneInputField';
+import { useRouter } from 'next/navigation';
 
 export default function Step3Update() {
   const { state } = useFormContext();
+  const router = useRouter();
   const {
     isPending,
     error,
@@ -42,6 +44,26 @@ export default function Step3Update() {
     '/visa/step-four',
     refetch
   );
+
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (error && error?.response?.status !== 404) {
+    console.log('error', error);
+    return router.push('/visa/step-one');
+  }
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center flex-1 h-full pt-20">
+        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
+        loading
+      </div>
+    );
+  }
 
   if (getAllStepsDataIsSuccess) {
     if (getAllStepsData.data.step3Data) {
@@ -259,7 +281,7 @@ export default function Step3Update() {
                       <div className="flex-col justify-between hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
                         <div>
                           <h2 className="py-2 sidetext ">
-                            Applicant’s permanent address (with postal/zip code)
+                            Applicant's permanent address (with postal/zip code)
                           </h2>
                           <h2 className="py-5 sidetext ">Village/Town/City</h2>
                           <h2 className="py-5 sidetext ">Country</h2>
@@ -280,7 +302,7 @@ export default function Step3Update() {
 
                         <div>
                           <h2 className="py-2 sidetext">
-                            Applicant’s present address, maximum 35 characters
+                            Applicant's present address, maximum 35 characters
                             (each line)
                           </h2>
                           <h2 className="py-5 sidetext ">Village/Town/City</h2>
@@ -298,7 +320,7 @@ export default function Step3Update() {
                       <hr className="h-1 text-primary bg-primary w-36" />
                     </div>
                     <div className="pt-5 text-2xl font-semibold text-primary">
-                      Father’s Details
+                      Father's Details
                     </div>
                     <div className="grid gap-8 md:grid-cols-12 ">
                       <div className="col-span-8">
@@ -372,7 +394,7 @@ export default function Step3Update() {
                               </div>
                             </div>
                             <div className="text-2xl font-semibold text-primary">
-                              Mother’s Details
+                              Mother's Details
                             </div>
                             <div className="form-input-main-div">
                               <div className="input-error-wrapper">
@@ -449,7 +471,7 @@ export default function Step3Update() {
                       <div className="flex-col justify-between hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
                         <div>
                           <h2 className="py-4 sidetext ">
-                            Applicant’s father name
+                            Applicant's father name
                           </h2>
                           <h2 className="py-5 sidetext ">
                             Nationality / region of father
@@ -465,7 +487,7 @@ export default function Step3Update() {
 
                         <div>
                           <h2 className="py-3 sidetext ">
-                            Applicant’s mother name
+                            Applicant's mother name
                           </h2>
                           <h2 className="py-5 sidetext ">
                             Nationality / region of mother
@@ -508,7 +530,7 @@ export default function Step3Update() {
                             {values.applicantMaritalStatus === 'married' && (
                               <div className="space-y-4">
                                 <div className="pt-5 text-2xl font-semibold text-primary">
-                                  Spouse’s Details
+                                  Spouse's Details
                                 </div>
 
                                 <div className="form-input-main-div">
@@ -649,7 +671,7 @@ export default function Step3Update() {
                       <div className="flex-col justify-between hidden col-span-4 px-4 py-6 border-2 md:flex bg-primary/10 border-primary/60 rounded-xl">
                         <div>
                           <h2 className="py-4 sidetext ">
-                            Applicant’s Marital Status
+                            Applicant's Marital Status
                           </h2>
                           <h2 className="py-4 sidetext ">
                             Were your Parents/Grandparents (paternal/maternal)
@@ -944,12 +966,7 @@ export default function Step3Update() {
       );
     }
   }
-  if (isPending) {
-    return (
-      <div className="flex items-center justify-center flex-1 h-full pt-20">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
-      </div>
-    );
-  }
+
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 }

@@ -77,6 +77,17 @@ export default function StepFour() {
     (_, index) => startYear + index
   );
 
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (getAllStepsDataError && getAllStepsDataError?.response?.status !== 404) {
+    console.log('getAllStepsDataError', getAllStepsDataError);
+    return router.push('/visa/step-one');
+  }
+
   if (getAllStepsDataIsPending) {
     return (
       <div className="flex items-center justify-center flex-1 h-full pt-20">
@@ -86,18 +97,18 @@ export default function StepFour() {
     );
   }
 
-  if (getAllStepsDataError) {
-    return router.push('/visa/step-one');
-  }
-
   if (getAllStepsDataIsSuccess) {
+    // If no step3Data, redirect to step three
     if (!getAllStepsData?.data?.step3Data) {
       return router.push('/visa/step-three');
     }
+
+    // If step4Data exists, redirect to update
     if (getAllStepsData?.data?.step4Data) {
       return router.push('/visa/step-four/update');
     }
 
+    // Show the form if we have step3Data but no step4Data
     const visaServiceSelected = getAllStepsData?.data?.step1Data?.visaService
       ? lodash.camelCase(getAllStepsData?.data?.step1Data?.visaService)
       : '';
@@ -1931,4 +1942,7 @@ export default function StepFour() {
       </>
     );
   }
+
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 }

@@ -16,8 +16,29 @@ import 'react-phone-number-input/style.css';
 import PhoneInputField from '@/components/common/PhoneInputField';
 import SelectField from '@/components/common/SelectField';
 import TextInputField from '@/components/common/TextInputField';
+import { useFormContext } from '@/context/formContext';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import axiosInstance from '@/services/api';
+import Loading from '@/components/india/common/Loading';
+import PaymentStatus from '@/components/india/common/PaymentStatus';
 
 const StepOne = () => {
+  const { state } = useFormContext();
+  const router = useRouter();
+
+  const {
+    isPending: getAllStepsDataIsPending,
+    error: getAllStepsDataError,
+    data: getAllStepsData,
+    isSuccess: getAllStepsDataIsSuccess,
+  } = useQuery({
+    queryKey: ['getAllStepsDataStep1'],
+    queryFn: () =>
+      axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
+    enabled: !!state.formId,
+  });
+
   const postMutation = usePost(
     apiEndpoint.VISA_ADD_STEP1,
     1,
@@ -25,10 +46,38 @@ const StepOne = () => {
     true
   );
 
+  // If formId exists, handle data fetching states
+  if (state?.formId) {
+    if (getAllStepsDataIsPending) {
+      return <Loading />;
+    }
+
+    if (getAllStepsDataError) {
+      return router.push('/visa/step-one');
+    }
+
+    if (getAllStepsDataIsSuccess) {
+      // If step1Data exists and is not paid, redirect to update
+      if (
+        getAllStepsData?.data?.step1Data &&
+        !getAllStepsData?.data?.step1Data?.paid
+      ) {
+        return router.push('/visa/step-one/update');
+      }
+
+      // If step1Data exists and is paid, show payment status
+      if (getAllStepsData?.data?.step1Data?.paid) {
+        return <PaymentStatus />;
+      }
+    }
+  }
+
+  // Show normal form for:
+  // 1. New users (no formId)
+  // 2. Existing users with formId but no step1Data
   return (
     <>
       <BannerPage heading="E-VISA APPLICATION FORM" />
-
       <p className="pt-8 font-semibold text-center">
         Note: For e-visa services to Afghan Nationals, they must select
         <span className="pl-2 pr-1 text-primary">AFGHANISTAN</span> nationality

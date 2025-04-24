@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { Formik, Form, ErrorMessage } from 'formik';
 import { useQuery } from '@tanstack/react-query';
@@ -24,6 +25,7 @@ import SelectField from '@/components/common/SelectField';
 
 export default function StepTwoUpdate() {
   const { state } = useFormContext();
+  const router = useRouter();
 
   const {
     isPending,
@@ -45,6 +47,26 @@ export default function StepTwoUpdate() {
     '/visa/step-three',
     refetch
   );
+
+  // If no formId, redirect to step one
+  if (!state?.formId) {
+    return router.push('/visa/step-one');
+  }
+
+  // If error in query and it's not a 404 (no data), redirect to step one
+  if (error && error?.response?.status !== 404) {
+    console.log('error', error);
+    return router.push('/visa/step-one');
+  }
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center flex-1 h-full pt-20">
+        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
+        loading
+      </div>
+    );
+  }
 
   if (getAllStepsDataIsSuccess) {
     if (getAllStepsData.data.step2Data) {
@@ -663,12 +685,6 @@ export default function StepTwoUpdate() {
     }
   }
 
-  if (isPending) {
-    return (
-      <div className="flex items-center justify-center flex-1 h-full pt-20">
-        <ImSpinner2 className="w-4 h-4 text-black animate-spin" />
-        loading
-      </div>
-    );
-  }
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 }
