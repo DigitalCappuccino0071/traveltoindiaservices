@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { GoogleTagManager } from '@next/third-parties/google';
 
 import { Formik, Form, ErrorMessage } from 'formik';
 import { useQuery } from '@tanstack/react-query';
@@ -686,6 +687,7 @@ export default function StepTwoUpdate() {
             </Form>
           )}
         </Formik>
+        <GoogleTagManager gtmId="GTM-TSRS895Q" />
       </>
     );
   }
