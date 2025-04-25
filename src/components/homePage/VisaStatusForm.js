@@ -28,6 +28,7 @@ export default function VisaStatusForm({ isFormModalOpen, handleFormModal }) {
   const postUserLogin = usePostUserLogin({
     apiEndpointUrl: apiEndpoint.EVISA_USER_LOGIN,
     queryKey: ['make payment for completed form'],
+    isDispatch: true,
     successMessage: 'Application id fetched successfully',
   });
 
@@ -37,6 +38,8 @@ export default function VisaStatusForm({ isFormModalOpen, handleFormModal }) {
 
   useEffect(() => {
     localStorage.removeItem('formId');
+    localStorage.removeItem('formSteps');
+    // }, [dispatch, isFormOpen]);
   }, [dispatch, isFormOpen]);
 
   const handleCheckAnotherId = () => {
@@ -194,11 +197,6 @@ export default function VisaStatusForm({ isFormModalOpen, handleFormModal }) {
                               'hold on' && (
                               <button
                                 onClick={() => {
-                                  dispatch({
-                                    type: 'SET_FORM_ID',
-                                    payload:
-                                      postUserLogin?.data?.data?.data?._id,
-                                  });
                                   router.push('/visa/step-eight');
                                 }}
                                 className="w-full mt-3 py-2 px-4 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
