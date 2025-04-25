@@ -8,8 +8,10 @@ const initialState = {
 };
 
 const formReducer = (state, action) => {
+  console.log('FormContext reducer - Action:', action);
   switch (action.type) {
     case 'SET_FORM_ID':
+      console.log('Setting formId in reducer:', action.payload);
       return { ...state, formId: action.payload };
 
     default:
@@ -20,6 +22,7 @@ const formReducer = (state, action) => {
 export const FormProvider = ({ children }) => {
   if (typeof window !== 'undefined') {
     const storedFormId = localStorage.getItem('formId');
+    console.log('Initial formId from localStorage:', storedFormId);
     initialState.formId = storedFormId ? storedFormId : initialState.formId;
   }
 
@@ -27,6 +30,7 @@ export const FormProvider = ({ children }) => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      console.log('Saving formId to localStorage:', state.formId);
       localStorage.setItem('formId', state.formId);
     }
   }, [state.formId]);
