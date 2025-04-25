@@ -48,31 +48,44 @@ export default function StepOne() {
     true
   );
 
-  // If we have a formId, check if the data exists and handle accordingly
   useEffect(() => {
+    console.log('Step-one useEffect - Current formId:', state?.formId);
+    console.log('Step-one useEffect - getAllStepsData:', getAllStepsData);
+    console.log(
+      'Step-one useEffect - getAllStepsDataError:',
+      getAllStepsDataError
+    );
+    console.log(
+      'Step-one useEffect - getAllStepsDataIsSuccess:',
+      getAllStepsDataIsSuccess
+    );
+
     // If there's a formId but we got a 404 error (application doesn't exist)
     // it means the formId is invalid, so we should show the form for new users
     if (getAllStepsDataError?.response?.status === 404 && state.formId) {
-      console.log('Form ID exists but no data found - showing new form');
+      console.log('Invalid formId, showing new form');
       return;
     }
 
     // If we successfully got data for this formId
     if (getAllStepsDataIsSuccess && getAllStepsData?.data) {
+      console.log('Got data for formId:', getAllStepsData?.data);
+
       // If step1Data exists and is not paid, redirect to update page
       if (
         getAllStepsData?.data?.step1Data &&
-        !getAllStepsData?.data?.step1Data?.paid
+        !getAllStepsData?.data?.step1Data?.paid &&
+        !postMutation.isSuccess // Only redirect if we're not in the middle of a successful submission
       ) {
         console.log('Found existing unpaid form - redirecting to update page');
         router.push('/visa/step-one/update');
+        return;
       }
 
       // If step1Data exists and is paid, show payment status
       else if (getAllStepsData?.data?.step1Data?.paid) {
-        console.log('Found paid application - showing payment status');
+        console.log('Found paid form - showing payment status');
         return <PaymentStatus />;
-        // No redirect needed - component will render PaymentStatus
       }
     }
   }, [
@@ -81,17 +94,21 @@ export default function StepOne() {
     state.formId,
     getAllStepsData,
     router,
+    postMutation.isSuccess, // Add postMutation.isSuccess to dependencies
   ]);
+
+  // Handle successful form submission
+  useEffect(() => {
+    if (postMutation.isSuccess) {
+      console.log('Form submission successful, redirecting to step-two');
+      router.push('/visa/step-two');
+    }
+  }, [postMutation.isSuccess, router]);
 
   // Show loading when fetching data
   if (state?.formId && getAllStepsDataIsPending) {
     return <Loading />;
   }
-
-  // Show payment status if the application is already paid
-  // if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step1Data?.paid) {
-  //   return <PaymentStatus />;
-  // }
 
   // Otherwise, show the form for new applications
   // This handles:
@@ -112,6 +129,7 @@ export default function StepOne() {
           validateOnChange={true}
           validateOnMount={true}
           onSubmit={(values, { setSubmitting, resetForm }) => {
+            console.log('Submitting form with values:', values);
             postMutation.mutate({
               ...values,
               lastExitStepUrl: '/visa/step-two',
@@ -994,9 +1012,11 @@ export default function StepOne() {
 
                 <button
                   type="submit"
-                  disabled={!isValid}
+                  disabled={postMutation.isPending}
                   className={`formbtn cursor-pointer inline-flex items-center gap-3 ${
-                    !isValid ? 'cursor-not-allowed opacity-50' : ''
+                    postMutation.isPending
+                      ? 'cursor-not-allowed opacity-50'
+                      : ''
                   }`}
                 >
                   {postMutation.isPending ? (
