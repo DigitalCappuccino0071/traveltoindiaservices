@@ -59,7 +59,10 @@ const StepFive = () => {
   useEffect(() => {
     console.log('Step-five useEffect - Current formId:', state?.formId);
     console.log('Step-five useEffect - getAllStepsData:', getAllStepsData);
-    console.log('Step-five useEffect - getAllStepsDataError:', error);
+    console.log(
+      'Step-five useEffect - getAllStepsDataError:',
+      getAllStepsDataError
+    );
     console.log(
       'Step-five useEffect - getAllStepsDataIsSuccess:',
       getAllStepsDataIsSuccess
@@ -72,9 +75,9 @@ const StepFive = () => {
       return;
     }
 
-    // If we successfully got data for this formId
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data) {
-      console.log('Got data for formId:', getAllStepsData?.data);
+    // If we have data and step1Data exists
+    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step4Data) {
+      console.log('Step4Data found:', getAllStepsData?.data?.step4Data);
 
       // If step1Data is paid, show payment status
       if (getAllStepsData?.data?.step1Data?.paid) {
@@ -82,21 +85,14 @@ const StepFive = () => {
         return <PaymentStatus />;
       }
 
-      // If step4Data doesn't exist, redirect to step-four
-      if (!getAllStepsData?.data?.step4Data) {
-        console.log('No step4Data found, redirecting to step-four');
-        router.push('/visa/step-four');
-        return;
-      }
-
-      // If step5Data exists, redirect to update page
+      // If step2Data exists, redirect to update page
       if (getAllStepsData?.data?.step5Data) {
         console.log('Step5Data exists, redirecting to update page');
         router.push('/visa/step-five/update');
         return;
       }
 
-      // If we have step4Data but no step5Data, show the form
+      // If we have step1Data but no step2Data, show the form
       console.log('Showing step-five form');
       return;
     }
@@ -109,7 +105,7 @@ const StepFive = () => {
     }
 
     // If we're still loading, show loading state
-    if (isPending) {
+    if (getAllStepsDataIsPending) {
       console.log('Loading getAllStepsData');
       return;
     }

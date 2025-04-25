@@ -80,13 +80,13 @@ export default function StepFour() {
 
   useEffect(() => {
     console.log('Step-four useEffect - Current formId:', state?.formId);
-    console.log('Step-four useEffect - getAllStepsData:', getAllStepsData);
+    console.log('Step-three useEffect - getAllStepsData:', getAllStepsData);
     console.log(
-      'Step-four useEffect - getAllStepsDataError:',
+      'Step-three useEffect - getAllStepsDataError:',
       getAllStepsDataError
     );
     console.log(
-      'Step-four useEffect - getAllStepsDataIsSuccess:',
+      'Step-two useEffect - getAllStepsDataIsSuccess:',
       getAllStepsDataIsSuccess
     );
 
@@ -97,9 +97,9 @@ export default function StepFour() {
       return;
     }
 
-    // If we successfully got data for this formId
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data) {
-      console.log('Got data for formId:', getAllStepsData?.data);
+    // If we have data and step1Data exists
+    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step3Data) {
+      console.log('Step3Data found:', getAllStepsData?.data?.step3Data);
 
       // If step1Data is paid, show payment status
       if (getAllStepsData?.data?.step1Data?.paid) {
@@ -107,21 +107,14 @@ export default function StepFour() {
         return <PaymentStatus />;
       }
 
-      // If step3Data doesn't exist, redirect to step-three
-      if (!getAllStepsData?.data?.step3Data) {
-        console.log('No step3Data found, redirecting to step-three');
-        router.push('/visa/step-three');
-        return;
-      }
-
-      // If step4Data exists, redirect to update page
+      // If step2Data exists, redirect to update page
       if (getAllStepsData?.data?.step4Data) {
         console.log('Step4Data exists, redirecting to update page');
         router.push('/visa/step-four/update');
         return;
       }
 
-      // If we have step3Data but no step4Data, show the form
+      // If we have step1Data but no step2Data, show the form
       console.log('Showing step-four form');
       return;
     }
@@ -152,14 +145,6 @@ export default function StepFour() {
     getAllStepsData,
     router,
   ]);
-
-  // Handle successful form submission
-  useEffect(() => {
-    if (postMutation.isSuccess) {
-      console.log('Form submission successful, redirecting to step-five');
-      router.push('/visa/step-five');
-    }
-  }, [postMutation.isSuccess, router]);
 
   // Show loading when fetching data
   if (getAllStepsDataIsPending) {

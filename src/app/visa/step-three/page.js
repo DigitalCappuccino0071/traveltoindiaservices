@@ -74,7 +74,7 @@ const StepThree = () => {
       getAllStepsDataError
     );
     console.log(
-      'Step-three useEffect - getAllStepsDataIsSuccess:',
+      'Step-two useEffect - getAllStepsDataIsSuccess:',
       getAllStepsDataIsSuccess
     );
 
@@ -85,9 +85,9 @@ const StepThree = () => {
       return;
     }
 
-    // If we successfully got data for this formId
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data) {
-      console.log('Got data for formId:', getAllStepsData?.data);
+    // If we have data and step1Data exists
+    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step2Data) {
+      console.log('Step2Data found:', getAllStepsData?.data?.step2Data);
 
       // If step1Data is paid, show payment status
       if (getAllStepsData?.data?.step1Data?.paid) {
@@ -95,21 +95,14 @@ const StepThree = () => {
         return <PaymentStatus />;
       }
 
-      // If step2Data doesn't exist, redirect to step-two
-      if (!getAllStepsData?.data?.step2Data) {
-        console.log('No step2Data found, redirecting to step-two');
-        router.push('/visa/step-two');
-        return;
-      }
-
-      // If step3Data exists, redirect to update page
+      // If step2Data exists, redirect to update page
       if (getAllStepsData?.data?.step3Data) {
         console.log('Step3Data exists, redirecting to update page');
         router.push('/visa/step-three/update');
         return;
       }
 
-      // If we have step2Data but no step3Data, show the form
+      // If we have step1Data but no step2Data, show the form
       console.log('Showing step-three form');
       return;
     }
@@ -140,15 +133,6 @@ const StepThree = () => {
     getAllStepsData,
     router,
   ]);
-
-  // Handle successful form submission
-  useEffect(() => {
-    if (postMutation.isSuccess) {
-      console.log('Form submission successful, redirecting to step-four');
-      router.push('/visa/step-four');
-    }
-  }, [postMutation.isSuccess, router]);
-
   // Show loading when fetching data
   if (getAllStepsDataIsPending) {
     return <Loading />;
