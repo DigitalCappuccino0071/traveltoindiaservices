@@ -9,6 +9,7 @@ import {
 } from '@/constant/indiaConstant';
 import { useFormContext } from '@/context/formContext';
 import usePost from '@/hooks/usePost';
+import { useFormFlow } from '@/hooks/useFormFlow';
 import useUpdate from '@/hooks/useUpdate';
 import axiosInstance from '@/services/api';
 import apiEndpoint from '@/services/apiEndpoint';
@@ -28,7 +29,7 @@ import Loading from '@/components/india/common/Loading';
 import { useEffect } from 'react';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
 
-const StepTwo = () => {
+export default function StepTwo() {
   const pathName = usePathname();
   const { state } = useFormContext();
   const router = useRouter();
@@ -68,102 +69,35 @@ const StepTwo = () => {
     localStorage.clear();
   };
 
-  useEffect(() => {
-    console.log('Step-two useEffect - Current formId:', state?.formId);
-    console.log('Step-two useEffect - getAllStepsData:', getAllStepsData);
-    console.log(
-      'Step-two useEffect - getAllStepsDataError:',
-      getAllStepsDataError
-    );
-    console.log(
-      'Step-two useEffect - getAllStepsDataIsSuccess:',
-      getAllStepsDataIsSuccess
-    );
-
-    // If no formId, redirect to step one
-    if (!state?.formId) {
-      console.log('No formId found, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we have data and step1Data exists
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step1Data) {
-      console.log('Step1Data found:', getAllStepsData?.data?.step1Data);
-
-      // If step1Data is paid, show payment status
-      if (getAllStepsData?.data?.step1Data?.paid) {
-        console.log('Step1Data is paid, showing payment status');
-        return <PaymentStatus />;
-      }
-
-      // If step2Data exists, redirect to update page
-      if (getAllStepsData?.data?.step2Data) {
-        console.log('Step2Data exists, redirecting to update page');
-        router.push('/visa/step-two/update');
-        return;
-      }
-
-      // If we have step1Data but no step2Data, show the form
-      console.log('Showing step-two form');
-      return;
-    }
-
-    // If there's an error that's not 404, redirect to step one
-    if (
-      getAllStepsDataError &&
-      getAllStepsDataError?.response?.status !== 404
-    ) {
-      console.log('Error in getAllStepsData, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we're still loading, show loading state
-    if (getAllStepsDataIsPending) {
-      console.log('Loading getAllStepsData');
-      return;
-    }
-
-    // If we get here, something went wrong, redirect to step one
-    console.log('Unexpected state, redirecting to step-one');
-    router.push('/visa/step-one');
-  }, [
-    state?.formId,
-    getAllStepsDataError,
-    getAllStepsDataIsSuccess,
-    getAllStepsData,
-    router,
-  ]);
+  const { shouldShowForm, shouldShowLoading, formData } =
+    useFormFlow('step-two');
 
   // Show loading when fetching data
-  if (getAllStepsDataIsPending) {
+  if (shouldShowLoading) {
     return <Loading />;
   }
 
-  // If we have step1Data but no step2Data, show the form
-  if (
-    getAllStepsDataIsSuccess &&
-    getAllStepsData?.data?.step1Data &&
-    !getAllStepsData?.data?.step2Data
-  ) {
+  // If we have a paid form, show payment status
+  if (formData?.step1Data?.paid) {
+    return <PaymentStatus />;
+  }
+
+  // Show form if conditions are met
+  if (shouldShowForm) {
     return (
       <>
         <BannerPage heading="Applicant Detail Form" />
         <Formik
           initialValues={{
             ...step2ValidationSchema.initialValues,
-            dateOfBirth: getAllStepsData.data
-              ? getAllStepsData.data.step1Data.dateOfBirth
-              : '',
-            nationalityRegion: getAllStepsData.data
-              ? getAllStepsData.data.step1Data.nationalityRegion
-              : '',
+            dateOfBirth: formData?.step1Data?.dateOfBirth || '',
+            nationalityRegion: formData?.step1Data?.nationalityRegion || '',
           }}
           validationSchema={step2ValidationSchema.yupSchema}
           validateOnChange={true}
           validateOnMount={true}
           onSubmit={(values, { setSubmitting, resetForm }) => {
+            console.log('Submitting form with values:', values);
             postMutation.mutate({
               ...values,
               formId: state.formId,
@@ -1040,6 +974,4 @@ const StepTwo = () => {
 
   // If we get here, something went wrong, redirect to step one
   return router.push('/visa/step-one');
-};
-
-export default StepTwo;
+}

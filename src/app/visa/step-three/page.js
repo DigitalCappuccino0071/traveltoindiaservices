@@ -12,6 +12,7 @@ import {
 } from '@/constant/indiaConstant';
 import { useFormContext } from '@/context/formContext';
 import usePost from '@/hooks/usePost';
+import { useFormFlow } from '@/hooks/useFormFlow';
 import useUpdate from '@/hooks/useUpdate';
 import axiosInstance from '@/services/api';
 import apiEndpoint from '@/services/apiEndpoint';
@@ -26,7 +27,7 @@ import { ImSpinner2 } from 'react-icons/im';
 import { useEffect } from 'react';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
 
-const StepThree = () => {
+export default function StepThree() {
   const pathName = usePathname();
   const { state } = useFormContext();
   const router = useRouter();
@@ -66,93 +67,28 @@ const StepThree = () => {
     localStorage.clear();
   };
 
-  useEffect(() => {
-    console.log('Step-three useEffect - Current formId:', state?.formId);
-    console.log('Step-three useEffect - getAllStepsData:', getAllStepsData);
-    console.log(
-      'Step-three useEffect - getAllStepsDataError:',
-      getAllStepsDataError
-    );
-    console.log(
-      'Step-two useEffect - getAllStepsDataIsSuccess:',
-      getAllStepsDataIsSuccess
-    );
+  const { shouldShowForm, shouldShowLoading, formData } =
+    useFormFlow('step-three');
 
-    // If no formId, redirect to step one
-    if (!state?.formId) {
-      console.log('No formId found, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we have data and step1Data exists
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step2Data) {
-      console.log('Step2Data found:', getAllStepsData?.data?.step2Data);
-
-      // If step1Data is paid, show payment status
-      if (getAllStepsData?.data?.step1Data?.paid) {
-        console.log('Step1Data is paid, showing payment status');
-        return <PaymentStatus />;
-      }
-
-      // If step2Data exists, redirect to update page
-      if (getAllStepsData?.data?.step3Data) {
-        console.log('Step3Data exists, redirecting to update page');
-        router.push('/visa/step-three/update');
-        return;
-      }
-
-      // If we have step1Data but no step2Data, show the form
-      console.log('Showing step-three form');
-      return;
-    }
-
-    // If there's an error that's not 404, redirect to step one
-    if (
-      getAllStepsDataError &&
-      getAllStepsDataError?.response?.status !== 404
-    ) {
-      console.log('Error in getAllStepsData, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we're still loading, show loading state
-    if (getAllStepsDataIsPending) {
-      console.log('Loading getAllStepsData');
-      return;
-    }
-
-    // If we get here, something went wrong, redirect to step one
-    console.log('Unexpected state, redirecting to step-one');
-    router.push('/visa/step-one');
-  }, [
-    state?.formId,
-    getAllStepsDataError,
-    getAllStepsDataIsSuccess,
-    getAllStepsData,
-    router,
-  ]);
   // Show loading when fetching data
-  if (getAllStepsDataIsPending) {
+  if (shouldShowLoading) {
     return <Loading />;
   }
 
-  // If we have step2Data but no step3Data, show the form
-  if (
-    getAllStepsDataIsSuccess &&
-    getAllStepsData?.data?.step2Data &&
-    !getAllStepsData?.data?.step3Data
-  ) {
+  // If we have a paid form, show payment status
+  if (formData?.step1Data?.paid) {
+    return <PaymentStatus />;
+  }
+
+  // Show form if conditions are met
+  if (shouldShowForm) {
     return (
       <>
         <BannerPage heading="Applicant Detail Form" />
         <Formik
           initialValues={{
             ...step3ValidationSchema.initialValues,
-            emailAddress: getAllStepsData?.data
-              ? getAllStepsData?.data.step1Data.emailId
-              : '',
+            emailAddress: formData?.step1Data?.emailId || '',
           }}
           validationSchema={step3ValidationSchema.yupSchema}
           validateOnChange={true}
@@ -1059,6 +995,4 @@ const StepThree = () => {
 
   // If we get here, something went wrong, redirect to step one
   return router.push('/visa/step-one');
-};
-
-export default StepThree;
+}
