@@ -131,7 +131,6 @@ export default function ReactDatePickerInput({
       // Add exactly 4 days
       arrivalMinDate.setDate(currentDate.getDate() + 4);
 
-      // Remove console.logs that might cause re-rendering
       // Use provided minDate if available, otherwise use calculated one
       minDateValue = minDate || arrivalMinDate;
 
@@ -218,21 +217,18 @@ export default function ReactDatePickerInput({
     return true;
   };
 
-  // Fix dependency array to prevent infinite loops
-  // Only run the effect once on mount and when selected prop changes
+  // Update validation when selected date changes
   useEffect(() => {
     if (selected) {
-      // Validate the date
       const valid = validateDate(selectedDate);
-
-      // Set touched to true to show validation feedback immediately
       setIsTouched(true);
-
-      // Update isValid state based on validation result
       setIsValid(valid);
+      // Only set touched if it's not already touched
+      if (!meta.touched) {
+        helpers.setTouched(true, true);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected, selectedDate]);
+  }, [selected, selectedDate, meta.touched, helpers]);
 
   // Modify the date change handler to ensure proper date objects
   const handleDateChange = date => {
@@ -241,44 +237,33 @@ export default function ReactDatePickerInput({
 
     // Always set as touched
     setIsTouched(true);
+    helpers.setTouched(true, true);
 
     // Make sure we have a valid date object before updating Formik
     if (date) {
-      // Remove console.log to prevent unnecessary re-renders
-
-      // Ensure we're passing a valid Date object to Formik
       try {
         const dateObj = new Date(date);
         if (!isNaN(dateObj.getTime())) {
-          setFieldValue(name, dateObj);
+          setFieldValue(name, dateObj, true); // Set validateOnChange to true
         }
       } catch (e) {
-        // Silently handle error to prevent console spam
+        // Silently handle error
       }
     } else {
-      // If date is null/undefined, clear the field
-      setFieldValue(name, null);
+      setFieldValue(name, null, true); // Set validateOnChange to true
     }
-
-    // Update Formik touched state
-    helpers.setTouched(true, true);
   };
 
   // Add a proper handleBlur function to validate when a user clicks away
   const handleBlur = () => {
-    // Mark as touched to trigger validation
     setIsTouched(true);
-
-    // Validate current selectedDate (might be null/empty)
     validateDate(selectedDate);
-
-    // Update Formik touched state
     helpers.setTouched(true, true);
   };
 
   // Determine validation state directly
-  const hasError = isTouched && !isValid;
-  const showSuccess = isTouched && isValid;
+  const hasError = (meta.touched || isTouched) && !isValid;
+  const showSuccess = (meta.touched || isTouched) && isValid;
 
   // Input style based on validation state
   const inputClass = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
@@ -339,7 +324,6 @@ export default function ReactDatePickerInput({
               },
             },
           ]}
-          // Add these props to ensure date handling works properly
           strictParsing={false}
           fixedHeight
           popperClassName="react-datepicker-right"
