@@ -5,6 +5,7 @@ import FileUploadMain from '@/components/india/FileUploadMain';
 import SingleFileUpload from '@/components/india/SingleFileUpload';
 import { useFormContext } from '@/context/formContext';
 import usePost from '@/hooks/usePost';
+import { useFormFlow } from '@/hooks/useFormFlow';
 import useUpdate from '@/hooks/useUpdate';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import axiosInstance from '@/services/api';
@@ -42,6 +43,9 @@ export default function StepSix() {
 
   const [isUploading, setIsUploading] = useState(false);
   const [activeUpload, setActiveUpload] = useState(null);
+
+  const { shouldShowForm, shouldShowLoading, formData } =
+    useFormFlow('step-six');
 
   // Define validation schema directly in the component
   const validationSchema = Yup.object().shape({
@@ -90,19 +94,6 @@ export default function StepSix() {
     eMedicalCard: [],
   };
 
-  const {
-    isPending,
-    error,
-    data: getAllStepsData,
-    isSuccess: getAllStepsDataIsSuccess,
-    refetch,
-  } = useQuery({
-    queryKey: ['getAllStepsData6'],
-    queryFn: () =>
-      axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
-    enabled: !!state.formId,
-  });
-
   const postMutation = usePost(
     apiEndpoint.VISA_ADD_STEP6,
     6,
@@ -115,8 +106,7 @@ export default function StepSix() {
     apiEndpoint.UPDATE_VISA_ADD_STEP1_LAST_EXIT_STEP_URL,
     state.formId,
     'temporary step 6 saved successfully',
-    '/',
-    refetch
+    '/'
   );
 
   const updatePaymentStatusMutation = useUpdate(
@@ -197,7 +187,7 @@ export default function StepSix() {
   // Check if all required files are uploaded based on visa type
   const validateRequiredFiles = useCallback(() => {
     let isValid = true;
-    const visaService = getAllStepsData?.data?.step1Data?.visaService || '';
+    const visaService = formData?.step1Data?.visaService || '';
 
     // Profile picture is always required
     if (!uploadedPublicIds.profilePicture) {
@@ -238,74 +228,21 @@ export default function StepSix() {
     }
 
     return isValid;
-  }, [uploadedPublicIds, getAllStepsData]);
+  }, [uploadedPublicIds, formData]);
 
-  useEffect(() => {
-    console.log('Step-six useEffect - Current formId:', state?.formId);
-    console.log('Step-six useEffect - getAllStepsData:', getAllStepsData);
-    console.log('Step-six useEffect - getAllStepsDataError:', error);
-    console.log(
-      'Step-two useEffect - getAllStepsDataIsSuccess:',
-      getAllStepsDataIsSuccess
-    );
-
-    // If no formId, redirect to step one
-    if (!state?.formId) {
-      console.log('No formId found, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we have data and step1Data exists
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step5Data) {
-      console.log('Step5Data found:', getAllStepsData?.data?.step5Data);
-
-      // If step1Data is paid, show payment status
-      if (getAllStepsData?.data?.step1Data?.paid) {
-        console.log('Step1Data is paid, showing payment status');
-        return <PaymentStatus />;
-      }
-
-      // If step2Data exists, redirect to update page
-      if (getAllStepsData?.data?.step6Data) {
-        console.log('Step6Data exists, redirecting to update page');
-        router.push('/visa/step-seven');
-        return;
-      }
-
-      // If we have step1Data but no step2Data, show the form
-      console.log('Showing step-sseven form');
-      return;
-    }
-
-    // If there's an error that's not 404, redirect to step one
-    if (error && error?.response?.status !== 404) {
-      console.log('Error in getAllStepsData, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we're still loading, show loading state
-    if (getAllStepsDataIsPending) {
-      console.log('Loading getAllStepsData');
-      return;
-    }
-
-    // If we get here, something went wrong, redirect to step one
-    console.log('Unexpected state, redirecting to step-one');
-    router.push('/visa/step-one');
-  }, [state?.formId, error, getAllStepsDataIsSuccess, getAllStepsData, router]);
-
-  if (isPending) {
+  // Show loading when fetching data
+  if (shouldShowLoading) {
     return <Loading />;
   }
 
-  if (
-    getAllStepsDataIsSuccess &&
-    getAllStepsData?.data?.step5Data &&
-    !getAllStepsData?.data?.step6Data
-  ) {
-    const visaService = getAllStepsData?.data?.step1Data?.visaService || '';
+  // If we have a paid form, show payment status
+  if (formData?.step1Data?.paid) {
+    return <PaymentStatus />;
+  }
+
+  // Show form if conditions are met
+  if (shouldShowForm) {
+    const visaService = formData?.step1Data?.visaService || '';
 
     return (
       <>
@@ -887,4 +824,7 @@ export default function StepSix() {
       </>
     );
   }
+
+  // If we get here, something went wrong, redirect to step one
+  return router.push('/visa/step-one');
 }

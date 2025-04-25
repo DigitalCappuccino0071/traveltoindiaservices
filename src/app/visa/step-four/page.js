@@ -14,6 +14,7 @@ import {
 } from '@/constant/indiaConstant';
 import { useFormContext } from '@/context/formContext';
 import usePost from '@/hooks/usePost';
+import { useFormFlow } from '@/hooks/useFormFlow';
 import useUpdate from '@/hooks/useUpdate';
 import axiosInstance from '@/services/api';
 import apiEndpoint from '@/services/apiEndpoint';
@@ -55,7 +56,6 @@ export default function StepFour() {
     false,
     'getAllStepsDataStep5'
   );
-
   const temporaryExitUpdateMutation = useUpdate(
     apiEndpoint.UPDATE_VISA_ADD_STEP1_LAST_EXIT_STEP_URL,
     state.formId,
@@ -78,90 +78,25 @@ export default function StepFour() {
     (_, index) => startYear + index
   );
 
-  useEffect(() => {
-    console.log('Step-four useEffect - Current formId:', state?.formId);
-    console.log('Step-three useEffect - getAllStepsData:', getAllStepsData);
-    console.log(
-      'Step-three useEffect - getAllStepsDataError:',
-      getAllStepsDataError
-    );
-    console.log(
-      'Step-two useEffect - getAllStepsDataIsSuccess:',
-      getAllStepsDataIsSuccess
-    );
-
-    // If no formId, redirect to step one
-    if (!state?.formId) {
-      console.log('No formId found, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we have data and step1Data exists
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step3Data) {
-      console.log('Step3Data found:', getAllStepsData?.data?.step3Data);
-
-      // If step1Data is paid, show payment status
-      if (getAllStepsData?.data?.step1Data?.paid) {
-        console.log('Step1Data is paid, showing payment status');
-        return <PaymentStatus />;
-      }
-
-      // If step2Data exists, redirect to update page
-      if (getAllStepsData?.data?.step4Data) {
-        console.log('Step4Data exists, redirecting to update page');
-        router.push('/visa/step-four/update');
-        return;
-      }
-
-      // If we have step1Data but no step2Data, show the form
-      console.log('Showing step-four form');
-      return;
-    }
-
-    // If there's an error that's not 404, redirect to step one
-    if (
-      getAllStepsDataError &&
-      getAllStepsDataError?.response?.status !== 404
-    ) {
-      console.log('Error in getAllStepsData, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we're still loading, show loading state
-    if (getAllStepsDataIsPending) {
-      console.log('Loading getAllStepsData');
-      return;
-    }
-
-    // If we get here, something went wrong, redirect to step one
-    console.log('Unexpected state, redirecting to step-one');
-    router.push('/visa/step-one');
-  }, [
-    state?.formId,
-    getAllStepsDataError,
-    getAllStepsDataIsSuccess,
-    getAllStepsData,
-    router,
-  ]);
+  const { shouldShowForm, shouldShowLoading, formData } =
+    useFormFlow('step-four');
 
   // Show loading when fetching data
-  if (getAllStepsDataIsPending) {
+  if (shouldShowLoading) {
     return <Loading />;
   }
 
-  // If we have step3Data but no step4Data, show the form
-  if (
-    getAllStepsDataIsSuccess &&
-    getAllStepsData?.data?.step3Data &&
-    !getAllStepsData?.data?.step4Data
-  ) {
-    const visaServiceSelected = getAllStepsData?.data?.step1Data?.visaService
-      ? lodash.camelCase(getAllStepsData?.data?.step1Data?.visaService)
+  // If we have a paid form, show payment status
+  if (formData?.step1Data?.paid) {
+    return <PaymentStatus />;
+  }
+
+  // Show form if conditions are met
+  if (shouldShowForm) {
+    const visaServiceSelected = formData?.step1Data?.visaService
+      ? lodash.camelCase(formData?.step1Data?.visaService)
       : '';
-    const visaServiceSelectedValue =
-      getAllStepsData?.data?.step1Data?.[visaServiceSelected];
+    const visaServiceSelectedValue = formData?.step1Data?.[visaServiceSelected];
 
     const getDurationOfVisa = (
       visaServiceSelected,
@@ -223,12 +158,8 @@ export default function StepFour() {
         <Formik
           initialValues={{
             ...step4ValidationSchema.initialValues,
-            visaService: getAllStepsData?.data
-              ? getAllStepsData?.data?.step1Data?.visaService
-              : '',
-            portOfArrival: getAllStepsData?.data
-              ? getAllStepsData?.data?.step1Data?.portOfArrival
-              : '',
+            visaService: formData?.step1Data?.visaService || '',
+            portOfArrival: formData?.step1Data?.portOfArrival || '',
             durationOfVisa: getDurationOfVisa(
               visaServiceSelected,
               visaServiceSelectedValue

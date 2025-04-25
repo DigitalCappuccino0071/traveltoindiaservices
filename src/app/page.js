@@ -9,11 +9,10 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const Home = () => {
-  const { dispatch } = useFormContext();
+  const { resetForm } = useFormContext();
   const [isPaymentForCompletedFormOpen, setPaymentForCompletedFormOpen] =
     useState(false);
   const [isPartiallyFillFormOpen, setPartiallyFillFormOpen] = useState(false);
-
   const [isVisaStatusFormOpen, setVisaStatusFormOpen] = useState(false);
 
   const handlePartiallyFillFormOpen = () => {
@@ -23,13 +22,15 @@ const Home = () => {
   const handlePaymentForCompletedFormOpen = () => {
     setPaymentForCompletedFormOpen(prev => !prev);
   };
+
   const handleVisaStatusFormOpen = () => {
     setVisaStatusFormOpen(prev => !prev);
   };
 
   useEffect(() => {
-    localStorage.removeItem('formId');
-  }, [dispatch]);
+    console.log('Resetting form state on home page');
+    resetForm();
+  }, [resetForm]);
 
   return (
     <>

@@ -4,6 +4,7 @@ import SavedFormId from '@/components/india/common/SavedFormId';
 import { step5ValidationSchema, step5data } from '@/constant/indiaConstant';
 import { useFormContext } from '@/context/formContext';
 import usePost from '@/hooks/usePost';
+import { useFormFlow } from '@/hooks/useFormFlow';
 import useUpdate from '@/hooks/useUpdate';
 import axiosInstance from '@/services/api';
 import apiEndpoint from '@/services/apiEndpoint';
@@ -13,26 +14,14 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { ImSpinner2 } from 'react-icons/im';
-import { useEffect } from 'react';
 import Loading from '@/components/india/common/Loading';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
 
-const StepFive = () => {
+export default function StepFive() {
   const pathName = usePathname();
   const { state } = useFormContext();
   const router = useRouter();
-  const {
-    isPending,
-    error,
-    data: getAllStepsData,
-    isSuccess: getAllStepsDataIsSuccess,
-    refetch,
-  } = useQuery({
-    queryKey: ['getAllStepsData5'],
-    queryFn: () =>
-      axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
-    enabled: !!state.formId,
-  });
+
   const postMutation = usePost(
     apiEndpoint.VISA_ADD_STEP5,
     5,
@@ -45,8 +34,7 @@ const StepFive = () => {
     apiEndpoint.UPDATE_VISA_ADD_STEP1_LAST_EXIT_STEP_URL,
     state.formId,
     'temporary step 5 saved successfully',
-    '/',
-    refetch
+    '/'
   );
 
   const handleTemporaryExit = () => {
@@ -56,81 +44,21 @@ const StepFive = () => {
     localStorage.clear();
   };
 
-  useEffect(() => {
-    console.log('Step-five useEffect - Current formId:', state?.formId);
-    console.log('Step-five useEffect - getAllStepsData:', getAllStepsData);
-    console.log('Step-five useEffect - error:', error);
-    console.log(
-      'Step-five useEffect - getAllStepsDataIsSuccess:',
-      getAllStepsDataIsSuccess
-    );
-
-    // If no formId, redirect to step one
-    if (!state?.formId) {
-      console.log('No formId found, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we have data and step1Data exists
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step4Data) {
-      console.log('Step4Data found:', getAllStepsData?.data?.step4Data);
-
-      // If step1Data is paid, show payment status
-      if (getAllStepsData?.data?.step1Data?.paid) {
-        console.log('Step1Data is paid, showing payment status');
-        return <PaymentStatus />;
-      }
-
-      // If step2Data exists, redirect to update page
-      if (getAllStepsData?.data?.step5Data) {
-        console.log('Step5Data exists, redirecting to update page');
-        router.push('/visa/step-five/update');
-        return;
-      }
-
-      // If we have step1Data but no step2Data, show the form
-      console.log('Showing step-five form');
-      return;
-    }
-
-    // If there's an error that's not 404, redirect to step one
-    if (error && error?.response?.status !== 404) {
-      console.log('Error in getAllStepsData, redirecting to step-one');
-      router.push('/visa/step-one');
-      return;
-    }
-
-    // If we're still loading, show loading state
-    if (getAllStepsDataIsPending) {
-      console.log('Loading getAllStepsData');
-      return;
-    }
-
-    // If we get here, something went wrong, redirect to step one
-    console.log('Unexpected state, redirecting to step-one');
-    router.push('/visa/step-one');
-  }, [state?.formId, error, getAllStepsDataIsSuccess, getAllStepsData, router]);
-
-  // Handle successful form submission
-  useEffect(() => {
-    if (postMutation.isSuccess) {
-      console.log('Form submission successful, redirecting to step-six');
-      router.push('/visa/step-six');
-    }
-  }, [postMutation.isSuccess, router]);
+  const { shouldShowForm, shouldShowLoading, formData } =
+    useFormFlow('step-five');
 
   // Show loading when fetching data
-  if (isPending) {
+  if (shouldShowLoading) {
     return <Loading />;
   }
 
-  // If we have step4Data but no step5Data, show the form
-  if (
-    getAllStepsDataIsSuccess &&
-    getAllStepsData?.data?.step4Data &&
-    !getAllStepsData?.data?.step5Data
-  ) {
+  // If we have a paid form, show payment status
+  if (formData?.step1Data?.paid) {
+    return <PaymentStatus />;
+  }
+
+  // Show form if conditions are met
+  if (shouldShowForm) {
     return (
       <>
         <BannerPage heading="Applicant Detail Form" />
@@ -219,12 +147,12 @@ const StepFive = () => {
                     <Field type="checkbox" name="declaration" />
 
                     <p className="font-semibold">
-                      I {getAllStepsData?.data?.step2Data?.firstName}, hereby
-                      declare that the information furnished above is correct to
-                      the best of my knowledge and belief. In case the
-                      information is found false at any stage, I am liable for
-                      legal action/deportation /blacklisting or any other as
-                      deemed fit by the Government of India.
+                      I {formData?.step2Data?.firstName}, hereby declare that
+                      the information furnished above is correct to the best of
+                      my knowledge and belief. In case the information is found
+                      false at any stage, I am liable for legal
+                      action/deportation /blacklisting or any other as deemed
+                      fit by the Government of India.
                     </p>
                   </div>
                   <ErrorMessage
@@ -285,6 +213,4 @@ const StepFive = () => {
 
   // If we get here, something went wrong, redirect to step one
   return router.push('/visa/step-one');
-};
-
-export default StepFive;
+}
