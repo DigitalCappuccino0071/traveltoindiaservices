@@ -59,10 +59,7 @@ const StepFive = () => {
   useEffect(() => {
     console.log('Step-five useEffect - Current formId:', state?.formId);
     console.log('Step-five useEffect - getAllStepsData:', getAllStepsData);
-    console.log(
-      'Step-five useEffect - getAllStepsDataError:',
-      getAllStepsDataError
-    );
+    console.log('Step-five useEffect - error:', error);
     console.log(
       'Step-five useEffect - getAllStepsDataIsSuccess:',
       getAllStepsDataIsSuccess
