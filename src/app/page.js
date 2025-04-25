@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const Home = () => {
-  const { resetForm } = useFormContext();
+  // const { resetForm } = useFormContext();
   const [isPaymentForCompletedFormOpen, setPaymentForCompletedFormOpen] =
     useState(false);
   const [isPartiallyFillFormOpen, setPartiallyFillFormOpen] = useState(false);
@@ -27,10 +27,15 @@ const Home = () => {
     setVisaStatusFormOpen(prev => !prev);
   };
 
+  // useEffect(() => {
+  //   console.log('Resetting form state on home page');
+  //   resetForm();
+  // }, [resetForm]);
+
   useEffect(() => {
-    console.log('Resetting form state on home page');
-    resetForm();
-  }, [resetForm]);
+    localStorage.removeItem('formId');
+    localStorage.removeItem('formSteps');
+  }, []);
 
   return (
     <>
