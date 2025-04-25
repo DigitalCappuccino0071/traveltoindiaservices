@@ -13,11 +13,16 @@ export const useFormFlow = currentStep => {
 
   // Fetch form data
   const { data: formData, isLoading } = useQuery({
-    queryKey: ['formData', state.formId],
+    queryKey: [`formdata${currentStep}`],
     queryFn: () =>
       axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
     enabled: !!state.formId,
     retry: false,
+    staleTime: 0,
+    cacheTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   useEffect(() => {
@@ -70,96 +75,38 @@ export const useFormFlow = currentStep => {
       return;
     }
 
-    // Get current step key
-    const stepKey = currentStep.replace('-', '');
     const isUpdatePage = window.location.pathname.includes('/update');
+    const stepKey = currentStep.replace('-', '');
+    const currentStepNumber = parseInt(currentStep.split('-')[1]);
 
-    // Handle step-one
-    if (currentStep === 'step-one') {
-      if (state.steps.step1 && !isUpdatePage) {
+    // Handle redirects based on step completion
+    const handleRedirect = () => {
+      // For step-one
+      if (currentStep === 'step-one' && state.steps.step1 && !isUpdatePage) {
         router.push('/visa/step-one/update');
         return;
       }
-    }
 
-    // Handle step-two
-    if (currentStep === 'step-two') {
-      // If step1 is not completed, redirect to step-one
-      if (!state.steps.step1) {
-        router.push('/visa/step-one');
-        return;
+      // For other steps
+      if (currentStepNumber > 1) {
+        const previousStep = `step${currentStepNumber - 1}`;
+        if (!state.steps[previousStep]) {
+          router.push(`/visa/step-${currentStepNumber - 1}`);
+          return;
+        }
       }
-      // If step2 is completed and not on update page, redirect to update
-      if (state.steps.step2 && !isUpdatePage) {
-        router.push('/visa/step-two/update');
-        return;
-      }
-    }
 
-    // Handle step-three
-    if (currentStep === 'step-three') {
-      // If step2 is not completed, redirect to step-two
-      if (!state.steps.step2) {
-        router.push('/visa/step-two');
-        return;
+      // Handle completed steps
+      if (state.steps[stepKey] && !isUpdatePage) {
+        if (currentStep === 'step-six') {
+          router.push('/visa/step-seven');
+        } else {
+          router.push(`/visa/${currentStep}/update`);
+        }
       }
-      // If step3 is completed and not on update page, redirect to update
-      if (state.steps.step3 && !isUpdatePage) {
-        router.push('/visa/step-three/update');
-        return;
-      }
-    }
+    };
 
-    // Handle step-four
-    if (currentStep === 'step-four') {
-      // If step3 is not completed, redirect to step-three
-      if (!state.steps.step3) {
-        router.push('/visa/step-three');
-        return;
-      }
-      // If step4 is completed and not on update page, redirect to update
-      if (state.steps.step4 && !isUpdatePage) {
-        router.push('/visa/step-four/update');
-        return;
-      }
-    }
-
-    // Handle step-five
-    if (currentStep === 'step-five') {
-      // If step4 is not completed, redirect to step-four
-      if (!state.steps.step4) {
-        router.push('/visa/step-four');
-        return;
-      }
-      // If step5 is completed and not on update page, redirect to update
-      if (state.steps.step5 && !isUpdatePage) {
-        router.push('/visa/step-five/update');
-        return;
-      }
-    }
-
-    // Handle step-six
-    if (currentStep === 'step-six') {
-      // If step5 is not completed, redirect to step-five
-      if (!state.steps.step5) {
-        router.push('/visa/step-five');
-        return;
-      }
-      // If step6 is completed, redirect to step-seven (no update page for step-six)
-      if (state.steps.step6) {
-        router.push('/visa/step-seven');
-        return;
-      }
-    }
-
-    // Handle step-seven
-    if (currentStep === 'step-seven') {
-      // If step6 is not completed, redirect to step-six
-      if (!state.steps.step6) {
-        router.push('/visa/step-six');
-        return;
-      }
-    }
+    handleRedirect();
   }, [state.formId, state.steps, currentStep, router, formData, isInitialized]);
 
   // Determine if we should show the form
