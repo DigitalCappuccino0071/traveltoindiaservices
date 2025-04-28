@@ -140,8 +140,8 @@ const StepEight = () => {
               Applicant Name :-
             </h2>
             <p className="font-bold leading-relaxed tracking-wide text-justify text-primary">
-              {getAllStepsData?.data?.step2?.firstName}{' '}
-              {getAllStepsData?.data?.step2?.lastName}
+              {getAllStepsData?.data?.step2Data?.firstName}{' '}
+              {getAllStepsData?.data?.step2Data?.lastName}
             </p>
           </div>
           <div className="flex items-center justify-center space-x-4 ">
@@ -330,7 +330,7 @@ const StepEight = () => {
                   </button>
 
                   {postPayment.isError ? (
-                    <div className="p-3 mt-4 text-left text-red-500 bg-red-50 rounded">
+                    <div className="p-3 mt-4 text-left text-red-500 rounded bg-red-50">
                       <p className="font-semibold">Payment Error</p>
                       <p>{postPayment.error.message}</p>
                     </div>
