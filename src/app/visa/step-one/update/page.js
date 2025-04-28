@@ -20,8 +20,8 @@ import PhoneInputField from '@/components/common/PhoneInputField';
 import SelectField from '@/components/common/SelectField';
 import TextInputField from '@/components/common/TextInputField';
 import { useRouter } from 'next/navigation';
-import Loading from '@/components/india/common/Loading';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 
 export default function StepOneUpdate() {
   const { state } = useFormContext();
@@ -39,12 +39,6 @@ export default function StepOneUpdate() {
       axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
     enabled: !!state.formId,
     staleTime: 0,
-    cacheTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    refetchInterval: 1000,
-    refetchIntervalInBackground: true,
   });
 
   const updateMutation = useUpdate(
@@ -56,6 +50,12 @@ export default function StepOneUpdate() {
   );
 
   useEffect(() => {
+    // If there's no formId, redirect to step-one
+    if (!state.formId) {
+      router.push('/visa/step-one');
+      return;
+    }
+
     // If there's a formId but we got a 404 error (application doesn't exist)
     // it means the formId is invalid, so we should show the form for new users
     if (error && error?.response?.status !== 404) {
@@ -64,28 +64,20 @@ export default function StepOneUpdate() {
       return;
     }
 
-    // If we successfully got data for this formId
-    if (getAllStepsDataIsSuccess && getAllStepsData?.data) {
-      // If step1Data exists and is not paid, redirect to update page
-      if (
-        getAllStepsData?.data?.step1Data &&
-        !getAllStepsData?.data?.step1Data?.paid
-      ) {
-        console.log('Found existing unpaid form - redirecting to update page');
-        router.push('/visa/step-one/update');
-      }
-
-      // If step1Data exists and is paid, show payment status
-      else if (getAllStepsData?.data?.step1Data?.paid) {
-        console.log('Found paid application - showing payment status');
-        return <PaymentStatus />;
-        // No redirect needed - component will render PaymentStatus
-      }
+    // If we successfully got data and the form has been paid, show payment status
+    if (getAllStepsDataIsSuccess &&
+        getAllStepsData?.data?.step1Data?.paid) {
+      // No need to redirect, the component will render PaymentStatus
+      console.log('Found paid application - showing payment status');
+      // Note: No redirect here, component will return PaymentStatus below
     }
+
+    // Important: We don't redirect to update page here, as we're already on it
+    // This stops the infinite redirection loop
   }, [getAllStepsDataIsSuccess, error, state.formId, getAllStepsData, router]);
 
   if (isPending) {
-    return <Loading />;
+    return <LoadingSkeleton />;
   }
 
   if (getAllStepsDataIsSuccess) {

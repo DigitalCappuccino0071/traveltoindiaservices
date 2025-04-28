@@ -28,6 +28,7 @@ import {
 } from 'react-icons/fa';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
 import Loading from '@/components/india/common/Loading';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 
 export default function StepSix() {
   const pathName = usePathname();
@@ -232,7 +233,7 @@ export default function StepSix() {
 
   // Show loading when fetching data
   if (shouldShowLoading) {
-    return <Loading />;
+    return <LoadingSkeleton />;
   }
 
   // If we have a paid form, show payment status

@@ -1,6 +1,6 @@
 'use client';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 import BannerPage from '@/components/india/common/BannerPage';
-import Loading from '@/components/india/common/Loading';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
 import { step5ValidationSchema, step5data } from '@/constant/indiaConstant';
 import { useFormContext } from '@/context/formContext';
@@ -69,7 +69,7 @@ export default function Step5Update() {
   }, [state?.formId, error, getAllStepsDataIsSuccess, getAllStepsData, router]);
 
   if (isPending) {
-    return <Loading />;
+    return <LoadingSkeleton />;
   }
 
   if (getAllStepsDataIsSuccess) {

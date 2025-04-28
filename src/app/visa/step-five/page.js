@@ -14,8 +14,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { ImSpinner2 } from 'react-icons/im';
-import Loading from '@/components/india/common/Loading';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 
 export default function StepFive() {
   const pathName = usePathname();
@@ -49,7 +49,7 @@ export default function StepFive() {
 
   // Show loading when fetching data
   if (shouldShowLoading) {
-    return <Loading />;
+    return <LoadingSkeleton />;
   }
 
   // If we have a paid form, show payment status

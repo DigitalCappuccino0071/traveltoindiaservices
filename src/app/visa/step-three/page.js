@@ -26,63 +26,70 @@ import { BsQuestionCircleFill } from 'react-icons/bs';
 import { ImSpinner2 } from 'react-icons/im';
 import { useEffect } from 'react';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
+import { useVisaApplication } from '@/hooks/useVisaApplication';
+import ErrorPage from '@/components/error/ErrorPage';
 
 export default function StepThree() {
   const pathName = usePathname();
-  const { state } = useFormContext();
-  const router = useRouter();
+   const router = useRouter();
+   const { formData, isError, isFetching, refetch, formId } =
+     useVisaApplication('step-three');
 
-  const {
-    isPending: getAllStepsDataIsPending,
-    error: getAllStepsDataError,
-    data: getAllStepsData,
-    isSuccess: getAllStepsDataIsSuccess,
-    refetch,
-  } = useQuery({
-    queryKey: ['getAllStepsDataStep3'],
-    queryFn: () =>
-      axiosInstance.get(`${apiEndpoint.GET_ALL_STEPS_DATA}${state.formId}`),
-    enabled: !!state.formId,
-  });
+   const postMutation = usePost(
+     apiEndpoint.VISA_ADD_STEP2,
+     2,
+     '/visa/step-three',
+     false,
+     'getAllStepsDataStep2'
+   );
 
-  const postMutation = usePost(
-    apiEndpoint.VISA_ADD_STEP3,
-    3,
-    '/visa/step-four',
-    false,
-    'getAllStepsDataStep4'
-  );
-  const temporaryExitUpdateMutation = useUpdate(
-    apiEndpoint.UPDATE_VISA_ADD_STEP1_LAST_EXIT_STEP_URL,
-    state.formId,
-    'temporary step 3 saved successfully',
-    '/',
-    refetch
-  );
+   const temporaryExitUpdateMutation = useUpdate(
+     apiEndpoint.UPDATE_VISA_ADD_STEP1_LAST_EXIT_STEP_URL,
+     formId,
+     'temporary step 3 saved successfully',
+     '/',
+     refetch
+   );
 
-  const handleTemporaryExit = () => {
-    temporaryExitUpdateMutation.mutate({
-      lastExitStepUrl: pathName,
-    });
-    localStorage.clear();
-  };
+   // Use effect for handling redirects
+   useEffect(() => {
+     if (formId && formData?.step1Data?.paid) {
+       router.push('/visa/thankyou');
+     } else if (formId && formData?.step3Data) {
+       router.push('/visa/step-three/update');
+     }
+   }, [formId, formData?.step1Data, formData?.step3Data, router]);
 
-  const { shouldShowForm, shouldShowLoading, formData } =
-    useFormFlow('step-three');
+   const handleTemporaryExit = () => {
+     temporaryExitUpdateMutation.mutate({
+       lastExitStepUrl: pathName,
+     });
+     localStorage.clear();
+   };
 
-  // Show loading when fetching data
-  if (shouldShowLoading) {
-    return <Loading />;
-  }
+   // Show loading skeleton only when actively fetching data
+   if (isFetching) {
+     return <LoadingSkeleton />;
+   }
 
-  // If we have a paid form, show payment status
-  if (formData?.step1Data?.paid) {
-    return <PaymentStatus />;
-  }
+   if (isError) {
+     return (
+       <ErrorPage
+         errorMessage="We couldn't load your visa application data. Please try again."
+         buttonText="Retry"
+         refetch={refetch}
+       />
+     );
+   }
 
-  // Show form if conditions are met
-  if (shouldShowForm) {
-    return (
+   // Don't immediately redirect, let the useEffect handle it to avoid layout shifts
+   if (formId && (formData?.step1Data?.paid || formData?.step3Data)) {
+     return <LoadingSkeleton />;
+   }
+
+
+
       <>
         <BannerPage heading="Applicant Detail Form" />
         <Formik
@@ -990,9 +997,5 @@ export default function StepThree() {
           )}
         </Formik>
       </>
-    );
-  }
 
-  // If we get here, something went wrong, redirect to step one
-  return router.push('/visa/step-one');
 }

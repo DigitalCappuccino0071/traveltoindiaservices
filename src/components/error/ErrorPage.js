@@ -1,38 +1,47 @@
-
-import React from 'react'
+'use client';
+import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-const ErrorPage = () => {
-    return (
-        <div className='container pt-32 pb-24'>
-            <div className='grid grid-cols-2 gap-10 items-center justify-between'>
-                <div className='md:order-2'>
-                    <Image src="/assets/images/main/error-payment.png" width="450" height="200" />
-                </div>
-                <div className='space-y-6'>
-                    <h2 className='text-4xl font-semibold '>
-                        Payment Failed
-                    </h2>
-                    <p className='text-xl'>
-                        The payment process encountered an issue, and unfortunately, the transaction did not go through successfully. Please check your payment details and try again, ensuring all information is accurate
-                    </p>
-                    <Link href="#">
-                        <div className="py-8">
+import { BiErrorAlt } from 'react-icons/bi';
 
-                            <button
-                                className={`cursor-pointer w-fit items-center gap-3  rounded-lg font-semibold text-white bg-primaryMain px-8 py-3`}
-                                type="submit"
-                            >
-                                Make Payment
-                            </button>
-                        </div>
-                    </Link>
-
-                </div>
-            </div>
-
+export default function ErrorPage({
+  errorMessage,
+  buttonText = 'Try Again',
+  buttonLink = '/',
+  refetch,
+}) {
+  return (
+    <div className="container pt-32 pb-24">
+      <div className="grid md:grid-cols-2 gap-10 items-center justify-between">
+        <div className="md:order-2 flex justify-center">
+          <BiErrorAlt className="text-red-500 w-64 h-64" />
         </div>
-    )
+        <div className="space-y-6">
+          <h2 className="text-4xl font-semibold">Something Went Wrong</h2>
+          <p className="text-xl">
+            {errorMessage ||
+              'We encountered an issue while processing your request. Please try again later or contact our support team if the problem persists.'}
+          </p>
+          <div className="py-8">
+            {refetch ? (
+              <button
+                className="cursor-pointer w-fit items-center gap-3 rounded-lg font-semibold text-white bg-primaryMain px-8 py-3"
+                onClick={() => refetch()}
+              >
+                {buttonText}
+              </button>
+            ) : (
+              <Link href={buttonLink}>
+                <button
+                  className="cursor-pointer w-fit items-center gap-3 rounded-lg font-semibold text-white bg-primaryMain px-8 py-3"
+                  type="submit"
+                >
+                  {buttonText}
+                </button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-export default ErrorPage

@@ -28,7 +28,7 @@ import { BsFillQuestionCircleFill, BsQuestionCircleFill } from 'react-icons/bs';
 import MultiSelectField from '@/components/common/MultiSelectField';
 import { useRouter } from 'next/navigation';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
-import Loading from '@/components/india/common/Loading';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 
 const StepFour = () => {
   const { state } = useFormContext();
@@ -110,7 +110,7 @@ const StepFour = () => {
   }, [state?.formId, error, getAllStepsDataIsSuccess, getAllStepsData, router]);
 
   if (isPending) {
-    return <Loading />;
+    return <LoadingSkeleton />;
   }
 
   if (getStep1DataIsSuccess && getAllStepsDataIsSuccess) {

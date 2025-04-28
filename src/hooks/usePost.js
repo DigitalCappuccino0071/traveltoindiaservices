@@ -47,32 +47,26 @@ export default function usePost(
       currentSteps[`step${step}`] = true;
       localStorage.setItem('formSteps', JSON.stringify(currentSteps));
 
-      // Wait for state updates to complete
-      setTimeout(() => {
-        console.log(
-          'After setTimeout - formId in localStorage:',
-          localStorage.getItem('formId')
-        );
-        console.log(
-          'After setTimeout - steps in localStorage:',
-          localStorage.getItem('formSteps')
-        );
+      // Display success toast
+      toast.success(`step ${step} completed successfully`, {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        autoClose: 1000,
+      });
 
-        toast.success(`step ${step} completed successfully`, {
-          position: toast.POSITION.BOTTOM_RIGHT,
-          autoClose: 1000,
-        });
+      // Invalidate queries if needed
+      if (queryKey) {
+        queryClient.invalidateQueries({ queryKey: [queryKey] });
+      }
 
-        if (queryKey) {
-          queryClient.invalidateQueries({ queryKey: [queryKey] });
-        }
+      // Prioritize the next step navigation
+      if (routeUrl) {
+        console.log('Redirecting to:', routeUrl);
 
-        if (routeUrl) {
-          console.log('Redirecting to:', routeUrl);
-          // Force a hard navigation to ensure the page reloads
-          window.location.href = routeUrl;
-        }
-      }, 1000); // Increased timeout to ensure state updates are complete
+        // Force redirect to the next step with a small delay to ensure state updates complete
+        setTimeout(() => {
+          router.push(routeUrl);
+        }, 100);
+      }
     },
     onError: error => {
       console.error('Post error:', error);

@@ -22,6 +22,7 @@ import PhoneInputField from '@/components/common/PhoneInputField';
 import { useRouter } from 'next/navigation';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
 import Loading from '@/components/india/common/Loading';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 
 export default function Step3Update() {
   const { state } = useFormContext();
@@ -77,7 +78,7 @@ export default function Step3Update() {
   }, [state?.formId, error, getAllStepsDataIsSuccess, getAllStepsData, router]);
 
   if (isPending) {
-    return <Loading />;
+    return <LoadingSkeleton />;
   }
 
   if (getAllStepsDataIsSuccess) {

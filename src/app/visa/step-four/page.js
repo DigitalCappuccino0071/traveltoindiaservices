@@ -28,8 +28,8 @@ import Script from 'next/script';
 import { BsQuestionCircleFill } from 'react-icons/bs';
 import { ImSpinner2 } from 'react-icons/im';
 import { useEffect } from 'react';
-import Loading from '@/components/india/common/Loading';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 
 export default function StepFour() {
   const pathname = usePathname();
@@ -83,7 +83,7 @@ export default function StepFour() {
 
   // Show loading when fetching data
   if (shouldShowLoading) {
-    return <Loading />;
+    return <LoadingSkeleton />;
   }
 
   // If we have a paid form, show payment status

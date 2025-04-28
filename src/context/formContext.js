@@ -21,11 +21,11 @@ const formReducer = (state, action) => {
   console.log('FormContext reducer - Action:', action);
   switch (action.type) {
     case 'SET_FORM_ID':
-      console.log('Setting formId in reducer:', action.payload);
+      // console.log('Setting formId in reducer:', action.payload);
       return { ...state, formId: action.payload };
 
     case 'SET_STEP_COMPLETED':
-      console.log('Setting step completed:', action.payload);
+      // console.log('Setting step completed:', action.payload);
       return {
         ...state,
         steps: {
@@ -35,21 +35,21 @@ const formReducer = (state, action) => {
       };
 
     case 'SET_MULTIPLE_STEPS_COMPLETED':
-      console.log('Setting multiple steps completed:', action.payload);
+      // console.log('Setting multiple steps completed:', action.payload);
       return {
         ...state,
         steps: { ...state.steps, ...action.payload },
       };
 
     case 'RESET_STEPS':
-      console.log('Resetting all steps');
+      // console.log('Resetting all steps');
       return {
         ...state,
         steps: initialState.steps,
       };
 
     case 'RESET_FORM':
-      console.log('Resetting entire form state');
+      // console.log('Resetting entire form state');
       return initialState;
 
     default:
@@ -68,8 +68,8 @@ export const FormProvider = ({ children }) => {
       const storedFormId = localStorage.getItem('formId');
       const storedSteps = localStorage.getItem('formSteps');
 
-      console.log('Initial formId from localStorage:', storedFormId);
-      console.log('Initial steps from localStorage:', storedSteps);
+      // console.log('Initial formId from localStorage:', storedFormId);
+      // console.log('Initial steps from localStorage:', storedSteps);
 
       return {
         formId: storedFormId || null,
@@ -87,8 +87,8 @@ export const FormProvider = ({ children }) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        console.log('Saving formId to localStorage:', state.formId);
-        console.log('Saving steps to localStorage:', state.steps);
+        // console.log('Saving formId to localStorage:', state.formId);
+        // console.log('Saving steps to localStorage:', state.steps);
 
         if (state.formId) {
           localStorage.setItem('formId', state.formId);
@@ -98,7 +98,7 @@ export const FormProvider = ({ children }) => {
 
         localStorage.setItem('formSteps', JSON.stringify(state.steps));
       } catch (error) {
-        console.error('Error saving state to localStorage:', error);
+        // console.error('Error saving state to localStorage:', error);
       }
     }
   }, [state.formId, state.steps]);

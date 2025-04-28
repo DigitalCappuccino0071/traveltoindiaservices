@@ -25,7 +25,7 @@ import ReactDatePickerInput from '@/components/common/ReactDatePickerInput';
 import TextInputField from '@/components/common/TextInputField';
 import SelectField from '@/components/common/SelectField';
 import PaymentStatus from '@/components/india/common/PaymentStatus';
-import Loading from '@/components/india/common/Loading';
+import LoadingSkeleton from '@/components/common/LoadingSkeleton';
 
 export default function StepTwoUpdate() {
   const { state } = useFormContext();
@@ -69,25 +69,19 @@ export default function StepTwoUpdate() {
       return;
     }
 
-    if (getAllStepsDataIsSuccess) {
-      if (
-        getAllStepsData?.data?.step1Data &&
-        getAllStepsData?.data?.step2Data
-      ) {
-        router.push('/visa/step-two/update');
-        return;
-      }
-      // If step1Data exists and is paid, show payment status
-      if (getAllStepsData?.data?.step1Data?.paid) {
-        // console.log('Found paid application - showing payment status');
-        return <PaymentStatus />;
-        // No redirect needed - component will render PaymentStatus
-      }
+    // If step1Data exists and is paid, show payment status
+    if (getAllStepsDataIsSuccess && getAllStepsData?.data?.step1Data?.paid) {
+      // No need to redirect - component will render PaymentStatus below
+      console.log('Found paid application - showing payment status');
+      return;
     }
+
+    // Important: Don't redirect to update page here, as we're already on it
+    // This stops the infinite redirection loop
   }, [state?.formId, error, router, getAllStepsDataIsSuccess, getAllStepsData]);
 
   if (isPending) {
-    return <Loading />;
+    return <LoadingSkeleton />;
   }
 
   if (getAllStepsDataIsSuccess && getAllStepsData.data.step2Data) {
