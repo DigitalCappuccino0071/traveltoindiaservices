@@ -35,6 +35,17 @@ export default function RootLayout({ children }) {
         </FormProvider>
         <GoogleTagManager gtmId="G-LC9MZM89N4" />
         <GoogleAnalytics gaId="G-LC9MZM89N4" />
+
+        <GoogleAnalytics gaId="AW-17158213088" />
+        {/* <GoogleAnalytics
+          gaId="AW-17158213088"
+          dataLayer={{
+            event: 'conversion',
+            send_to: 'AW-17158213088/k_zbCKnw2tQaEOCb1vU_',
+            value: 1.0,
+            currency: 'INR',
+          }}
+        /> */}
       </body>
     </html>
   );

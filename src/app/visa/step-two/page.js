@@ -39,6 +39,7 @@ export default function StepTwo() {
     error: getAllStepsDataError,
     data: getAllStepsData,
     isSuccess: getAllStepsDataIsSuccess,
+
     refetch,
   } = useQuery({
     queryKey: ['getAllStepsDataStep2'],
@@ -967,6 +968,15 @@ export default function StepTwo() {
           //   event: 'conversion',
           //   send_to: 'AW-11559486298/pYlxCPyz-oYaENqG_4cr',
           // }}
+        />
+        <GoogleAnalytics
+          gaId="AW-17158213088"
+          dataLayer={{
+            event: 'conversion',
+            send_to: 'AW-17158213088/k_zbCKnw2tQaEOCb1vU_',
+            value: 1.0,
+            currency: 'INR',
+          }}
         />
       </>
     );
