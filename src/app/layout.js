@@ -37,6 +37,7 @@ export default function RootLayout({ children }) {
         <GoogleAnalytics gaId="G-LC9MZM89N4" />
 
         <GoogleAnalytics gaId="AW-17158213088" />
+        <GoogleAnalytics gaId="G-YHF2JTC50X" />
         {/* <GoogleAnalytics
           gaId="AW-17158213088"
           dataLayer={{

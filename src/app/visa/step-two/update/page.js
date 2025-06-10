@@ -36,6 +36,7 @@ export default function StepTwoUpdate() {
     error,
     data: getAllStepsData,
     isSuccess: getAllStepsDataIsSuccess,
+
     refetch,
   } = useQuery({
     queryKey: ['getAllStepsData'],
